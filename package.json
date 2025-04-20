@@ -9,6 +9,7 @@
 		"preview": "npm run build && wrangler dev",
 		"migrate": "node server/database/migrations/buildMigrations.js && npx wrangler d1 migrations apply D1",
 		"migrateRemote": "node server/database/migrations/buildMigrations.js && npx wrangler d1 migrations apply D1 --remote",
+		"push-secrets": "npx wrangler secret bulk .dev.vars",
 		"build-only": "vite build",
 		"type-check": "vue-tsc --build",
 		"deploy": "npm run build && wrangler deploy",
