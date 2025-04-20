@@ -5,14 +5,27 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "aliasflare-ts",
-	"compatibility_date": "2025-04-19",
+	"compatibility_date": "2025-04-16",
 	"main": "server/index.ts",
 	"assets": {
 		"not_found_handling": "single-page-application"
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"compatibility_flags": ["assets_navigation_has_no_effect", "nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "D1",
+			"database_name": "aliasflare-ts",
+			"database_id": "3361547d-5d74-4728-9ed8-fe558023e11f",
+			"preview_database_id": "D1",
+		}
+	],
+	"routes": [
+		{ "pattern": "tononym.de", "custom_domain": true },
+		{ "pattern": "www.tononym.de", "custom_domain": true }
+	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

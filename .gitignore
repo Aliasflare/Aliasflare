@@ -32,3 +32,8 @@ coverage
 # wrangler files
 .wrangler
 .dev.vars*
+
+# Others
+migrations
+*.request.js
+.dev.notes
