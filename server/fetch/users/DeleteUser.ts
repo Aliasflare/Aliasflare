@@ -4,9 +4,9 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { validateUUID } from "../../utils/Validators";
 import { AuthLogout } from "../auth/AuthLogout";
 
-export async function GetUser(request: ExtendedRequest, env: Env) {
+export async function DeleteUser(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/user/get")) {
+    if (url.pathname.startsWith("/api/user/delete")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
