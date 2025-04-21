@@ -25,6 +25,13 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		return true;
 	} else console.log("[NormalAlias]", `Found alias '${alias.id}' to '${alias.destinationMail}'`);
 
+	//Only accept mails if alias is enabled
+	if(!alias.enabled) {
+		console.warn("[NormalAlias]", `Rejected mail to disabled alias '${to.raw}' from '${from.raw}`);
+		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+		return true;
+	}
+
 	// Find or create the senders reverse-alias
 	let reverseAlias = await db
 		.selectFrom("reverseAlias")

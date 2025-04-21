@@ -35,6 +35,13 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
         return false;
     } else console.log("[ReverseAlias]", `Found alias '${alias.id}' to '${alias.destinationMail}'`);
 
+    //Only accept mails if alias is enabled
+	if(!alias.enabled) {
+		console.warn("[ReverseAlias]", `Rejected reverse-mail to disabled alias '${to.raw}' from '${from.raw}`);
+		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+		return true;
+	}
+
     //Check if the reverse alias exists
     const reverseAlias = await db
         .selectFrom("reverseAlias")
