@@ -26,6 +26,8 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
         .selectFrom("alias")
         .selectAll()
         .where("id", "==", aliasID)
+        .where("domain", "==", to.domain)
+        .limit(1)
         .executeTakeFirst();
         
     if(!alias) {
@@ -38,6 +40,8 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
         .selectFrom("reverseAlias")
         .selectAll()
         .where("id", "==", reverseAliasID)
+        .where("alias", "==", alias.id)
+        .limit(1)
         .executeTakeFirst();
 
     if(!reverseAlias) {
@@ -58,9 +62,8 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
 	//Save that mail has been sent
 	await db.updateTable("reverseAlias")
 		.where("id", "==", reverseAlias.id)
-		.set({
-			lastMailAt: new Date().toISOString()
-		})
+        .where("alias", "==", alias.id)
+		.set({ lastMailAt: new Date().toISOString() })
 		.execute();
 
     //Send mail

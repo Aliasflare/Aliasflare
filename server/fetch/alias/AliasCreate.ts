@@ -3,7 +3,7 @@ import { BodyFieldInvalidTypeError, BodyFieldMalformedError, BodyFieldMissingErr
 import { ExtendedRequest } from "../ExtendedRequest";
 import { validateEmail, validateMailName } from "../../utils/Validators";
 
-export async function AliasCreate(request: ExtendedRequest, env: Env) {
+export async function AliasCreate(request: ExtendedRequest, env: any) {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/alias/create")) {
         if(!db) throw new Error("Database error");
@@ -17,6 +17,10 @@ export async function AliasCreate(request: ExtendedRequest, env: Env) {
         if(body.destinationMail == undefined) return BodyFieldMissingError("destinationMail");
         if(typeof body.destinationMail != 'string') return BodyFieldInvalidTypeError("destinationMail", "string");
         if(!validateEmail(body.destinationMail)) return BodyFieldMalformedError("destinationMail", "Not an valid mail-address");
+
+        if(body.domain == undefined) return BodyFieldMissingError("domain");
+        if(typeof body.domain != 'string') return BodyFieldInvalidTypeError("domain", "string");
+        if(!env.domains.toLowerCase().split(",").includes(body.domain.toLowerCase())) return BodyFieldMalformedError("domain", "Not an available domain");
 
         if(body.destinationName != undefined) {
             if(typeof body.destinationName != 'string') return BodyFieldInvalidTypeError("destinationName", "string");
@@ -37,6 +41,7 @@ export async function AliasCreate(request: ExtendedRequest, env: Env) {
             .insertInto("alias")
             .values({
                 id: newAliasID,
+                domain: body.domain.toLowerCase(),
                 user: request.user.id,
                 friendlyName: body.friendlyName,
                 destinationMail: body.destinationMail,

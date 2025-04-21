@@ -15,6 +15,8 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		.selectFrom("alias")
 		.selectAll()
 		.where("id", "==", to.mailbox)
+		.where("domain", "==", to.domain)
+		.limit(1)
 		.executeTakeFirst();
 
 	if(!alias) {
@@ -27,8 +29,10 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	let reverseAlias = await db
 		.selectFrom("reverseAlias")
 		.selectAll()
+		.where("alias", "==", alias.id)
 		.where("destinationMail", "==", from.email)
 		.where("destinationName", "==", from.name)
+		.limit(1)
 		.executeTakeFirst();
 
 	//Create reverse alias if it doesnt exist
@@ -53,9 +57,9 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	} else console.log(`[NormalAlias] Found reverse-alias '${reverseAlias.id}' for '${from.raw}'!`);
 
 	// Modify mail so it comes from us
-	mailContent = setHeader(mailContent, "From", from.name + " <" + alias.id + "@" + env.domain + ">");
+	mailContent = setHeader(mailContent, "From", from.name + " <" + alias.id + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "To", alias.destinationName + " <" + alias.destinationMail + ">");
-	mailContent = setHeader(mailContent, "Reply-To", reverseAlias.destinationName + " <" + reverseAlias.id + "-" + alias.id + "@" + env.domain + ">");
+	mailContent = setHeader(mailContent, "Reply-To", reverseAlias.destinationName + " <" + reverseAlias.id + "-" + alias.id + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "Sender", from.raw);
 	console.log("[NormalAlias] Modified headers!");
 
