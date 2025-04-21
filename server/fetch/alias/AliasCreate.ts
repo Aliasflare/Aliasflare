@@ -27,7 +27,12 @@ export async function AliasCreate(request: ExtendedRequest, env: Env) {
             if(typeof body.friendlyName != 'string') return BodyFieldInvalidTypeError("friendlyName", "string");
         }
 
-        const newAliasID = crypto.randomUUID();
+        let newAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
+        while(await db.selectFrom("reservedAddress").selectAll().where("mailbox", "==", newAliasID).executeTakeFirst()) {
+            console.log("[AliasCreate]", `Skipping already used address '${newAliasID}`);
+            newAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
+        }
+
         await db
             .insertInto("alias")
             .values({

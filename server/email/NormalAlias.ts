@@ -33,7 +33,12 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 
 	//Create reverse alias if it doesnt exist
 	if(!reverseAlias) {
-		const reverseAliasID = crypto.randomUUID().slice(0, 16).replaceAll("-", "");
+		let reverseAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
+        while(await db.selectFrom("reservedAddress").selectAll().where("mailbox", "==", alias.id + "-" + reverseAliasID).executeTakeFirst()) {
+            console.log("[NormalAlias]", `Skipping already used address '${reverseAliasID + "-" + reverseAliasID}`);
+            reverseAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
+        }
+
 		reverseAlias = await db
 			.insertInto("reverseAlias")
 			.returningAll()
