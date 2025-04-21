@@ -50,9 +50,9 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
     } else console.log(`[ReverseAlias] Found reverse-alias '${reverseAlias.id}' for '${reverseAlias.destinationMail}'!`);
 
     //Rewrite headers so no data is leaked
-    mailContent = setHeader(mailContent, "From", from.name + " <" + alias.id + "@" + env.domain + ">");
-    mailContent = setHeader(mailContent, "To", reverseAlias.destinationName + " <" + reverseAlias.destinationMail + ">");
-    mailContent = setHeader(mailContent, "Reply-To", "<" + alias.id + "@" + env.domain + ">");
+    mailContent = setHeader(mailContent, "From", (alias.ownNameOverwriteOnOutgoing||from.name) + " <" + alias.id + "@" + env.domain + ">");
+    mailContent = setHeader(mailContent, "To", (alias.remoteNameOverwriteOnOutgoing||to.name) + " <" + reverseAlias.destinationMail + ">");
+    mailContent = setHeader(mailContent, "Reply-To", getHeader(mailContent, "From"));
     console.log("[ReverseAlias] Modified headers!");
 
 	// Remove invalid headers

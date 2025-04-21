@@ -57,9 +57,9 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	} else console.log(`[NormalAlias] Found reverse-alias '${reverseAlias.id}' for '${from.raw}'!`);
 
 	// Modify mail so it comes from us
-	mailContent = setHeader(mailContent, "From", from.name + " <" + alias.id + "@" + alias.domain + ">");
+	mailContent = setHeader(mailContent, "From", (alias.remoteNameOverwriteOnIncoming||from.name) + " <" + alias.id + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "To", alias.destinationName + " <" + alias.destinationMail + ">");
-	mailContent = setHeader(mailContent, "Reply-To", reverseAlias.destinationName + " <" + reverseAlias.id + "-" + alias.id + "@" + alias.domain + ">");
+	mailContent = setHeader(mailContent, "Reply-To", from.name + " <" + reverseAlias.id + "-" + alias.id + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "Sender", from.raw);
 	console.log("[NormalAlias] Modified headers!");
 

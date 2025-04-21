@@ -26,7 +26,7 @@
 - [ ] API: /api/alias/update
 - [ ] API: /api/alias/delete
 - [ ] API: /api/alias/sendWithAlias
-- [ ] Feature: Allow overwriting own/sender name
+- [X] Feature: Allow overwriting own/sender name
 - [ ] Feature: Auto-delete after time
 - [X] Feature: Multi-domain (store domain too)
 
