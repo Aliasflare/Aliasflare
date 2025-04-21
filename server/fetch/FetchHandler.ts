@@ -13,6 +13,7 @@ import { AliasCreate } from "./alias/AliasCreate";
 import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
 import { DeleteUser } from "./users/DeleteUser";
+import { UpdateUser } from "./users/UpdateUser";
 
 const fetchHandlers = [
     initDBFetchHandler,
@@ -25,6 +26,7 @@ const fetchHandlers = [
     GetUser,
     ListUser,
     DeleteUser,
+    UpdateUser,
     AliasCreate,
     AliasGet,
     AliasList,
