@@ -28,7 +28,7 @@
 - [ ] API: /api/alias/sendWithAlias
 - [ ] Feature: Allow overwriting own/sender name
 - [ ] Feature: Auto-delete after time
-- [ ] Feature: Multi-domain (store domain too)
+- [X] Feature: Multi-domain (store domain too)
 
 ## Reverse-Aliases
 - [X] Database: ReverseAlias Table
@@ -37,7 +37,7 @@
 - [ ] API: /api/reverseAlias/list (by alias)
 - [ ] API: /api/reverseAlias/update
 - [ ] API: /api/reverseAlias/delete
-- [ ] Feature: Multi-domain (store domain too)
+- [X] Feature: Multi-domain (store domain too)
 
 ## TempMails (short living aliases)
 - [ ] Database: TempMail Table
@@ -45,11 +45,11 @@
 - [ ] API: /api/tempMail/create
 - [ ] API: /api/tempMail/list (by user)
 
-## Used Addresses
-- [ ] Database: UsedAlias Table
-- [ ] Database: UsedAlias Types
-- [ ] Feature: Respeect when generating Alias IDs
-- [ ] Feature: Multi-domain (store domain too)
+## Reserved Addresses
+- [X] Database: ReservedAddress Table
+- [X] Database: ReservedAddress Types
+- [X] Feature: Respeect when generating Alias IDs
+- [X] Feature: Multi-domain (store domain too)
 
 # Web
 ## Logic
