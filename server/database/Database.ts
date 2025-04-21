@@ -1,4 +1,4 @@
-import { SessionTable, UserTable, AliasTable, ReverseAliasTable, ReservedAddressTable } from './types/index';
+import { SessionTable, UserTable, AliasTable, ReverseAliasTable, ReservedAddressTable, ReverseAliasQuotaTable } from './types/index';
 import { Kysely, Transaction } from "kysely";
 
 export interface Database {
@@ -6,6 +6,7 @@ export interface Database {
   user: UserTable,
   alias: AliasTable,
   reverseAlias: ReverseAliasTable,
+  reverseAliasQuota: ReverseAliasQuotaTable,
   reservedAddress: ReservedAddressTable
 }
 

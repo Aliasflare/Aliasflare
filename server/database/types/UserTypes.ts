@@ -5,6 +5,8 @@ export interface UserTable {
     username: ColumnType<string, string, string>;
     passwordHash: ColumnType<string, string, string>;
     passwordSalt: ColumnType<string, string, string>;
+    maxOutgoingPerDay: ColumnType<number, number|null, number|null>;
+    maxIncominggPerDay: ColumnType<number, number|null, number|null>;
     mail: ColumnType<string, string, string>;
     createdAt: ColumnType<string, never, never>;
     admin: ColumnType<number, boolean|null, boolean|null>;
