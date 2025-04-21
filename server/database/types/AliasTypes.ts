@@ -7,6 +7,9 @@ export interface AliasTable {
     friendlyName: ColumnType<string|null>
     destinationMail: ColumnType<string>
     destinationName: ColumnType<string|null>
+    remoteNameOverwriteOnIncoming: ColumnType<string|null>,
+    remoteNameOverwriteOnOutgoing: ColumnType<string|null>,
+    ownNameOverwriteOnOutgoing: ColumnType<string|null>,
     enabled: ColumnType<boolean, boolean|null, boolean>
     lastMailAt: ColumnType<string|null, never, string|null>
     createdAt: ColumnType<string, never, never>
