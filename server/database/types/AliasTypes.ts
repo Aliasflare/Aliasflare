@@ -2,6 +2,7 @@ import { ColumnType, Insertable, Selectable, Updateable } from "kysely";
 
 export interface AliasTable {
     id: ColumnType<string, string, never>;
+    domain: ColumnType<string, string, never>;
     user: ColumnType<string, string, never>;
     friendlyName: ColumnType<string|null>
     destinationMail: ColumnType<string>

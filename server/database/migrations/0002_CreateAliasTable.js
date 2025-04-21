@@ -8,7 +8,9 @@ export async function up(db) {
   sqls.push(
   db.schema
     .createTable("alias")
-    .addColumn("id", "text", col => col.notNull().primaryKey())
+    .addColumn("id", "text", col => col.notNull())
+    .addColumn("domain", "text", col => col.notNull())
+    .addPrimaryKeyConstraint("alias_pkey", ["id", "domain"])
     .addColumn("user", "uuid", col => col.notNull().references("user.id"))
     .addColumn("friendlyName", "text", col => col.defaultTo(null))
     .addColumn("destinationMail", "text", col => col.notNull())
