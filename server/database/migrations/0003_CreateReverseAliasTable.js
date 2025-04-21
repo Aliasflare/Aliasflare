@@ -8,8 +8,8 @@ export async function up(db) {
   sqls.push(
   db.schema
     .createTable("reverseAlias")
-    .addColumn("id", "uuid", col => col.notNull().primaryKey())
-    .addColumn("alias", "uuid", col => col.notNull().references("alias.id"))
+    .addColumn("id", "text", col => col.notNull().primaryKey())
+    .addColumn("alias", "text", col => col.notNull().references("alias.id"))
     .addColumn("friendlyName", "text", col => col.defaultTo(null))
     .addColumn("destinationName", "text", col => col.defaultTo(null))
     .addColumn("destinationMail", "text", col => col.notNull())
