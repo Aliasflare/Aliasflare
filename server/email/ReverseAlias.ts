@@ -56,6 +56,29 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
         return false;
     } else console.log(`[ReverseAlias] Found reverse-alias '${reverseAlias.id}' for '${reverseAlias.destinationMail}'!`);
 
+    //Ensure alias owner has outgoing quota
+    const user = await db
+        .selectFrom("user")
+        .selectAll()
+        .where("id", "==", alias.user)
+        .limit(1)
+        .executeTakeFirstOrThrow();
+    if(!user) throw new Error("Alias user not found");
+
+    const totalOutgoingToday = (await db
+        .selectFrom("alias")
+        .where("user", "==", alias.user)
+        .leftJoin("reverseAliasQuota", join => join.on("reverseAliasQuota.alias", "=", "alias.id"))
+        .where("reverseAliasQuota.date", "==", new Date().toISOString().slice(0, 10))
+        .select(({fn}) => fn.sum("reverseAliasQuota.outgoingMailCount").as("count"))
+        .executeTakeFirst())?.count as number|null || 0;
+
+    if(totalOutgoingToday >= (user.maxOutgoingPerDay||env.defaultOutgoingQuotaPerDay)) {
+        console.log("[ReverseAlias] Rejecting because user outgoing quota is exceeded!");
+        message.setReject(`Outgoing quota exceeded (maximum of ${user.maxOutgoingPerDay} outgoing mails per day)`);
+        return true;
+    }
+
     //Rewrite headers so no data is leaked
     mailContent = setHeader(mailContent, "From", (alias.ownNameOverwriteOnOutgoing||from.name) + " <" + alias.id + "@" + env.domain + ">");
     mailContent = setHeader(mailContent, "To", (alias.remoteNameOverwriteOnOutgoing||to.name) + " <" + reverseAlias.destinationMail + ">");
@@ -71,6 +94,23 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
 		.where("id", "==", reverseAlias.id)
         .where("alias", "==", alias.id)
 		.set({ lastMailAt: new Date().toISOString() })
+		.execute();
+
+	//Increase outgoing quota on reverse-alias (insert or update)
+	await db
+		.insertInto("reverseAliasQuota")
+		.values({
+			date: new Date().toDateString().slice(0, 10),
+			reverseAlias: reverseAlias.id,
+			alias: reverseAlias.alias,
+			outgoingMailCount: 1
+		})
+		.onConflict(oc => oc
+			.columns(['date', 'alias', 'reverseAlias'])
+			.doUpdateSet(eb => ({
+				outgoingMailCount: eb('outgoingMailCount', '+', 1)
+			}))
+		)
 		.execute();
 
     //Send mail

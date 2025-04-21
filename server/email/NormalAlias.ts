@@ -63,6 +63,29 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		console.log(`[NormalAlias] Generated reverse-alias '${reverseAliasID}' for '${from.raw}'!`);
 	} else console.log(`[NormalAlias] Found reverse-alias '${reverseAlias.id}' for '${from.raw}'!`);
 
+    //Ensure alias owner has incoming quota
+    const user = await db
+        .selectFrom("user")
+        .selectAll()
+        .where("id", "==", alias.user)
+        .limit(1)
+        .executeTakeFirstOrThrow();
+    if(!user) throw new Error("Alias user not found");
+
+    const totalIncomingToday = (await db
+        .selectFrom("alias")
+        .where("user", "==", alias.user)
+        .leftJoin("reverseAliasQuota", join => join.on("reverseAliasQuota.alias", "=", "alias.id"))
+		.where("reverseAliasQuota.date", "==", new Date().toISOString().slice(0, 10))
+        .select(({fn}) => fn.sum("reverseAliasQuota.incomingMailCount").as("count"))
+        .executeTakeFirst())?.count as number|null || 0;
+
+    if(totalIncomingToday >= (user.maxIncomingPerDay||env.defaultIncomingQuotaPerDay)) {
+        console.log("[NormalAlias] Rejecting because user incoming quota is exceeded!");
+        message.setReject(`Mailbox has exceeded incoming quota. Try again tomorrow.`);
+        return true;
+    }
+
 	// Modify mail so it comes from us
 	mailContent = setHeader(mailContent, "From", (alias.remoteNameOverwriteOnIncoming||from.name) + " <" + alias.id + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "To", alias.destinationName + " <" + alias.destinationMail + ">");
@@ -83,6 +106,23 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		.set({
 			lastMailAt: new Date().toISOString()
 		})
+		.execute();
+
+	//Increase incoming quota on reverse-alias (insert or update)
+	await db
+		.insertInto("reverseAliasQuota")
+		.values({
+			date: new Date().toDateString().slice(0, 10),
+			reverseAlias: reverseAlias.id,
+			alias: reverseAlias.alias,
+			incomingMailCount: 1
+		})
+		.onConflict(oc => oc
+			.columns(['date', 'alias', 'reverseAlias'])
+			.doUpdateSet(eb => ({
+				incomingMailCount: eb('incomingMailCount', '+', 1)
+			}))
+		)
 		.execute();
 
 	return true;
