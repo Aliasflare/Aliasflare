@@ -9,7 +9,6 @@ export async function up(db) {
   db.schema
     .createTable("user")
     .addColumn("id", "uuid", col => col.notNull().primaryKey())
-    .addColumn("domain", "text", col => col.notNull())
     .addColumn("username", "text", col => col.notNull().unique())
     .addColumn("passwordHash", "text", col => col.notNull())
     .addColumn("passwordSalt", "text", col => col.notNull())
