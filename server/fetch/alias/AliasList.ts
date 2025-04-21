@@ -1,6 +1,13 @@
+import { z } from "zod";
 import { db } from "../../database/D1DB";
-import { BodyFieldInvalidTypeError, BodyFieldMalformedError, BodyFieldMissingError, BodyMalformedError, InvalidMethodError, InvalidOperationError, NotAllowedError, TargetNotFoundError } from "../Errors";
+import { ZodJSONObject, ZodListPagination, ZodUUID } from "../../utils/Validators";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+
+const ZodListAliasBody = z.object({
+    userId: ZodUUID
+}).
+extend(ZodListPagination.shape);
 
 export async function AliasList(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -8,27 +15,20 @@ export async function AliasList(request: ExtendedRequest, env: Env) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
-        let body:any;
-        try { body = await request.json(); } catch (err) { return BodyMalformedError("Not a JSON body"); }
-
-        if(body.self && !request.user) return InvalidOperationError("Cannot get self when not logged in");
-        if(body.self) body.userId = request.user?.id;
-        if(!request.isAdmin && request.user?.id != body.userId) return NotAllowedError("Only Admin can list other users aliases");
-
-        if(body.limit === undefined) return BodyFieldMissingError("limit");
-        if(typeof body.limit != 'number') return BodyFieldInvalidTypeError("limit", "number");
-        if(body.limit > 50) return BodyFieldMalformedError("limit", "Cannot be bigger than 50");
-
-        if(!body.page === undefined) return BodyFieldMissingError("page");
-        if(typeof body.page != 'number') return BodyFieldInvalidTypeError("page", "number");
-
+        //Parse and validate body
+        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
+        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+            
+        const listAliasBody = await ZodListAliasBody.safeParseAsync(rawBody);
+        if(listAliasBody.error) return InvalidBodyError(listAliasBody.error.issues);
+    
         //Check if users exists
         const aliases = await db
             .selectFrom("alias")
             .selectAll()
-            .where("user", "==", body.userId)
-            .limit(body.limit)
-            .offset(body.limit*body.page)
+            .where("user", "==", listAliasBody.data.userId)
+            .limit(listAliasBody.data.limit)
+            .offset(listAliasBody.data.page)
             .orderBy("alias.lastMailAt", "desc")
             .execute();
 

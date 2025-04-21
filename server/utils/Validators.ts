@@ -1,34 +1,82 @@
-export function validateEmail(email: string) {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-};
+import { z } from "zod";
+import * as yup from "yup";
+import { db } from "../database/D1DB";
+import { sql } from "kysely";
 
-export function validateUsername(username: string) {
-  return /^[a-zA-Z0-9_]+$/.test(username);
-}
+export const ZodUsername = z
+  .string()
+  .nonempty()
+  .min(4)
+  .max(32)
+  .regex(/^[a-zA-Z0-9_]+$/, { message: "Must only contain alpha-numeric or underscore charcacters" });
 
-export function validateUUID(uuid: string) {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid);
-}
+export const ZodUntakenUsername = ZodUsername
+  .refine(async(a) => {
+    return (await db?.
+      selectFrom("user")
+      .select("id")
+      .where(sql`LOWER(username)`, "==", a.toLowerCase())
+      .limit(1)
+      .executeTakeFirstOrThrow())?.id != null;
+  }, "Must be a not-taken username");
 
-export function validateMailName(name: string): boolean {
-  if (typeof name !== 'string') return false;
-  if (name.length === 0 || name.length > 64) return false;
+export const ZodPassword = z
+  .string()
+  .nonempty()
+  .min(12)
+  .max(64);
 
-  // Must not contain control characters (ASCII < 32 or 127)
-  const controlCharRegex = /[\x00-\x1F\x7F]/;
-  if (controlCharRegex.test(name)) return false;
+export const ZodBoolean = z
+  .boolean();
 
-  // Dangling backslash is invalid (e.g. ends with single \)
-  if (/\\$/.test(name)) return false;
+export const ZodString = z
+  .string();
 
-  // Unescaped quote count must be even (for escapability)
-  const unescapedQuoteRegex = /(?<!\\)"/g;
-  const quotes = name.match(unescapedQuoteRegex);
-  if (quotes && quotes.length % 2 !== 0) return false;
+export const ZodUUID = z
+  .string()
+  .uuid();
 
-  return true;
-}
+export const ZodMailName = z
+  .string()
+  .nonempty()
+  .min(4)
+  .max(64)
+  .regex(/[\x00-\x1F\x7F]/, { message: "Must not contain control characters" })
+  .regex(/\\$/, { message: "Must not contain dangling bachslash" })
+  .refine(a => (a.match(/(?<!\\)"/)?.length||0) % 2 === 0, { message: "Must not contain uneven unescaped quotes" });
+
+export const ZodMailAddress = z
+  .string()
+  .email();
+
+export const ZodUntakenMailAddress = ZodMailAddress
+  .refine(async(a) => {
+    return (await db?.
+      selectFrom("user")
+      .select("id")
+      .where(sql`LOWER(mail)`, "==", a.toLowerCase())
+      .limit(1)
+      .executeTakeFirstOrThrow())?.id != null;
+  }, "Must be a not-taken mail address");
+
+export const ZodValidDomain = (env: any) => z
+  .string()
+  .min(1)
+  .refine(a => env.domains.toLowerCase().split(",").includes(a.toLowerCase()), { message: "Must be a valid domain" });
+
+export const ZodJSONObject = z
+  .string()
+  .refine(a => { try{ JSON.parse(a); return true; } catch(err) { return false; } }, { message: "Must be a JSON String"})
+  .transform(a => JSON.parse(a));
+
+export const ZodListPagination = z
+  .object({
+    page: z.number().positive().default(0),
+    limit: z.number().positive().max(50).default(10)
+  });
+
+export const ZodAliasID = z
+  .string()
+  .nonempty()
+  .length(24)
+  .regex(/^[a-zA-Z0-9]+$/, { message: "Must only contain alpha-numeric charcacters" });

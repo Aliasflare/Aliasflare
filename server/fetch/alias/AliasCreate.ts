@@ -1,7 +1,15 @@
+import { z } from "zod";
 import { db } from "../../database/D1DB";
-import { BodyFieldInvalidTypeError, BodyFieldMalformedError, BodyFieldMissingError, BodyMalformedError, InvalidMethodError, NotAllowedError } from "../Errors";
+import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { validateEmail, validateMailName } from "../../utils/Validators";
+import { ZodJSONObject, ZodMailAddress, ZodMailName, ZodString, ZodValidDomain } from "../../utils/Validators";
+
+const ZodAliasCreateBody = (env: any) => z.object({
+    destinationMail: ZodMailAddress,
+    destinationName: ZodMailName.optional(),
+    domain: ZodValidDomain(env),
+    friendlyName: ZodString.optional()
+}).readonly();
 
 export async function AliasCreate(request: ExtendedRequest, env: any) {
     const url = new URL(request.url);
@@ -9,46 +17,34 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
         if(!request.user) return NotAllowedError("Need to be logged in");
-        //TODO: CHECK QUOTA
 
-        let body:any;
-        try { body = await request.json(); } catch (err) { return BodyMalformedError("Not a JSON body"); }
+        //Parse and validate body
+        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
+        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        if(body.destinationMail == undefined) return BodyFieldMissingError("destinationMail");
-        if(typeof body.destinationMail != 'string') return BodyFieldInvalidTypeError("destinationMail", "string");
-        if(!validateEmail(body.destinationMail)) return BodyFieldMalformedError("destinationMail", "Not an valid mail-address");
+        const parsedBody = await ZodAliasCreateBody(env).safeParseAsync(rawBody);
+        if(parsedBody.error) return InvalidBodyError(parsedBody.error.issues);
 
-        if(body.domain == undefined) return BodyFieldMissingError("domain");
-        if(typeof body.domain != 'string') return BodyFieldInvalidTypeError("domain", "string");
-        if(!env.domains.toLowerCase().split(",").includes(body.domain.toLowerCase())) return BodyFieldMalformedError("domain", "Not an available domain");
-
-        if(body.destinationName != undefined) {
-            if(typeof body.destinationName != 'string') return BodyFieldInvalidTypeError("destinationName", "string");
-            if(!validateMailName(body.destinationName)) return BodyFieldMalformedError("destinationMail", "Not an valid mail-name");
-        }
-
-        if(body.friendlyName != undefined) {
-            if(typeof body.friendlyName != 'string') return BodyFieldInvalidTypeError("friendlyName", "string");
-        }
-
+        //Generate new not-taken id for the alias
         let newAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
         while(await db.selectFrom("reservedAddress").selectAll().where("mailbox", "==", newAliasID).executeTakeFirst()) {
             console.log("[AliasCreate]", `Skipping already used address '${newAliasID}`);
             newAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
         }
 
+        //Insert alias
         await db
             .insertInto("alias")
             .values({
                 id: newAliasID,
-                domain: body.domain.toLowerCase(),
                 user: request.user.id,
-                friendlyName: body.friendlyName,
-                destinationMail: body.destinationMail,
-                destinationName: body.destinationName,
+                domain: parsedBody.data.domain.toLowerCase(),
+                friendlyName: parsedBody.data.friendlyName,
+                destinationMail: parsedBody.data.destinationMail,
+                destinationName: parsedBody.data.destinationName,
             })
             .execute();
-        console.log("[AliasCreate]", `Created new alias for '${body.destinationMail}' with id '${newAliasID}'`);
+        console.log("[AliasCreate]", `Created new alias for '${parsedBody.data.destinationMail}' with id '${newAliasID}'`);
         return Response.json({ error: false, aliasID: newAliasID });
     }
 }

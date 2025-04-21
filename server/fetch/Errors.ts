@@ -101,3 +101,14 @@ export function NotAllowedError(reason: string) { return Response.json(
         status: 401 
     }
 )};
+
+export function InvalidBodyError(issues: any) { return Response.json(
+    { 
+        error: true, 
+        type: "INVALID_BODY", 
+        issues
+    }, 
+    {
+        status: 400
+    }
+)};

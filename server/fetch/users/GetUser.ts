@@ -1,8 +1,18 @@
 import { db } from "../../database/D1DB";
-import { BodyFieldInvalidTypeError, BodyFieldMalformedError, BodyFieldMissingError, BodyMalformedError, InvalidMethodError, InvalidOperationError, NotAllowedError, TargetNotFoundError } from "../Errors";
+import { InvalidBodyError, InvalidMethodError, TargetNotFoundError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { validateUUID } from "../../utils/Validators";
-import { User } from "../../database";
+import { ZodUUID, ZodBoolean, ZodJSONObject } from "../../utils/Validators";
+import { z } from "zod";
+
+export const ZodGetUserBody = (request: ExtendedRequest, env: Env) => z
+.object({
+    self: ZodBoolean.optional(),
+    id: ZodUUID.optional()
+})
+.refine(a => a.self||a.id, "Must specify either id or self")
+.refine(a => a.self && !request.user, "Must be signed in to operate on self")
+.refine(a => !a.self && a.id != request.user?.id && !request.isAdmin, "Must be admin to operate on other users")
+.transform(a => ({ id: a.id as string, self: a.self }));
 
 export async function GetUser(request: ExtendedRequest, env: Env) {
 	const url = new URL(request.url);
@@ -10,22 +20,18 @@ export async function GetUser(request: ExtendedRequest, env: Env) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
-        let body:any;
-        try { body = await request.json(); } catch (err) { return BodyMalformedError("Not a JSON body"); }
+        //Parse and validate body
+        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
+        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        if(body.self && !request.user) return InvalidOperationError("Cannot get self when not logged in");
-        if(body.self) body.id = request.user?.id;
-
-        if(!body.id) return BodyFieldMissingError("id");
-        if(typeof body.id != 'string') return BodyFieldInvalidTypeError("id", "string");
-        if(!validateUUID(body.id)) return BodyFieldMalformedError("id", "Not an UUID");
-        if(!request.isAdmin && request.user?.id != body.id) return NotAllowedError("Only Admin can get other users");
+        const parsedBody = await ZodGetUserBody(request, env).safeParseAsync(rawBody);
+        if(parsedBody.error) return InvalidBodyError(parsedBody.error.issues);
 
         //Check if users exists
         const user = await db
             .selectFrom("user")
             .selectAll()
-            .where("id", "==", body.id)
+            .where("id", "==", parsedBody.data.id)
             .limit(1)
             .executeTakeFirst();
         if(!user) return TargetNotFoundError("user");

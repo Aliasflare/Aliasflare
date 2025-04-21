@@ -1,8 +1,9 @@
 import { db } from "../../database/D1DB";
-import { BodyFieldInvalidTypeError, BodyFieldMalformedError, BodyFieldMissingError, BodyMalformedError, InvalidMethodError, InvalidOperationError, NotAllowedError, TargetNotFoundError } from "../Errors";
+import { InvalidBodyError, InvalidMethodError, InvalidOperationError, NotAllowedError, TargetNotFoundError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { validateUUID } from "../../utils/Validators";
+import { ZodJSONObject } from "../../utils/Validators";
 import { AuthLogout } from "../auth/AuthLogout";
+import { ZodGetUserBody } from "./GetUser";
 
 export async function DeleteUser(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -10,22 +11,18 @@ export async function DeleteUser(request: ExtendedRequest, env: Env) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
-        let body:any;
-        try { body = await request.json(); } catch (err) { return BodyMalformedError("Not a JSON body"); }
+        //Parse and validate body
+        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
+        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        if(body.self && !request.user) return InvalidOperationError("Cannot delete self when not logged in");
-        if(body.self) body.id = request.user?.id;
-
-        if(!body.id) return BodyFieldMissingError("id");
-        if(typeof body.id != 'string') return BodyFieldInvalidTypeError("id", "string");
-        if(!validateUUID(body.id)) return BodyFieldMalformedError("id", "Not an UUID");
-        if(!request.isAdmin && request.user?.id != body.id) return NotAllowedError("Only Admin can delete other users");
+        const userBody = await ZodGetUserBody(request, env).safeParseAsync(rawBody);
+        if(userBody.error) return InvalidBodyError(userBody.error.issues);
 
         //TODO: Keep anonymized audit logs for deletions (e.g. to comply with law enforcements request)
         //Delete user account (all others deletes are managed by the database)
         const deleteRes = await db
             .deleteFrom("user")
-            .where("id", "==", body.id as any)
+            .where("id", "==", userBody.data.id as any)
             .executeTakeFirst();
         if(deleteRes.numDeletedRows == BigInt(0)) return TargetNotFoundError("user");
 

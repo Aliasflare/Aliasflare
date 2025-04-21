@@ -13,8 +13,8 @@
 - [X] API: /api/users/create
 - [X] API: /api/users/get
 - [X] API: /api/users/list
-- [ ] API: /api/users/update
-- [ ] API: /api/users/delete
+- [X] API: /api/users/update
+- [X] API: /api/users/delete
 - [X] Feature: Mail and alias quota
 
 ## Aliases
