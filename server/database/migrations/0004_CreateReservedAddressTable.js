@@ -10,7 +10,7 @@ export async function up(db) {
     .createTable("reservedAddress")
     .addColumn("mailbox", "text", col => col.notNull())
     .addColumn("domain", "text", col => col.notNull())
-    .addPrimaryKeyConstraint("reserved_address_pkey", ["mailbox", "domain"])
+    .addPrimaryKeyConstraint("reservedaddress_pkey", ["mailbox", "domain"])
     .compile()
   );
   return sqls
