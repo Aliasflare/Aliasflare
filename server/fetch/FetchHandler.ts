@@ -12,6 +12,7 @@ import { AuthLogout } from "./auth/AuthLogout";
 import { AliasCreate } from "./alias/AliasCreate";
 import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
+import { DeleteUser } from "./users/DeleteUser";
 
 const fetchHandlers = [
     initDBFetchHandler,
@@ -23,6 +24,7 @@ const fetchHandlers = [
     CreateUser,
     GetUser,
     ListUser,
+    DeleteUser,
     AliasCreate,
     AliasGet,
     AliasList,
