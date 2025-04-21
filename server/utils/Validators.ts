@@ -1,5 +1,4 @@
 import { z } from "zod";
-import * as yup from "yup";
 import { db } from "../database/D1DB";
 import { sql } from "kysely";
 
