@@ -15,7 +15,7 @@
 - [X] API: /api/users/list
 - [ ] API: /api/users/update
 - [ ] API: /api/users/delete
-- [ ] Feature: Mail and alias quota
+- [X] Feature: Mail and alias quota
 
 ## Aliases
 - [X] Database: Alias Table
@@ -27,7 +27,6 @@
 - [ ] API: /api/alias/delete
 - [ ] API: /api/alias/sendWithAlias
 - [X] Feature: Allow overwriting own/sender name
-- [ ] Feature: Auto-delete after time
 - [X] Feature: Multi-domain (store domain too)
 
 ## Reverse-Aliases
@@ -39,7 +38,7 @@
 - [ ] API: /api/reverseAlias/delete
 - [X] Feature: Multi-domain (store domain too)
 
-## TempMails (short living aliases)
+## TempMails (short living aliases with inbox)
 - [ ] Database: TempMail Table
 - [ ] Database: TempMail Types
 - [ ] API: /api/tempMail/create

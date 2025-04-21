@@ -1,4 +1,4 @@
-import { Kysely, Migrator } from 'kysely';
+import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { Database } from './Database';
 
