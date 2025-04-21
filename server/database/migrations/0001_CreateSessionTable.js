@@ -14,7 +14,7 @@ export async function up(db) {
     .addColumn("createdAt", "datetime", col => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn("expiresAt", "datetime", col => col.notNull())
     .addColumn("invalidateBecause", "text")
-    .addColumn("user", "uuid", col => col.references("user.id"))
+    .addColumn("user", "uuid", col => col.references("user.id").onDelete("cascade"))
     .compile()
   );
   return sqls

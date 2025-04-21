@@ -11,7 +11,7 @@ export async function up(db) {
     .addColumn("id", "text", col => col.notNull())
     .addColumn("domain", "text", col => col.notNull())
     .addPrimaryKeyConstraint("alias_pkey", ["id", "domain"])
-    .addColumn("user", "uuid", col => col.notNull().references("user.id"))
+    .addColumn("user", "uuid", col => col.notNull().references("user.id").onDelete("cascade"))
     .addColumn("friendlyName", "text", col => col.defaultTo(null))
     .addColumn("destinationMail", "text", col => col.notNull())
     .addColumn("destinationName", "text", col => col.defaultTo(null))

@@ -8,8 +8,8 @@ export async function up(db) {
   sqls.push(
   db.schema
     .createTable("reverseAliasQuota")
-    .addColumn("reverseAlias", "text", col => col.notNull().references("reverseAlias.id"))
-    .addColumn("alias", "text", col => col.notNull().references("alias.id"))
+    .addColumn("reverseAlias", "text", col => col.notNull().references("reverseAlias.id").onDelete("cascade"))
+    .addColumn("alias", "text", col => col.notNull().references("alias.id").onDelete("cascade"))
     .addColumn("date", "date", col => col.notNull().defaultTo(sql`CURRENT_DATE`))
     .addPrimaryKeyConstraint("aliasquota_pkey", ["reverseAlias", "alias", "date"])
     .addColumn("incomingMailCount", "integer", col => col.notNull().defaultTo(0))

@@ -9,7 +9,7 @@ export async function up(db) {
   db.schema
     .createTable("reverseAlias")
     .addColumn("id", "text", col => col.notNull().primaryKey())
-    .addColumn("alias", "text", col => col.notNull().references("alias.id"))
+    .addColumn("alias", "text", col => col.notNull().references("alias.id").onDelete("cascade"))
     .addColumn("friendlyName", "text", col => col.defaultTo(null))
     .addColumn("destinationName", "text", col => col.defaultTo(null))
     .addColumn("destinationMail", "text", col => col.notNull())
