@@ -10,7 +10,7 @@ export interface AliasTable {
     remoteNameOverwriteOnIncoming: ColumnType<string|null>,
     remoteNameOverwriteOnOutgoing: ColumnType<string|null>,
     ownNameOverwriteOnOutgoing: ColumnType<string|null>,
-    enabled: ColumnType<boolean, boolean|null, boolean>
+    enabled: ColumnType<number, boolean|null, boolean>
     lastMailAt: ColumnType<string|null, never, string|null>
     createdAt: ColumnType<string, never, never>
 }
