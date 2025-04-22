@@ -16,6 +16,9 @@ export const ZodUpdateUserBody = (request: ExtendedRequest, env: Env) => z
     admin: z.boolean().refine(a => request.isAdmin, "Must be admin to set role").optional()
 });
 
+const RefinedZodUpdateUserBody = (request: ExtendedRequest, env: Env) => ZodUpdateUserBody(request, env)
+.refine(a => Object.keys(a).length > 0, "Must contain at least one update field");
+
 export async function UpdateUser(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/user/update")) {
@@ -29,7 +32,7 @@ export async function UpdateUser(request: ExtendedRequest, env: Env) {
         const userBody = await ZodGetUserBody(request, env).safeParseAsync(rawBody.data);
         if(userBody.error) return InvalidBodyError(userBody.error.issues);
 
-        const updateBody = await ZodUpdateUserBody(request, env).safeParseAsync(rawBody.data);
+        const updateBody = await RefinedZodUpdateUserBody(request, env).safeParseAsync(rawBody.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
 
         //Update fields
