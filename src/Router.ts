@@ -3,12 +3,14 @@ import AuthLoginView from './views/auth/AuthLoginView.vue'
 import AuthCheckingView from './views/auth/AuthCheckingView.vue'
 import UserHome from './views/user/UserHome.vue';
 import { AppState } from './AppState';
+import AuthLogoutView from './views/auth/AuthLogoutView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: "/auth/login", component: AuthLoginView },
     { path: "/auth/checking", component: AuthCheckingView },
+    { path: "/auth/logout", component: AuthLogoutView },
     { path: "/user/home", component: UserHome, meta: { requireAuth: true } }
   ],
 });

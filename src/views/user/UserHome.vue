@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import UserWrapper from './UserWrapper.vue';
+</script>
+
 <template>
-    <div>TEST!</div>
+    <UserWrapper>
+        <div>Welcome!</div>
+    </UserWrapper>
 </template>
