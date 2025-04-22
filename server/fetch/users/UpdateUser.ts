@@ -26,10 +26,10 @@ export async function UpdateUser(request: ExtendedRequest, env: Env) {
         const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
         if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        const userBody = await ZodGetUserBody(request, env).safeParseAsync(rawBody);
+        const userBody = await ZodGetUserBody(request, env).safeParseAsync(rawBody.data);
         if(userBody.error) return InvalidBodyError(userBody.error.issues);
 
-        const updateBody = await ZodUpdateUserBody(request, env).safeParseAsync(rawBody);
+        const updateBody = await ZodUpdateUserBody(request, env).safeParseAsync(rawBody.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
 
         //Update fields

@@ -22,7 +22,7 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
         const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
         if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        const parsedBody = await ZodAliasCreateBody(env).safeParseAsync(rawBody);
+        const parsedBody = await ZodAliasCreateBody(env).safeParseAsync(rawBody.data);
         if(parsedBody.error) return InvalidBodyError(parsedBody.error.issues);
 
         //Generate new not-taken id for the alias

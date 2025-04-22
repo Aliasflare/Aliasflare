@@ -19,7 +19,7 @@ export async function AliasList(request: ExtendedRequest, env: Env) {
         const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
         if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
             
-        const listAliasBody = await ZodListAliasBody.safeParseAsync(rawBody);
+        const listAliasBody = await ZodListAliasBody.safeParseAsync(rawBody.data);
         if(listAliasBody.error) return InvalidBodyError(listAliasBody.error.issues);
     
         //Check if users exists

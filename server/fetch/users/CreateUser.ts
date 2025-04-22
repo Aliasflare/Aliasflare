@@ -23,7 +23,7 @@ export async function CreateUser(request: ExtendedRequest, env: Env) {
         const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
         if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        const createBody = await ZodCreateUserBody(request, env).extend({}).safeParseAsync(rawBody);
+        const createBody = await ZodCreateUserBody(request, env).safeParseAsync(rawBody.data);
         if(createBody.error) return InvalidBodyError(createBody.error.issues);
 
         //Create new user

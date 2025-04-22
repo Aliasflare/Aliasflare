@@ -18,8 +18,9 @@ export const ZodValidCredentials = z.object({
             .where(sql`LOWER(username)`, "==", a.username.toLowerCase())
             .limit(1)
             .executeTakeFirst();
-    if(!user) return BodyFieldMalformedError("username,password", "Invalid username or password");
-    if(!verifyPassword(a.password, user.passwordSalt, user.passwordHash)) return BodyFieldMalformedError("username,password", "Invalid username or password");
+    if(!user) return false;
+    if(!verifyPassword(a.password, user.passwordSalt, user.passwordHash)) return false;
+    return true;
 }, "Must be a valid username and password combination");
 
 export async function AuthLogin(request: ExtendedRequest, env: Env) {
@@ -33,7 +34,7 @@ export async function AuthLogin(request: ExtendedRequest, env: Env) {
         const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
         if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
 
-        const credentials = await ZodValidCredentials.safeParseAsync(rawBody);
+        const credentials = await ZodValidCredentials.safeParseAsync(rawBody.data);
         if(credentials.error) return InvalidBodyError(credentials.error.issues);
 
         //Find user
