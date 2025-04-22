@@ -13,15 +13,16 @@ export const ZodValidCredentials = z.object({
 .refine(async(a) => {
     if(!db) throw new Error("Database error");
     const user = await db
-            .selectFrom("user")
-            .select(["passwordSalt", "passwordHash"])
-            .where(sql`LOWER(username)`, "==", a.username.toLowerCase())
-            .limit(1)
-            .executeTakeFirst();
+        .selectFrom("user")
+        .select(["passwordSalt", "passwordHash"])
+        .where(sql`LOWER(username)`, "==", a.username.toLowerCase())
+        .limit(1)
+        .executeTakeFirst();
     if(!user) return false;
     if(!verifyPassword(a.password, user.passwordSalt, user.passwordHash)) return false;
     return true;
-}, "Must be a valid username and password combination");
+}, "Must be a valid username and password combination")
+.transform(a => ({ ...a, username: a.username.toLowerCase() }));
 
 export async function AuthLogin(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
