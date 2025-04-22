@@ -72,7 +72,7 @@ export const ZodJSONObject = z
 
 export const ZodListPagination = z
   .object({
-    page: z.number().positive().default(0),
+    page: z.number().nonnegative().default(0),
     limit: z.number().positive().max(50).default(10)
   });
 

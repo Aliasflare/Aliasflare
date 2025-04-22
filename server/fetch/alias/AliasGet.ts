@@ -30,7 +30,7 @@ export async function AliasGet(request: ExtendedRequest, env: Env) {
             .limit(1)
             .executeTakeFirst();
         if(!alias) return TargetNotFoundError("alias");
-        if(alias.user != request.user?.id) return NotAllowedError("Must be admin to modify other users aliases");
+        if(alias.user != request.user?.id) return InvalidBodyError("Must be admin to modify other users aliases");
         return Response.json({ error: false, alias });
     }
 }

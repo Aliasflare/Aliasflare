@@ -4,10 +4,11 @@ import { ZodJSONObject, ZodListPagination, ZodUUID } from "../../utils/Validator
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 
-const ZodListAliasBody = z.object({
+const ZodListAliasBody = (request: ExtendedRequest, env: Env) => z.object({
     userId: ZodUUID
-}).
-extend(ZodListPagination.shape);
+})
+.extend(ZodListPagination.shape)
+.refine(a => a.userId == request.user?.id ||request.isAdmin, "Must be admin to list other users aliases");
 
 export async function AliasList(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -19,7 +20,7 @@ export async function AliasList(request: ExtendedRequest, env: Env) {
         const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
         if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
             
-        const listAliasBody = await ZodListAliasBody.safeParseAsync(rawBody.data);
+        const listAliasBody = await ZodListAliasBody(request, env).safeParseAsync(rawBody.data);
         if(listAliasBody.error) return InvalidBodyError(listAliasBody.error.issues);
     
         //Check if users exists
