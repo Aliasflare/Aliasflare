@@ -11,12 +11,13 @@ export const ZodUsername = z
 
 export const ZodUntakenUsername = ZodUsername
   .refine(async(a) => {
-    return (await db?.
+    if(!db) throw new Error("Database error");
+    return (await db.
       selectFrom("user")
       .select("id")
       .where(sql`LOWER(username)`, "==", a.toLowerCase())
       .limit(1)
-      .executeTakeFirstOrThrow())?.id != null;
+      .executeTakeFirst()) == null;
   }, "Must be a not-taken username");
 
 export const ZodPassword = z
@@ -50,12 +51,13 @@ export const ZodMailAddress = z
 
 export const ZodUntakenMailAddress = ZodMailAddress
   .refine(async(a) => {
-    return (await db?.
+    if(!db) throw new Error("Database error");
+    return (await db.
       selectFrom("user")
       .select("id")
       .where(sql`LOWER(mail)`, "==", a.toLowerCase())
       .limit(1)
-      .executeTakeFirstOrThrow())?.id != null;
+      .executeTakeFirst()) == null;
   }, "Must be a not-taken mail address");
 
 export const ZodValidDomain = (env: any) => z
