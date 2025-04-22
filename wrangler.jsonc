@@ -13,7 +13,7 @@
 	"observability": {
 		"enabled": true
 	},
-	"compatibility_flags": ["assets_navigation_has_no_effect", "nodejs_compat"],
+	"compatibility_flags": ["nodejs_compat"],
 	"d1_databases": [
 		{
 			"binding": "D1",
