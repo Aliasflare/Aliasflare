@@ -16,12 +16,10 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
-		"@node-rs/argon2": "^2.0.2",
 		"@tailwindcss/vite": "^4.1.4",
 		"better-sqlite3": "^11.9.1",
 		"cookie": "^1.0.2",
 		"daisyui": "^5.0.27",
-		"hash-wasm": "^4.12.0",
 		"kysely": "^0.28.1",
 		"kysely-d1": "^0.4.0",
 		"tailwindcss": "^4.1.4",
@@ -32,12 +30,14 @@
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.0.8",
 		"@cloudflare/workers-types": "^4.20250419.0",
+		"@iconify/json": "^2.2.330",
 		"@tsconfig/node22": "^22.0.1",
 		"@types/node": "^22.14.0",
 		"@vitejs/plugin-vue": "^5.2.3",
 		"@vue/tsconfig": "^0.7.0",
 		"npm-run-all2": "^7.0.2",
 		"typescript": "~5.8.0",
+		"unplugin-icons": "^22.1.0",
 		"vite": "^6.2.4",
 		"vite-plugin-vue-devtools": "^7.7.2",
 		"vue-tsc": "^2.2.8",
