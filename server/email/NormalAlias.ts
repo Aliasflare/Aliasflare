@@ -1,4 +1,4 @@
-import { db } from "../database/D1DB";
+import { db } from "../Database";
 import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
 import { sendRawMail } from "../utils/MailSend";
 
@@ -36,7 +36,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	let reverseAlias = await db
 		.selectFrom("reverseAlias")
 		.selectAll()
-		.where("alias", "==", alias.id)
+		.where("aliasID", "==", alias.id)
 		.where("destinationMail", "==", from.email)
 		.where("destinationName", "==", from.name)
 		.limit(1)

@@ -1,4 +1,4 @@
-import { Session, User } from "../database";
+import { Session, User } from "../../OLD";
 
 export interface ExtendedRequest extends Request {
     session: Session;

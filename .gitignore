@@ -38,3 +38,6 @@ coverage
 *.request.js
 .dev.notes
 /OLD/
+
+#Generated-SQL-Migrations
+.generated

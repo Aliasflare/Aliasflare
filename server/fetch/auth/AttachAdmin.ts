@@ -1,4 +1,4 @@
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
 
 export async function AttachAdmin(request: ExtendedRequest, env: any) {

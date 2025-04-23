@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../database/D1DB";
+import { db } from "../Database";
 import { sql } from "kysely";
 
 export const ZodUsername = z
@@ -41,8 +41,8 @@ export const ZodMailName = z
   .nonempty()
   .min(4)
   .max(64)
-  .regex(/[\x00-\x1F\x7F]/, { message: "Must not contain control characters" })
-  .regex(/\\$/, { message: "Must not contain dangling bachslash" })
+  .refine(a => a.match(/[\x00-\x1F\x7F]/) == null, { message: "Must not contain control characters" })
+  .refine(a => a.match(/\\$/) == null, { message: "Must not contain dangling bachslash" })
   .refine(a => (a.match(/(?<!\\)"/)?.length||0) % 2 === 0, { message: "Must not contain uneven unescaped quotes" });
 
 export const ZodMailAddress = z
@@ -79,5 +79,5 @@ export const ZodListPagination = z
 export const ZodAliasID = z
   .string()
   .nonempty()
-  .length(24)
+  .length(20)
   .regex(/^[a-zA-Z0-9]+$/, { message: "Must only contain alpha-numeric charcacters" });

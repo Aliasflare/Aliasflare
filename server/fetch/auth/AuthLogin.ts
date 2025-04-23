@@ -1,5 +1,5 @@
 import { sql } from "kysely";
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { BodyFieldMalformedError, InvalidBodyError, InvalidMethodError, InvalidOperationError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodJSONObject, ZodPassword, ZodUsername } from "../../utils/Validators";
@@ -51,7 +51,7 @@ export async function AuthLogin(request: ExtendedRequest, env: Env) {
             .updateTable("session")
             .where("id", "==", request.session.id)
             .set({
-                user: user.id,
+                userID: user.id,
             })
             .execute();
 

@@ -1,4 +1,4 @@
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { InvalidMethodError, InvalidOperationError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 

@@ -1,4 +1,4 @@
-import { db } from "../database/D1DB";
+import { db } from "../Database";
 import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader } from "../utils/MailHeaders";
 import { sendRawMail } from "../utils/MailSend";
 

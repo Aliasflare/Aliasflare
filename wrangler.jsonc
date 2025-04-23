@@ -20,6 +20,7 @@
 			"database_name": "aliasflare-ts",
 			"database_id": "3361547d-5d74-4728-9ed8-fe558023e11f",
 			"preview_database_id": "D1",
+			"migrations_dir": "./database/.generated/migrations"
 		}
 	],
 	"routes": [

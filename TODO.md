@@ -17,6 +17,24 @@
 - [X] API: /api/users/delete
 - [X] Feature: Mail and alias quota
 
+## Categories
+- [X] Database: Category Table
+- [X] Database: Category Types
+- [ ] API: /api/destination/create
+- [ ] API: /api/destination/get
+- [ ] API: /api/destination/list
+- [ ] API: /api/destination/update
+- [ ] API: /api/destination/delete
+
+## Destinations
+- [X] Database: Destination Table
+- [X] Database: Destination Types
+- [ ] API: /api/destination/create
+- [ ] API: /api/destination/get
+- [ ] API: /api/destination/list
+- [ ] API: /api/destination/update
+- [ ] API: /api/destination/delete
+
 ## Aliases
 - [X] Database: Alias Table
 - [X] Database: Alias Types
@@ -37,12 +55,6 @@
 - [ ] API: /api/reverseAlias/update
 - [ ] API: /api/reverseAlias/delete
 - [X] Feature: Multi-domain (store domain too)
-
-## TempMails (short living aliases with inbox)
-- [ ] Database: TempMail Table
-- [ ] Database: TempMail Types
-- [ ] API: /api/tempMail/create
-- [ ] API: /api/tempMail/list (by user)
 
 ## Reserved Addresses
 - [X] Database: ReservedAddress Table

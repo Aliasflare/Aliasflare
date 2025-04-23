@@ -1,5 +1,5 @@
 import { parse } from "cookie";
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
 
 export async function AttachSession(request: ExtendedRequest, env: Env) {

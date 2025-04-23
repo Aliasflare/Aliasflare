@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodJSONObject, ZodMailAddress, ZodMailName, ZodString, ZodValidDomain } from "../../utils/Validators";

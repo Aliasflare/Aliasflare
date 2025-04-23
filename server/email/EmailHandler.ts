@@ -1,7 +1,7 @@
 import { streamToString } from "../utils/Streams";
 import { getHeader, parseAddressField, unfoldHeaders } from "../utils/MailHeaders";
 import { NormalAlias } from "./NormalAlias";
-import { initDB } from "../database/D1DB";
+import { initDB } from "../Database";
 import { ReverseAlias } from "./ReverseAlias";
 
 export async function EmailHandler(message: any, env: any, ctx: any) {

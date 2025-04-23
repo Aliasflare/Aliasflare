@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { ZodAliasID, ZodJSONObject } from "../../utils/Validators";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError, TargetNotFoundError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 
-const ZodAliasGetBody = z.object({
+export const ZodAliasGetBody = z.object({
     id: ZodAliasID
 }).readonly();
 

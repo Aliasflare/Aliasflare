@@ -1,4 +1,4 @@
-import { initDBFetchHandler } from "../database/D1DB";
+import { initDBFetchHandler } from "../Database";
 import { ExtendedRequest } from './ExtendedRequest'
 import { AttachSession } from "./auth/AttachSession";
 import { AttachUser } from "./auth/AttachUser";
@@ -14,6 +14,7 @@ import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
 import { DeleteUser } from "./users/DeleteUser";
 import { UpdateUser } from "./users/UpdateUser";
+import { AliasUpdate } from "./alias/AliasUpdate";
 
 const fetchHandlers = [
     initDBFetchHandler,
@@ -30,6 +31,7 @@ const fetchHandlers = [
     AliasCreate,
     AliasGet,
     AliasList,
+    AliasUpdate,
     GenericApi,
 ]
 

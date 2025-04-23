@@ -1,4 +1,5 @@
 import { Kysely, sql } from 'kysely'
+import { RANDOM_20_TOKEN, RANDOM_UUID } from '../Helpers.js';
 
 /**
  * @param {Kysely} db 
@@ -8,18 +9,34 @@ export async function up(db) {
   sqls.push(
   db.schema
     .createTable("alias")
-    .addColumn("id", "text", col => col.notNull())
+    //ID
+    .addColumn("id", "uuid", col => col.notNull().defaultTo(RANDOM_UUID).primaryKey())
+
+    //Relations
+    .addColumn("userID", "uuid", col => col.notNull().references("user.id").onDelete("cascade"))
+    .addColumn("aliasCategoryID", "uuid", col => col.references("aliasCategory.id").onDelete("set null"))
+    .addColumn("destinationID", "uuid", col => col.references("destination.id").onDelete("set null"))
+
+    //Alias
+    .addColumn("token", "text", col => col.notNull().defaultTo(RANDOM_20_TOKEN))
     .addColumn("domain", "text", col => col.notNull())
-    .addPrimaryKeyConstraint("alias_pkey", ["id", "domain"])
-    .addColumn("user", "uuid", col => col.notNull().references("user.id").onDelete("cascade"))
-    .addColumn("friendlyName", "text", col => col.defaultTo(null))
-    .addColumn("destinationMail", "text", col => col.notNull())
-    .addColumn("destinationName", "text", col => col.defaultTo(null))
+    .addUniqueConstraint("alias_untaken_on_domain", ["token", "domain"])
+
+    //Display
+    .addColumn("displayColor", "text", col => col.defaultTo(null))
+    .addColumn("displayIcon", "text", col => col.defaultTo(null))
+    .addColumn("displayName", "text", col => col.defaultTo(null))
+
+    //Options
     .addColumn("remoteNameOverwriteOnIncoming", "text", col => col.defaultTo(null)) //Use this instead of original senders name on incoming mails
     .addColumn("remoteNameOverwriteOnOutgoing", "text", col => col.defaultTo(null)) //Use this instead of original senders name on outgoing mails
     .addColumn("ownNameOverwriteOnOutgoing", "text", col => col.defaultTo(null)) //Use this instead of our name in a response-mail
+
+    //State
     .addColumn("enabled", "boolean", col => col.notNull().defaultTo(true))
-    .addColumn("lastMailAt", "datetime", col => col.defaultTo(null))
+
+    //Timestamps
+    .addColumn("updatedAt", "datetime", col => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn("createdAt", "datetime", col => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .compile()
   );

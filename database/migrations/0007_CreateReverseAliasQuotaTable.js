@@ -8,12 +8,19 @@ export async function up(db) {
   sqls.push(
   db.schema
     .createTable("reverseAliasQuota")
-    .addColumn("reverseAlias", "text", col => col.notNull().references("reverseAlias.id").onDelete("cascade"))
-    .addColumn("alias", "text", col => col.notNull().references("alias.id").onDelete("cascade"))
+    //ID & Relations
+    .addColumn("reverseAliasID", "text", col => col.notNull().references("reverseAlias.id").onDelete("cascade"))
     .addColumn("date", "date", col => col.notNull().defaultTo(sql`CURRENT_DATE`))
-    .addPrimaryKeyConstraint("aliasquota_pkey", ["reverseAlias", "alias", "date"])
+    .addPrimaryKeyConstraint("aliasquota_pkey", ["reverseAliasID", "date"])
+
+    //Data
     .addColumn("incomingMailCount", "integer", col => col.notNull().defaultTo(0))
     .addColumn("outgoingMailCount", "integer", col => col.notNull().defaultTo(0))
+    .addColumn("rejectedMailCount", "integer", col => col.notNull().defaultTo(0))
+
+    //Timestamps
+    .addColumn("updatedAt", "datetime", col => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+    .addColumn("createdAt", "datetime", col => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .compile()
   );
   return sqls

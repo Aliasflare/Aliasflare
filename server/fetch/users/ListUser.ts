@@ -1,4 +1,4 @@
-import { db } from "../../database/D1DB";
+import { db } from "../../Database";
 import { ZodJSONObject, ZodListPagination } from "../../utils/Validators";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
