@@ -1,36 +1,26 @@
 import { z } from "zod";
 import { db } from "../../Database";
-import { ZodAliasID, ZodJSONObject } from "../../utils/Validators";
-import { InvalidBodyError, InvalidMethodError, NotAllowedError, TargetNotFoundError } from "../Errors";
+import { ZodRequestBody } from "../../validators/RequestValidators";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 
-export const ZodAliasGetBody = z.object({
-    id: ZodAliasID
-}).readonly();
+const AliasGetBody = (request: ExtendedRequest, env: Env) => z.object({
+    alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin)
+});
 
 export async function AliasGet(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
     if (url.pathname.startsWith("/api/alias/get")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.user) return NotAllowedError("Need to be logged in");
+        
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        //Parse and validate body
-        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
-
-        const parsedBody = await ZodAliasGetBody.safeParseAsync(rawBody.data);
-        if(parsedBody.error) return InvalidBodyError(parsedBody.error.issues);
-
-        //Check if users exists
-        const alias = await db
-            .selectFrom("alias")
-            .selectAll()
-            .where("id", "==", parsedBody.data.id)
-            .limit(1)
-            .executeTakeFirst();
-        if(!alias) return TargetNotFoundError("alias");
-        if(alias.user != request.user?.id) return InvalidBodyError("Must be admin to modify other users aliases");
-        return Response.json({ error: false, alias });
+        const getBody = await AliasGetBody(request, env).safeParseAsync(body.data);
+        if(getBody.error) return InvalidBodyError(getBody.error.issues);
+        
+        return Response.json({ error: false, alias: getBody.data.alias });
     }
 }

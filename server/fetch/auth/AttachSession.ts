@@ -24,14 +24,14 @@ export async function AttachSession(request: ExtendedRequest, env: Env) {
             delete cookies[sessionCookieName];
         } else {
             //Session Cookie valid (exists)
-            if(new Date(session.expiresAt) < new Date()) {
+            if(new Date(session.createdAt + session.expiresAfter) < new Date()) {
                 //Session Cookie expired
                 console.info("[AttachSession]", "Session expired!");
                 dropReason = "NOT_FOUND";
                 delete cookies[sessionCookieName];
-            } else if(session.invalidateBecause) {
+            } else if(session.invalidatedBecause) {
                 console.info("[AttachSession]", `Invalidated session!`);
-                dropReason = session.invalidateBecause;
+                dropReason = session.invalidatedBecause;
                 delete cookies[sessionCookieName];
             } else {
                 console.info("[AttachSession]", `Attached session '${session.id}'`);
@@ -49,7 +49,7 @@ export async function AttachSession(request: ExtendedRequest, env: Env) {
                 id: randID,
                 userAgent: request.headers.get("User-Agent")||"Unknown",
                 ip: request.headers.get("cf-connecting-ip")||"Unknown",
-                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString()
+                expiresAfter: 1000 * 60 * 60 * 24 * 7
             })
             .execute();
             console.info("[AttachSession]", "New session created:", randID);

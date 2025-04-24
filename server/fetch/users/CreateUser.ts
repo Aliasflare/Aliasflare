@@ -1,15 +1,21 @@
+import { z } from "zod";
 import { db } from "../../Database";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { ZodJSONObject, ZodPassword, ZodUntakenMailAddress, ZodUntakenUsername } from "../../utils/Validators";
-import { hashPassword } from "../../utils/Passwords";
-import { ZodUpdateUserBody } from "./UpdateUser";
+import { ZodBoolean, ZodNumber } from "../../validators/BasicValidators";
+import { ZodRequestBody } from "../../validators/RequestValidators";
+import { ZodUserUntakenUsername, ZodUserUntakenMail, ZodHashedPassword } from "../../validators/CredentialValidators";
 
-export const ZodCreateUserBody = (request: ExtendedRequest, env: Env) => ZodUpdateUserBody(request, env)
-.extend({
-    username: ZodUntakenUsername,
-    password: ZodPassword,
-    mail: ZodUntakenMailAddress,
+const CreateUserBody = (request: ExtendedRequest, env: Env) => z.object({
+    username: ZodUserUntakenUsername,
+    password: ZodHashedPassword,
+    mail: ZodUserUntakenMail,
+    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set role").optional(),
+    maxIncomingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    maxOutgoingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    maxAliasCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    maxDestinationCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    maxCategoryCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
 });
 
 export async function CreateUser(request: ExtendedRequest, env: Env) {
@@ -20,26 +26,23 @@ export async function CreateUser(request: ExtendedRequest, env: Env) {
         if(!request.isAdmin) return NotAllowedError("Need to be Admin");
 
         //Parse and validate body
-        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        const createBody = await ZodCreateUserBody(request, env).safeParseAsync(rawBody.data);
+        const createBody = await CreateUserBody(request, env).safeParseAsync(body.data);
         if(createBody.error) return InvalidBodyError(createBody.error.issues);
 
         //Create new user
-        const newUserID = crypto.randomUUID();
-        const hashedPassword = await hashPassword(createBody.data.password);
-        await db
+        const newUser = await db
             .insertInto("user")
             .values({
-                id: newUserID,
-                username: createBody.data.username,
-                passwordHash: hashedPassword.hash,
-                passwordSalt: hashedPassword.salt,
-                mail: createBody.data.mail
+                ...createBody.data,
+                passwordHash: createBody.data.password.hash,
+                passwordSalt: createBody.data.password.salt,
             })
+            .returningAll()
             .execute();
-        console.log("[CreateUser]", `Created new user with id '${newUserID}'`);
-		return Response.json({ error: false, userID: newUserID });
+        console.log("[CreateUser]", `Created new user with id '${newUser}'`);
+		return Response.json({ error: false, userID: newUser });
 	}
 }

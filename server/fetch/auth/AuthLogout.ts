@@ -9,13 +9,14 @@ export async function AuthLogout(request: ExtendedRequest, env: Env) {
         if(request.method != "POST") return InvalidMethodError("POST")
         if(!request.user) return InvalidOperationError("Not allowed to logout if not logged in");
 
+        //Update session
         await db
             .updateTable("session")
             .where("id", "==", request.session.id)
-            .set({
-                user: null
-            })
+            .set({userID: null })
             .execute();
+
+        //Generate response
         console.log("[AuthLogout]", `Logged out'`);
         return Response.json({ error: false });
     }

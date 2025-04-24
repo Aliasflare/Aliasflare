@@ -2,13 +2,23 @@ import { z } from "zod";
 import { db } from "../../Database";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { ZodJSONObject, ZodMailAddress, ZodMailName, ZodString, ZodValidDomain } from "../../utils/Validators";
+import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
+import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
+import { ZodValidDomain } from "../../validators/MailValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { ZodRequestBody } from "../../validators/RequestValidators";
 
-const ZodAliasCreateBody = (env: any) => z.object({
-    destinationMail: ZodMailAddress,
-    destinationName: ZodMailName.optional(),
+const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
+    aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
+    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
     domain: ZodValidDomain(env),
-    friendlyName: ZodString.optional()
+    displayColor: ZodDisplayColor,
+    displayIcon: ZodDisplayIcon,
+    displayName: ZodDisplayName,
+    remoteNameOverwriteOnIncoming: ZodString.optional(),
+    remoteNameOverwriteOnOutgoing: ZodString.optional(),
+    ownNameOverwriteOnOutgoing: ZodString.optional(),
+    enabled: ZodBoolean.optional()
 }).readonly();
 
 export async function AliasCreate(request: ExtendedRequest, env: any) {
@@ -19,32 +29,23 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
         if(!request.user) return NotAllowedError("Need to be logged in");
 
         //Parse and validate body
-        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        const parsedBody = await ZodAliasCreateBody(env).safeParseAsync(rawBody.data);
-        if(parsedBody.error) return InvalidBodyError(parsedBody.error.issues);
-
-        //Generate new not-taken id for the alias
-        let newAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
-        while(await db.selectFrom("reservedAddress").selectAll().where("mailbox", "==", newAliasID).executeTakeFirst()) {
-            console.log("[AliasCreate]", `Skipping already used address '${newAliasID}`);
-            newAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
-        }
+        const createBody = await AliasCreateBody(request,env).safeParseAsync(body.data);
+        if(createBody.error) return InvalidBodyError(createBody.error.issues);
 
         //Insert alias
-        await db
+        const insertedAlias = (await db
             .insertInto("alias")
             .values({
-                id: newAliasID,
-                user: request.user.id,
-                domain: parsedBody.data.domain.toLowerCase(),
-                friendlyName: parsedBody.data.friendlyName,
-                destinationMail: parsedBody.data.destinationMail,
-                destinationName: parsedBody.data.destinationName,
+                userID: request.user.id,
+                ...createBody.data
             })
-            .execute();
-        console.log("[AliasCreate]", `Created new alias for '${parsedBody.data.destinationMail}' with id '${newAliasID}'`);
-        return Response.json({ error: false, aliasID: newAliasID });
+            .returningAll()
+            .execute())[0];
+
+        console.log("[AliasCreate]", `Created new Alias(${insertedAlias.id}) for Destination(${createBody.data.destination?.id})`);
+        return Response.json({ error: false, aliasID: insertedAlias.id });
     }
 }

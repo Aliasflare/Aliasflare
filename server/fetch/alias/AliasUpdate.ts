@@ -1,20 +1,24 @@
-import { db } from "../../Database";
-import { InvalidBodyError, InvalidMethodError, TargetNotFoundError } from "../Errors";
-import { ExtendedRequest } from "../ExtendedRequest";
-import { ZodBoolean, ZodJSONObject, ZodMailAddress, ZodMailName, ZodString } from "../../utils/Validators";
 import { z } from "zod";
-import { ZodAliasGetBody } from "./AliasGet";
+import { db } from "../../Database";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
+import { ExtendedRequest } from "../ExtendedRequest";
+import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
+import { ZodRequestBody } from "../../validators/RequestValidators";
 
-export const ZodUpdateAliasBody = (request: ExtendedRequest, env: Env) => z
-.object({
-    destinationMail: ZodMailAddress.optional(),
-    destinationName: ZodMailName.optional(),
-    friendlyName: ZodString.optional(),
+const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
+    alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin),
+    aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
+    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
+    displayColor: ZodDisplayColor,
+    displayIcon: ZodDisplayIcon,
+    displayName: ZodDisplayName,
+    remoteNameOverwriteOnIncoming: ZodString.optional(),
+    remoteNameOverwriteOnOutgoing: ZodString.optional(),
+    ownNameOverwriteOnOutgoing: ZodString.optional(),
     enabled: ZodBoolean.optional()
-});
-
-const RefinedZodUpdateAliasBody = (request: ExtendedRequest, env: Env) => ZodUpdateAliasBody(request, env)
-.refine(a => Object.keys(a).length > 0, "Must contain at least one update field");
+}).readonly();
 
 export async function AliasUpdate(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -23,29 +27,21 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
         if(request.method != "POST") return InvalidMethodError("POST")
 
         //Parse and validate body
-        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        const aliasBody = await ZodAliasGetBody.safeParseAsync(rawBody.data);
-        if(aliasBody.error) return InvalidBodyError(aliasBody.error.issues);
-
-        const updateBody = await RefinedZodUpdateAliasBody(request, env).safeParseAsync(rawBody.data);
+        const updateBody = await AliasUpdateBody(request, env).safeParseAsync(body.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
 
         //Update fields
         const updateResult = await db
             .updateTable("alias")
-            .where("id", "==", aliasBody.data.id)
-            .set({
-                ...updateBody.data.destinationMail != undefined ? { destinationMail: updateBody.data.destinationMail } : {},
-                ...updateBody.data.destinationName != undefined ? { destinationName: updateBody.data.destinationName } : {},
-                ...updateBody.data.friendlyName != undefined ? { friendlyName: updateBody.data.friendlyName } : {},
-                ...updateBody.data.enabled != undefined ? { enabled: updateBody.data.enabled } : {},
-            })
+            .where("id", "==", updateBody.data.alias.id)
+            .set(updateBody.data)
+            .returningAll()
             .executeTakeFirst();
-        if(updateResult.numUpdatedRows == BigInt(0)) return TargetNotFoundError("alias");
 
-        console.log("[UpdateAlias]", `Updated alias with id '${aliasBody.data.id}'`);
-        return Response.json({ error: false, aliasID: aliasBody.data.id });
+        console.log("[UpdateAlias]", `Updated alias with id '${updateBody.data.alias.id}'`);
+        return Response.json({ error: false, alias: updateResult });
     }
 }

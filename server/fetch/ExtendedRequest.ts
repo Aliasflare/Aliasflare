@@ -1,7 +1,7 @@
-import { Session, User } from "../../OLD";
+import { DBTableFullObject } from "../Database";
 
 export interface ExtendedRequest extends Request {
-    session: Session;
-    user?: User;
+    session: DBTableFullObject<"session">;
+    user?: DBTableFullObject<"user">;
     isAdmin: boolean;
 }

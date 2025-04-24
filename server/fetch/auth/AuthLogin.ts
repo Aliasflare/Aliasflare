@@ -1,28 +1,21 @@
-import { sql } from "kysely";
 import { db } from "../../Database";
-import { BodyFieldMalformedError, InvalidBodyError, InvalidMethodError, InvalidOperationError } from "../Errors";
+import { InvalidBodyError, InvalidMethodError, InvalidOperationError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { ZodJSONObject, ZodPassword, ZodUsername } from "../../utils/Validators";
 import { verifyPassword } from "../../utils/Passwords";
 import { z } from "zod";
+import { ZodObjectFromTable } from "../../validators/DatabaseValidators";
+import { ZodPassword } from "../../validators/CredentialValidators";
+import { ZodRequestBody } from "../../validators/RequestValidators";
 
 export const ZodValidCredentials = z.object({
-    username: ZodUsername,
+    username: ZodObjectFromTable("user", "username"),
     password: ZodPassword,
 })
 .refine(async(a) => {
-    if(!db) throw new Error("Database error");
-    const user = await db
-        .selectFrom("user")
-        .select(["passwordSalt", "passwordHash"])
-        .where(sql`LOWER(username)`, "==", a.username.toLowerCase())
-        .limit(1)
-        .executeTakeFirst();
-    if(!user) return false;
-    if(!verifyPassword(a.password, user.passwordSalt, user.passwordHash)) return false;
+    if(!verifyPassword(a.password, a.username.passwordSalt, a.username.passwordHash)) return false;
     return true;
 }, "Must be a valid username and password combination")
-.transform(a => ({ ...a, username: a.username.toLowerCase() }));
+.transform(a => ({ user: a.username }));
 
 export async function AuthLogin(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -32,34 +25,25 @@ export async function AuthLogin(request: ExtendedRequest, env: Env) {
         if(request.user) return InvalidOperationError("Not allowed to login if already logged in");
 
         //Parse and validate body
-        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        const credentials = await ZodValidCredentials.safeParseAsync(rawBody.data);
+        const credentials = await ZodValidCredentials.safeParseAsync(body.data);
         if(credentials.error) return InvalidBodyError(credentials.error.issues);
-
-        //Find user
-        const user = await db
-            .selectFrom("user")
-            .selectAll()
-            .where(sql`LOWER(username)`, "==", credentials.data.username)
-            .limit(1)
-            .executeTakeFirstOrThrow();
 
         //Update session
         await db
             .updateTable("session")
             .where("id", "==", request.session.id)
-            .set({
-                userID: user.id,
-            })
+            .set({ userID: credentials.data.user.id })
             .execute();
 
         //Attach user to session object
-        request.session.user = user.id;
-        request.user = user;
+        request.session.userID = credentials.data.user.id;
+        request.user = request.user;
 
-        console.log("[AuthLogin]", `Logged in as '${user.id}'`);
-        return Response.json({ error: false, userID: user.id });
+        //Generate response
+        console.log("[AuthLogin]", `Logged in as '${credentials.data.user.id}'`);
+        return Response.json({ error: false, userID: credentials.data.user.id });
     }
 }

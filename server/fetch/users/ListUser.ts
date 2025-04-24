@@ -1,7 +1,8 @@
 import { db } from "../../Database";
-import { ZodJSONObject, ZodListPagination } from "../../utils/Validators";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+import { ZodListPagination } from "../../validators/BasicValidators";
+import { ZodRequestBody } from "../../validators/RequestValidators";
 
 export async function ListUser(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -11,10 +12,10 @@ export async function ListUser(request: ExtendedRequest, env: Env) {
         if(!request.isAdmin) return NotAllowedError("Need to be Admin");
 
         //Parse and validate body
-        const rawBody = await request.text().then(a => ZodJSONObject.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        const listPagination = await ZodListPagination.safeParseAsync(rawBody.data);
+        const listPagination = await ZodListPagination.safeParseAsync(body.data);
         if(listPagination.error) return InvalidBodyError(listPagination.error.issues);
 
         //Check if users exists
