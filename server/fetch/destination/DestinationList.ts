@@ -1,35 +1,37 @@
 import { z } from "zod";
 import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
+import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from "../../validators/RequestValidators";
 
-const UserListBody = (request: ExtendedRequest, env: Env) => z.object({
+const DestinationListBody = (request: ExtendedRequest, env: Env) => z.object({
+    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
     page: ZodListPaginationPage,
     limit: ZodListPaginationLimit
 });
 
-export async function UserList(request: ExtendedRequest, env: Env) {
+export async function DestinationList(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/user/list")) {
+    if (url.pathname.startsWith("/api/destination/list")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.isAdmin) return NotAllowedError("Need to be Admin");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
-        const listBody = await UserListBody(request, env).safeParseAsync(body.data);
+        const listBody = await DestinationListBody(request, env).safeParseAsync(body.data);
         if(listBody.error) return InvalidBodyError(listBody.error.issues);
 
         const list = await db
-            .selectFrom("user")
+            .selectFrom("destination")
             .selectAll()
+            .where("userID", "==", listBody.data.user.id)
             .limit(listBody.data.limit)
             .offset(listBody.data.page)
             .execute();
-         
-        console.log("[UserList]", `Listed ${list.length} Users`);
-        return Response.json({ error: false, users: list.map(a => ({ ...a, passwordHash: undefined, passwordSalt : undefined })) });
+
+        console.log("[DestinationList]", `Listed ${list.length} Destinations`);
+        return Response.json({ error: false, destinations: list.map(a => ({ ...a })) });
     }
 }

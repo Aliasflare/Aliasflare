@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { db } from "../../Database";
-import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
-import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
+import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
 
 const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin),
@@ -26,22 +26,24 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
-        //Parse and validate body
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
         const updateBody = await AliasUpdateBody(request, env).safeParseAsync(body.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
 
-        //Update fields
-        const updateResult = await db
+        const updated = await db
             .updateTable("alias")
             .where("id", "==", updateBody.data.alias.id)
-            .set(updateBody.data)
+            .set({
+                ...updateBody.data,
+                aliasCategoryID: updateBody.data.aliasCategory?.id,
+                destinationID: updateBody.data.destination?.id,
+            })
             .returningAll()
-            .executeTakeFirst();
+            .executeTakeFirstOrThrow();
 
-        console.log("[UpdateAlias]", `Updated alias with id '${updateBody.data.alias.id}'`);
-        return Response.json({ error: false, alias: updateResult });
+        console.log("[AliasUpdate]", `Updated Alias(${updated.id})`);
+        return Response.json({ error: false, alias: { ...updated } });
     }
 }

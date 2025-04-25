@@ -1,17 +1,17 @@
 import { z } from "zod";
 import { db } from "../../Database";
-import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
-import { ZodValidDomain } from "../../validators/MailValidators";
-import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
+import { ZodMailValidDomain } from "../../validators/MailValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
 
 const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
     aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
     destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
-    domain: ZodValidDomain(env),
+    domain: ZodMailValidDomain(env),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
     displayName: ZodDisplayName,
@@ -28,24 +28,24 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
         if(request.method != "POST") return InvalidMethodError("POST")
         if(!request.user) return NotAllowedError("Need to be logged in");
 
-        //Parse and validate body
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
         const createBody = await AliasCreateBody(request,env).safeParseAsync(body.data);
         if(createBody.error) return InvalidBodyError(createBody.error.issues);
 
-        //Insert alias
-        const insertedAlias = (await db
+        const inserted = await db
             .insertInto("alias")
             .values({
+                ...createBody.data,
                 userID: request.user.id,
-                ...createBody.data
+                aliasCategoryID: createBody.data.aliasCategory?.id,
+                destinationID: createBody.data.destination?.id,
             })
             .returningAll()
-            .execute())[0];
+            .executeTakeFirstOrThrow();
 
-        console.log("[AliasCreate]", `Created new Alias(${insertedAlias.id}) for Destination(${createBody.data.destination?.id})`);
-        return Response.json({ error: false, aliasID: insertedAlias.id });
+        console.log("[AliasCreate]", `Created new Alias(${inserted.id}) for Destination(${inserted.destinationID})`);
+        return Response.json({ error: false, alias: { ...inserted} });
     }
 }

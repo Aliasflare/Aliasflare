@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { db } from "../../Database";
-import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 

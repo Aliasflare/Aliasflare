@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { db } from "../../Database";
-import { ZodRequestBody } from "../../validators/RequestValidators";
-import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+import { InvalidBodyError, InvalidMethodError } from "../Errors";
+import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 
 const AliasCategoryGetBody = (request: ExtendedRequest, env: Env) => z.object({

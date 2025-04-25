@@ -5,23 +5,28 @@ import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 
-const AliasGetBody = (request: ExtendedRequest, env: Env) => z.object({
+const AliasDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
     alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin)
 });
 
-export async function AliasGet(request: ExtendedRequest, env: Env) {
+export async function AliasDelete(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/alias/get")) {
+    if (url.pathname.startsWith("/api/aliasCategory/delete")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        
+
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
-        const getBody = await AliasGetBody(request, env).safeParseAsync(body.data);
-        if(getBody.error) return InvalidBodyError(getBody.error.issues);
-        
-        console.log("[AliasGet]", `Get Alias(${getBody.data.alias.id})`);
-        return Response.json({ error: false, alias: getBody.data.alias });
+        const deleteBody = await AliasDeleteBody(request, env).safeParseAsync(body.data);
+        if(deleteBody.error) return InvalidBodyError(deleteBody.error.issues);
+
+        await db
+            .deleteFrom("alias")
+            .where("id", "==", deleteBody.data.alias.id)
+            .executeTakeFirst();
+
+        console.log("[AliasDelete]", `Deleted Alias(${deleteBody.data.alias.id})`);    
+        return Response.json({ error: false });
     }
 }
