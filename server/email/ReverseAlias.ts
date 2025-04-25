@@ -1,3 +1,4 @@
+import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { db } from "../Database";
 import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader } from "../utils/MailHeaders";
 import { sendRawMail } from "../utils/MailSend";
@@ -12,74 +13,100 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
 
     //Check if format would match an alias (has an -)
     if(!to.mailbox.includes("-")) {
-        console.log("[ReverseAlias]", "Mail is not an alias!");
+        console.log("[ReverseAlias]", "Mail is not an Alias");
         return false;
     }
 
     //Extract aliasMail and reverseAliasID
     const reverseAliasID = to.mailbox.split("-")[0];
     const aliasID = to.mailbox.split("-").slice(1).join("-");
-    console.info("[ReverseAlias]", `Mail is probably going to reverse-alias '${reverseAliasID}' of alias '${aliasID}'`);
+    console.info("[ReverseAlias]", `Mail is probably going to ReverseAlias '${reverseAliasID}' of Alias '${aliasID}'`);
 
-    //Check if the alias exists
+    // Grab alias
     const alias = await db
         .selectFrom("alias")
         .selectAll()
-        .where("id", "==", aliasID)
+        .where("token", "==", aliasID)
         .where("domain", "==", to.domain)
+        .select((eb) => [
+            jsonObjectFrom(
+                eb
+                .selectFrom("aliasCategory")
+                .selectAll()
+                .where("aliasCategory.id", "==", "alias.aliasCategoryID")
+            ).as("aliasCategory"),
+            jsonObjectFrom(
+                eb
+                .selectFrom("user")
+                .selectAll()
+                .where("user.id", "==", "alias.userID")
+            ).as("user")
+        ])
         .limit(1)
         .executeTakeFirst();
         
+    // Ensure alias and its fields exists
     if(!alias) {
-        console.log("[ReverseAlias]", "Alias not found!");
-        return false;
-    } else console.log("[ReverseAlias]", `Found alias '${alias.id}' to '${alias.destinationMail}'`);
+        console.warn("[ReverseAlias]", `REJECT: Alias '${to.mailbox}' not found`);
+        message.setReject(`Mailbox "${to.mailbox}" does not exist`);
+        return true;
+    }
+    console.log("[ReverseAlias]", `Mail goes to Alias(${alias.id})`);
 
-    //Only accept mails if alias is enabled
-	if(!alias.enabled) {
-		console.warn("[ReverseAlias]", `Rejected reverse-mail to disabled alias '${to.raw}' from '${from.raw}`);
-		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
-		return true;
-	}
+    if(!alias.user) {
+        console.warn("[ReverseAlias]", `REJECT: Alias has no User`);
+        console.error("[ReverseAlias]", "THIS IS A DATABASE ERROR! THERE SHOULD NEVER BE UNREACHABLE ALIASES WITHOUT USERS!");
+        message.setReject(`Mailbox "${to.mailbox}" permanently unavailable`);
+        return true;
+    }
+    console.log("[ReverseAlias]", `Alias(${alias.id}) has User(${alias.user.id})`);
 
-    //Check if the reverse alias exists
+    // Ensure alias and his category is enabled
+    if(!alias.enabled) {
+        console.warn("[ReverseAlias]", `REJECT: Alias is disabled`);
+        message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+        return true;
+    }
+
+    if(alias.aliasCategory && !alias.aliasCategory.enabled) {
+        console.warn("[ReverseAlias]", `REJECT: Aliases Category is disabled`);
+        message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+        return true;
+    }
+
+    // Ensure reverse alias exists
     const reverseAlias = await db
         .selectFrom("reverseAlias")
         .selectAll()
-        .where("id", "==", reverseAliasID)
-        .where("alias", "==", alias.id)
+        .where("aliasID", "==", alias.id)
+        .where("token", "==", reverseAliasID)
         .limit(1)
         .executeTakeFirst();
 
     if(!reverseAlias) {
-        console.log("[ReverseAlias]", "Reverse Alias not found on Alias!");
+        console.log("[ReverseAlias]", `ReverseAlias '${reverseAliasID}' not found on Alias(${alias.id})!`);
         return false;
-    } else console.log(`[ReverseAlias] Found reverse-alias '${reverseAlias.id}' for '${reverseAlias.destinationMail}'!`);
+    }
+    console.log(`[ReverseAlias] Mail goes to ReverseAlias(${reverseAlias.id})`);
 
-    //Ensure alias owner has outgoing quota
-    const user = await db
-        .selectFrom("user")
-        .selectAll()
-        .where("id", "==", alias.user)
-        .limit(1)
-        .executeTakeFirstOrThrow();
-    if(!user) throw new Error("Alias user not found");
-
+    // Ensure alias owner has incoming quota
     const totalOutgoingToday = (await db
         .selectFrom("alias")
-        .where("user", "==", alias.user)
-        .leftJoin("reverseAliasQuota", join => join.on("reverseAliasQuota.alias", "=", "alias.id"))
+        .where("userID", "==", alias.user.id)
+        .leftJoin("reverseAlias", join => join.on("reverseAlias.aliasID", "=", "alias.id"))
+        .leftJoin("reverseAliasQuota", join => join.on("reverseAliasQuota.reverseAliasID", "=", "reverseAlias.id"))
         .where("reverseAliasQuota.date", "==", new Date().toISOString().slice(0, 10))
         .select(({fn}) => fn.sum("reverseAliasQuota.outgoingMailCount").as("count"))
         .executeTakeFirst())?.count as number|null || 0;
+    console.log(`[ReverseAlias] User(${alias.user.id}) had ${totalOutgoingToday} outgoing mails today`);
 
-    if(totalOutgoingToday >= (user.maxOutgoingPerDay||env.defaultOutgoingQuotaPerDay)) {
-        console.log("[ReverseAlias] Rejecting because user outgoing quota is exceeded!");
-        message.setReject(`Outgoing quota exceeded (maximum of ${user.maxOutgoingPerDay} outgoing mails per day)`);
+    if(totalOutgoingToday >= (alias.user.maxOutgoingPerDay||parseInt(env.defaultOutgoingQuotaPerDay))) {
+        console.log("[ReverseAlias] REJECT: Outgoing Quota exceeded");
+        message.setReject(`Mailbox has exceeded outgoing quota. Try again tomorrow.`);
         return true;
     }
 
-    //Rewrite headers so no data is leaked
+	// Modify headers so it comes from the alias and replies go to the alias
     mailContent = setHeader(mailContent, "From", (alias.ownNameOverwriteOnOutgoing||from.name) + " <" + alias.id + "@" + env.domain + ">");
     mailContent = setHeader(mailContent, "To", (alias.remoteNameOverwriteOnOutgoing||to.name) + " <" + reverseAlias.destinationMail + ">");
     mailContent = setHeader(mailContent, "Reply-To", getHeader(mailContent, "From"));
@@ -89,31 +116,26 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
 	mailContent = removeHeadersExcept(mailContent, TrustedHeaders);
 	console.log("[ReverseAlias] Removed all untrusted headers!");
 
-	//Save that mail has been sent
-	await db.updateTable("reverseAlias")
-		.where("id", "==", reverseAlias.id)
-        .where("alias", "==", alias.id)
-		.set({ lastMailAt: new Date().toISOString() })
-		.execute();
+	// Send mail
+	await sendRawMail(mailContent, env, message);
+	console.log(`[ReverseAlias] Redirected to ReverseAlias(${reverseAlias.id})!`);
 
-	//Increase outgoing quota on reverse-alias (insert or update)
+	// Update quota for reverse alias
 	await db
 		.insertInto("reverseAliasQuota")
 		.values({
 			date: new Date().toDateString().slice(0, 10),
-			reverseAlias: reverseAlias.id,
-			alias: reverseAlias.alias,
+			reverseAliasID: reverseAlias.id,
 			outgoingMailCount: 1
 		})
 		.onConflict(oc => oc
-			.columns(['date', 'alias', 'reverseAlias'])
+			.columns(['date', 'reverseAliasID'])
 			.doUpdateSet(eb => ({
 				outgoingMailCount: eb('outgoingMailCount', '+', 1)
 			}))
 		)
 		.execute();
+	console.log(`[ReverseAlias] Adjusted Quota of User(${alias.user.id})!`);
 
-    //Send mail
-    await sendRawMail(mailContent, env, message);
     return true;
 }

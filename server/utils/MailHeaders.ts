@@ -102,17 +102,45 @@ export function hasHeader(mailContent: string, headerName: string) {
     return getHeaderNames(mailContent).map(a => a.toLowerCase()).includes(headerName.toLowerCase());
 }
 
-export function parseAddressField(input?: string|null) {
-    if(!input) throw new Error("Cannot parse empty address");
-    const regex = /([a-zA-Z\s]+)?<([^>]+)>|([^<>\s]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
-    const match = input.match(regex);
-  
-    if (match) {
-      if (match[1]) {
-        return { raw: input, name: match[1].trim(), email: match[2]?.toLowerCase(), mailbox: match[2]?.toLowerCase()?.split("@")[0], domain: match[2]?.toLowerCase()?.split("@")[1]  };
-      } else if (match[3]) {
-        return { raw: input, name: null, email: match[3]?.toLowerCase(), mailbox: match[3]?.toLowerCase()?.split("@")[0], domain: match[3]?.toLowerCase()?.split("@")[1] };
-      }
-    }
+//Thanks ChatGPT
+export function parseAddressField(input?: string | null) {
+  if (!input || typeof input !== "string" || input.trim() === "")
+    throw new Error("Cannot parse empty address");
+
+  const cleanedInput = input.replace(/\r?\n|\r/g, "").trim(); // prevent injection
+
+  // RFC 5322-like parser (loosely inspired)
+  const regex = /^(?:(?:"?([^"]*)"?\s*)?<([^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)>|([^<>\s]+@[^<>\s]+\.[^<>\s]+))$/u;
+
+  const match = cleanedInput.match(regex);
+
+  if (!match) return null;
+
+  let name: string | null = null;
+  let email: string;
+
+  if (match[1] && match[2]) {
+    // "Name" <email@example.com>
+    name = match[1].trim() || null;
+    email = match[2].toLowerCase();
+  } else if (match[3]) {
+    // email@example.com
+    email = match[3].toLowerCase();
+  } else if (match[2]) {
+    // <email@example.com>
+    email = match[2].toLowerCase();
+  } else {
     return null;
+  }
+
+  const [mailbox, domain] = email.split("@");
+  if (!mailbox || !domain) return null;
+
+  return {
+    raw: input,
+    name,
+    email,
+    mailbox,
+    domain
+  };
 }

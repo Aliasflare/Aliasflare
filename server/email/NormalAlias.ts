@@ -1,38 +1,88 @@
 import { db } from "../Database";
-import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
 import { sendRawMail } from "../utils/MailSend";
+import { jsonObjectFrom } from "kysely/helpers/sqlite";
+import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
 
 export async function NormalAlias(message: any, env: any, mailContent: string, data: any) {
 	if(!db) throw new Error("Database error");
 
-	//Parse to/from
+	// Parse to/from
 	const to = parseAddressField(getHeader(mailContent, "To"));
 	const from = parseAddressField(getHeader(mailContent, "From"));
 	if(!to || !from) throw new Error("Malformed to/from header");
 
-	//Ensure alias exists
+	// Grab alias
 	const alias = await db
 		.selectFrom("alias")
 		.selectAll()
-		.where("id", "==", to.mailbox)
+		.where("token", "==", to.mailbox)
 		.where("domain", "==", to.domain)
+		.select((eb) => [
+			jsonObjectFrom(
+				eb
+				.selectFrom("destination")
+				.selectAll()
+				.where("destination.id", "==", "alias.destinationID")
+			).as("destination"),
+			jsonObjectFrom(
+				eb
+				.selectFrom("aliasCategory")
+				.selectAll()
+				.where("aliasCategory.id", "==", "alias.aliasCategoryID")
+			).as("aliasCategory"),
+			jsonObjectFrom(
+				eb
+				.selectFrom("user")
+				.selectAll()
+				.where("user.id", "==", "alias.userID")
+			).as("user")
+		])
 		.limit(1)
 		.executeTakeFirst();
-
+	
+	// Ensure alias and its fields exists
 	if(!alias) {
-		console.warn("[NormalAlias]", `Rejected mail to unknown alias '${to.raw}' from '${from.raw}`);
+		console.warn("[NormalAlias]", `REJECT: Alias '${to.mailbox}' not found`);
 		message.setReject(`Mailbox "${to.mailbox}" does not exist`);
 		return true;
-	} else console.log("[NormalAlias]", `Found alias '${alias.id}' to '${alias.destinationMail}'`);
+	}
+	console.log("[NormalAlias]", `Mail goes to Alias(${alias.id})`);
 
-	//Only accept mails if alias is enabled
+	if(!alias.user) {
+		console.warn("[NormalAlias]", `REJECT: Alias has no User`);
+		console.error("[NormalAlias]", "THIS IS A DATABASE ERROR! THERE SHOULD NEVER BE UNREACHABLE ALIASES WITHOUT USERS!");
+		message.setReject(`Mailbox "${to.mailbox}" permanently unavailable`);
+		return true;
+	}
+	console.log("[NormalAlias]", `Alias(${alias.id}) has User(${alias.user.id})`);
+
+	if(!alias.destination) {
+		console.warn("[NormalAlias]", `REJECT: Alias has no Destination`);
+		message.setReject(`Mailbox "${to.mailbox}" temporarily unavailable`);
+		return true;
+	}
+	console.log("[NormalAlias]", `Alias(${alias.id}) has Destination(${alias.destination.id})`);
+
+	// Ensure alias and his category and destination is enabled
 	if(!alias.enabled) {
-		console.warn("[NormalAlias]", `Rejected mail to disabled alias '${to.raw}' from '${from.raw}`);
+		console.warn("[NormalAlias]", `REJECT: Alias is disabled`);
 		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
 		return true;
 	}
 
-	// Find or create the senders reverse-alias
+	if(!alias.destination.enabled) {
+		console.warn("[NormalAlias]", `REJECT: Aliases Destination is disabled`);
+		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+		return true;
+	}
+
+	if(alias.aliasCategory && !alias.aliasCategory.enabled) {
+		console.warn("[NormalAlias]", `REJECT: Aliases Category is disabled`);
+		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+		return true;
+	}
+
+	// Ensure reverse alias exists or create one
 	let reverseAlias = await db
 		.selectFrom("reverseAlias")
 		.selectAll()
@@ -42,54 +92,42 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		.limit(1)
 		.executeTakeFirst();
 
-	//Create reverse alias if it doesnt exist
 	if(!reverseAlias) {
-		let reverseAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
-        while(await db.selectFrom("reservedAddress").selectAll().where("mailbox", "==", alias.id + "-" + reverseAliasID).executeTakeFirst()) {
-            console.log("[NormalAlias]", `Skipping already used address '${reverseAliasID + "-" + reverseAliasID}`);
-            reverseAliasID = crypto.randomUUID().slice(0, 24).replaceAll("-", "");
-        }
-
+		console.log("[NormalAlias]", `Sender does not have an existing ReverseAlias!`);
 		reverseAlias = await db
 			.insertInto("reverseAlias")
-			.returningAll()
 			.values({
-				id: reverseAliasID,
-				alias: alias.id,
+				aliasID: alias.id,
 				destinationMail: from.email,
 				destinationName: from.name,
 			})
+			.returningAll()
 			.executeTakeFirstOrThrow();
-		console.log(`[NormalAlias] Generated reverse-alias '${reverseAliasID}' for '${from.raw}'!`);
-	} else console.log(`[NormalAlias] Found reverse-alias '${reverseAlias.id}' for '${from.raw}'!`);
+		console.log(`[NormalAlias] Generated ReverseAlias(${reverseAlias.id}) for sender!`);
+	}
+	console.log(`[NormalAlias] Sender has ReverseAlias(${reverseAlias.id})`);
 
-    //Ensure alias owner has incoming quota
-    const user = await db
-        .selectFrom("user")
-        .selectAll()
-        .where("id", "==", alias.user)
-        .limit(1)
-        .executeTakeFirstOrThrow();
-    if(!user) throw new Error("Alias user not found");
-
+    // Ensure alias owner has incoming quota
     const totalIncomingToday = (await db
         .selectFrom("alias")
-        .where("user", "==", alias.user)
-        .leftJoin("reverseAliasQuota", join => join.on("reverseAliasQuota.alias", "=", "alias.id"))
+        .where("userID", "==", alias.user.id)
+		.leftJoin("reverseAlias", join => join.on("reverseAlias.aliasID", "=", "alias.id"))
+        .leftJoin("reverseAliasQuota", join => join.on("reverseAliasQuota.reverseAliasID", "=", "reverseAlias.id"))
 		.where("reverseAliasQuota.date", "==", new Date().toISOString().slice(0, 10))
         .select(({fn}) => fn.sum("reverseAliasQuota.incomingMailCount").as("count"))
         .executeTakeFirst())?.count as number|null || 0;
+	console.log(`[NormalAlias] User(${alias.user.id}) had ${totalIncomingToday} incoming mails today`);
 
-    if(totalIncomingToday >= (user.maxIncomingPerDay||env.defaultIncomingQuotaPerDay)) {
-        console.log("[NormalAlias] Rejecting because user incoming quota is exceeded!");
+    if(totalIncomingToday >= (alias.user.maxIncomingPerDay||parseInt(env.defaultIncomingQuotaPerDay))) {
+        console.log("[NormalAlias] REJECT: Incoming Quota exceeded");
         message.setReject(`Mailbox has exceeded incoming quota. Try again tomorrow.`);
         return true;
     }
 
-	// Modify mail so it comes from us
-	mailContent = setHeader(mailContent, "From", (alias.remoteNameOverwriteOnIncoming||from.name) + " <" + alias.id + "@" + alias.domain + ">");
-	mailContent = setHeader(mailContent, "To", alias.destinationName + " <" + alias.destinationMail + ">");
-	mailContent = setHeader(mailContent, "Reply-To", from.name + " <" + reverseAlias.id + "-" + alias.id + "@" + alias.domain + ">");
+	// Modify headers so it comes from the alias and replies go to the reverse alias
+	mailContent = setHeader(mailContent, "From", (alias.remoteNameOverwriteOnIncoming||from.name) + " <" + alias.token + "@" + alias.domain + ">");
+	mailContent = setHeader(mailContent, "To", alias.destination.mailName + " <" + alias.destination.mailBox + "@" + alias.destination.mailDomain + ">");
+	mailContent = setHeader(mailContent, "Reply-To", from.name + " <" + reverseAlias.token + "-" + alias.token + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "Sender", from.raw);
 	console.log("[NormalAlias] Modified headers!");
 
@@ -99,31 +137,24 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 
 	// Send mail
 	await sendRawMail(mailContent, env, message);
+	console.log(`[NormalAlias] Redirected to Destination(${alias.destination.id})!`);
 
-	//Save that mail has been sent
-	await db.updateTable("alias")
-		.where("id", "==", alias.id)
-		.set({
-			lastMailAt: new Date().toISOString()
-		})
-		.execute();
-
-	//Increase incoming quota on reverse-alias (insert or update)
+	// Update quota for reverse alias
 	await db
 		.insertInto("reverseAliasQuota")
 		.values({
 			date: new Date().toDateString().slice(0, 10),
-			reverseAlias: reverseAlias.id,
-			alias: reverseAlias.alias,
+			reverseAliasID: reverseAlias.id,
 			incomingMailCount: 1
 		})
 		.onConflict(oc => oc
-			.columns(['date', 'alias', 'reverseAlias'])
+			.columns(['date', 'reverseAliasID'])
 			.doUpdateSet(eb => ({
 				incomingMailCount: eb('incomingMailCount', '+', 1)
 			}))
 		)
 		.execute();
-
+	console.log(`[NormalAlias] Adjusted Quota of User(${alias.user.id})!`);
+	
 	return true;
 }
