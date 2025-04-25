@@ -29,7 +29,7 @@ async function performLogin() {
     if(res.status == 200) {
         loading.value = false;
         success.value = true;
-        AppState.authChecked = true;
+        AppState.authChecked = false;
         AppState.loggedIn = true;
         setTimeout(() => router.push({ path: router.currentRoute.value.query.originalPath as any }), 1000);
         return true;

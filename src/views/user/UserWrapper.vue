@@ -8,7 +8,7 @@ import MaterialSymbolsAccountCircle from '~icons/material-symbols/account-circle
 
 <template>
     <div class="UserWrapper h-full w-full flex flex-col">
-        <div class="UserNavbar navbar bg-base-100 shadow-sm">
+        <div class="UserNavbar navbar bg-base-300 shadow-sm">
             <div class="navbar-start">
                 <div class="dropdown">
                 <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
@@ -48,8 +48,8 @@ import MaterialSymbolsAccountCircle from '~icons/material-symbols/account-circle
                 </div>
             </div>
         </div>
-        <div class="UserContent flex flex-grow relative p-4">
-            <div class="UserContentNoFlexOverflow absolute w-full h-full overflow-auto">
+        <div class="UserContent flex flex-grow relative">
+            <div class="UserContentNoFlexOverflow absolute w-full h-full overflow-auto p-4">
                 <slot></slot>
             </div>
         </div>

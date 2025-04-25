@@ -1,4 +1,4 @@
-import { ZodString } from "./BasicValidators";
+import { ZodOneOfWithoutCasing, ZodString } from "./BasicValidators";
 
 export const ZodMailName = ZodString
   .nonempty()
@@ -11,6 +11,10 @@ export const ZodMailName = ZodString
 export const ZodMailAddress = ZodString
   .email();
 
-export const ZodValidDomain = (env: any) => ZodString
-  .min(1)
-  .refine(a => env.domains.toLowerCase().split(",").includes(a.toLowerCase()), { message: "Must be a valid domain" });
+export const ZodMailBox = ZodString
+  .regex(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+$/, "Must be a valid mailbox part");
+
+export const ZodDomain = ZodString
+  .regex(/^(?=.{1,253}$)(?!\-)([a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,}$/, "Must be a valid mail domain");
+
+export const ZodMailValidDomain = (env: any) => ZodOneOfWithoutCasing(env.domains.split(","));

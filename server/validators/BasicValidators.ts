@@ -30,3 +30,8 @@ export const ZodAliasID = z
   .nonempty()
   .length(20)
   .regex(/^[a-zA-Z0-9]+$/, { message: "Must only contain alpha-numeric charcacters" });
+
+export const ZodOneOfWithoutCasing = (str: string[]) => z
+  .string()
+  .nonempty()
+  .refine(a => str.map(b => b.toLowerCase()).includes(a.toLowerCase()), "Not an valid option")

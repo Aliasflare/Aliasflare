@@ -1,38 +1,33 @@
-import { initDBFetchHandler } from "../Database";
 import { ExtendedRequest } from './ExtendedRequest'
+
+//Handlers
+import { initDBFetchHandler } from "../Database";
 import { AttachSession } from "./auth/AttachSession";
 import { AttachUser } from "./auth/AttachUser";
 import { AttachAdmin } from "./auth/AttachAdmin";
 import { AuthLogin } from "./auth/AuthLogin";
-import { GenericApi } from "./GenericApi";
-import { CreateUser } from "./users/CreateUser";
-import { GetUser } from "./users/GetUser";
-import { ListUser } from "./users/ListUser";
 import { AuthLogout } from "./auth/AuthLogout";
+import { UserCreate } from "./user/UserCreate";
+import { UserGet } from "./user/UserGet";
+import { UserList } from "./user/UserList";
+import { UserDelete } from "./user/UserDelete";
+import { UserUpdate } from "./user/UserUpdate";
+import { DestinationCreate } from "./destination/DestinationCreate";
+import { DestinationDelete } from "./destination/DestinationDelete";
+import { DestinationGet } from "./destination/DestinationGet";
+import { DestinationUpdate } from "./destination/DestinationUpdate";
 import { AliasCreate } from "./alias/AliasCreate";
 import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
-import { DeleteUser } from "./users/DeleteUser";
-import { UpdateUser } from "./users/UpdateUser";
 import { AliasUpdate } from "./alias/AliasUpdate";
-
+import { GenericApi } from "./GenericApi";
 const fetchHandlers = [
-    initDBFetchHandler,
-    AttachSession,
-    AttachUser,
-    AttachAdmin,
-    AuthLogin,
-    AuthLogout,
-    CreateUser,
-    GetUser,
-    ListUser,
-    DeleteUser,
-    UpdateUser,
-    AliasCreate,
-    AliasGet,
-    AliasList,
-    AliasUpdate,
-    GenericApi,
+    ...[initDBFetchHandler, AttachSession, AttachUser, AttachAdmin],
+    ...[AuthLogin, AuthLogout],
+    ...[UserCreate, UserDelete, UserGet, UserList, UserUpdate],
+    ...[DestinationCreate, DestinationDelete, DestinationGet, DestinationUpdate],
+    ...[AliasCreate, AliasGet, AliasList, AliasUpdate],
+    ...[GenericApi],
 ]
 
 export async function FetchHandler(request: Request, env: any):Promise<Response> {
