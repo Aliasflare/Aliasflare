@@ -20,13 +20,19 @@ import { AliasCreate } from "./alias/AliasCreate";
 import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
 import { AliasUpdate } from "./alias/AliasUpdate";
+import { AliasCategoryCreate } from './aliasCategory/AliasCategoryCreate';
+import { AliasCategoryGet } from './aliasCategory/AliasCategoryGet';
+import { AliasCategoryUpdate } from './aliasCategory/AliasCategoryUpdate';
+import { AliasCategoryDelete } from './aliasCategory/AliasCategoryDelete';
 import { GenericApi } from "./GenericApi";
+
 const fetchHandlers = [
     ...[initDBFetchHandler, AttachSession, AttachUser, AttachAdmin],
     ...[AuthLogin, AuthLogout],
     ...[UserCreate, UserDelete, UserGet, UserList, UserUpdate],
     ...[DestinationCreate, DestinationDelete, DestinationGet, DestinationUpdate],
     ...[AliasCreate, AliasGet, AliasList, AliasUpdate],
+    ...[AliasCategoryCreate, AliasCategoryGet, AliasCategoryDelete, AliasCategoryUpdate],
     ...[GenericApi],
 ]
 

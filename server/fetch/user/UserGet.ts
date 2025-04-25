@@ -21,7 +21,7 @@ export async function UserGet(request: ExtendedRequest, env: Env) {
         const getBody = await UserGetBody(request, env).safeParseAsync(body.data);
         if(getBody.error) return InvalidBodyError(getBody.error.issues);
 
-        console.log("[UserGet]", `Fetched User(${getBody.data.user.id})`);
+        console.log("[UserGet]", `Get User(${getBody.data.user.id})`);
 		return Response.json({ error: false, user: { ...getBody.data.user, passwordHash: undefined, passwordSalt: undefined } });
 	}
 }

@@ -5,23 +5,23 @@ import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 
-const DestinationGetBody = (request: ExtendedRequest, env: Env) => z.object({
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin)
+const AliasCategoryGetBody = (request: ExtendedRequest, env: Env) => z.object({
+    aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin)
 });
 
-export async function DestinationGet(request: ExtendedRequest, env: Env) {
+export async function AliasCategoryGet(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/destination/get")) {
+    if (url.pathname.startsWith("/api/aliasCagetory/get")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
         
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
-        const getBody = await DestinationGetBody(request, env).safeParseAsync(body.data);
+        const getBody = await AliasCategoryGetBody(request, env).safeParseAsync(body.data);
         if(getBody.error) return InvalidBodyError(getBody.error.issues);
         
-        console.log("[DestinationGet]", `Get Destination(${getBody.data.destination.id})`);
-        return Response.json({ error: false, destination: { ...getBody.data.destination, verifyToken: undefined } });
+        console.log("[AliasCategoryGet]", `Get AliasCategory(${getBody.data.aliasCategory.id})`);
+        return Response.json({ error: false, aliasCategory: { ...getBody.data.aliasCategory } });
     }
 }
