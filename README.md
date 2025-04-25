@@ -1,33 +1,17 @@
-# aliasflare-ts
+<p align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/logo_dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./public/logo.png">
+  <img alt="Fallback image description" src="./public/logo_dark.png" width=400>
+</picture>
+</p>
 
-This template should help get you started developing with Vue 3 in Vite.
+AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets you create unlimited aliases to forward incoming and outgoing emails to your real inbox. It supports full reverse-aliasing, so you can send replies from your alias addresses while keeping your personal email private.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+## Features
+- Unlimited Aliases: Create as many email aliases as you need without any restrictions.
+- Seamless Forwarding: Effortlessly forward both incoming and outgoing emails to and from your real inbox.
+- Reverse-Aliasing: Reply from your alias address, maintaining privacy without revealing your personal email.
+- Cloudflare Powered: Enjoy fast and reliable email routing through Cloudflare's secure and scalable infrastructure.
+- Privacy Focused: Protect your personal inbox from spam and unwanted exposure while keeping your communication streamlined.
+- Easy to Use: Simple setup with no complex configurations, making email management effortless and secure.
