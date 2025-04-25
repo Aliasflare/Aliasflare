@@ -10,6 +10,7 @@ import { AuthLogout } from "./auth/AuthLogout";
 import { UserCreate } from "./user/UserCreate";
 import { UserGet } from "./user/UserGet";
 import { UserList } from "./user/UserList";
+import { UserSelf } from './user/UserSelf';
 import { UserDelete } from "./user/UserDelete";
 import { UserUpdate } from "./user/UserUpdate";
 import { DestinationCreate } from "./destination/DestinationCreate";
@@ -32,7 +33,7 @@ import { GenericApi } from "./GenericApi";
 const fetchHandlers = [
     ...[initDBFetchHandler, AttachSession, AttachUser, AttachAdmin],
     ...[AuthLogin, AuthLogout],
-    ...[UserCreate, UserDelete, UserGet, UserList, UserUpdate],
+    ...[UserCreate, UserDelete, UserGet, UserList, UserSelf, UserUpdate],
     ...[DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationUpdate],
     ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasUpdate],
     ...[AliasCategoryCreate, AliasCategoryDelete, AliasCategoryGet, AliasCategoryList, AliasCategoryUpdate],
