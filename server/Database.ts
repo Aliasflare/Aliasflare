@@ -1,6 +1,6 @@
-import { Kysely, Selectable, SelectQueryBuilder } from 'kysely';
+import { Kysely, Selectable } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
-import { DB } from '../database/.generated/db';
+import type { DB } from '../database/.generated/db';
 
 export {DB};
 export let db:Kysely<DB>|undefined;
