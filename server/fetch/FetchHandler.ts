@@ -15,6 +15,7 @@ import { UserUpdate } from "./user/UserUpdate";
 import { DestinationCreate } from "./destination/DestinationCreate";
 import { DestinationDelete } from "./destination/DestinationDelete";
 import { DestinationGet } from "./destination/DestinationGet";
+import { DestinationList } from './destination/DestinationList';
 import { DestinationUpdate } from "./destination/DestinationUpdate";
 import { AliasCreate } from "./alias/AliasCreate";
 import { AliasDelete } from './alias/AliasDelete';
@@ -24,6 +25,7 @@ import { AliasUpdate } from "./alias/AliasUpdate";
 import { AliasCategoryCreate } from './aliasCategory/AliasCategoryCreate';
 import { AliasCategoryUpdate } from './aliasCategory/AliasCategoryUpdate';
 import { AliasCategoryGet } from './aliasCategory/AliasCategoryGet';
+import { AliasCategoryList } from './aliasCategory/AliasCategoryList';
 import { AliasCategoryDelete } from './aliasCategory/AliasCategoryDelete';
 import { GenericApi } from "./GenericApi";
 
@@ -31,9 +33,9 @@ const fetchHandlers = [
     ...[initDBFetchHandler, AttachSession, AttachUser, AttachAdmin],
     ...[AuthLogin, AuthLogout],
     ...[UserCreate, UserDelete, UserGet, UserList, UserUpdate],
-    ...[DestinationCreate, DestinationDelete, DestinationGet, DestinationUpdate],
+    ...[DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationUpdate],
     ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasUpdate],
-    ...[AliasCategoryCreate, AliasCategoryDelete, AliasCategoryGet, AliasCategoryUpdate],
+    ...[AliasCategoryCreate, AliasCategoryDelete, AliasCategoryGet, AliasCategoryList, AliasCategoryUpdate],
     ...[GenericApi],
 ];
 
