@@ -37,6 +37,8 @@ export async function UserCreate(request: ExtendedRequest, env: Env) {
                 ...createBody.data,
                 passwordHash: createBody.data.password.hash,
                 passwordSalt: createBody.data.password.salt,
+                //@ts-expect-error
+                password: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow()

@@ -1,17 +1,16 @@
-import { z } from "zod";
-import { DB, db, DBTable, DBTableColumn, DBTableFullObject } from "../Database";
-import { ZodBoolean, ZodString, ZodUUID } from "./BasicValidators";
-import { ZodMailAddress } from "./MailValidators";
+import { db, DBTable, DBTableColumn, DBTableFullObject } from "../Database";
+import { ZodString } from "./BasicValidators";
 
 export const ExistsInTableFilter = <T extends DBTable>(table: T, column: DBTableColumn<T>) => async(a: any) => {
     if(!db) throw new Error("Database error");
-    return (await db
+    const c= (await db
       .selectFrom(table)
       //@ts-ignore
       .select(column)
       .where(column, "==", a)
       .limit(1)
-      .executeTakeFirst()) != null;
+      .executeTakeFirst()) !== undefined;
+    return c;
 };
   
 export const NotExistsInTableFilter = <T extends DBTable>(table: T, column: DBTableColumn<T>) => async(a: any) => !ExistsInTableFilter(table, column)(a);
@@ -27,13 +26,13 @@ export const ZodObjectFromTable = <T extends DBTable>(table: T, column: DBTableC
         .limit(1)
         .executeTakeFirst()) as (DBTableFullObject<T>);
     })
-    .refine(a => a!= undefined, "Must be a valid '" + column + "' in '" + table + "'")
+    .refine(a => a!= undefined, "Must be a valid '" + column + "' of '" + table + "'")
     .transform(a => a as DBTableFullObject<T>);
 
 export const ZodAccessibleObjectFromTable = <T extends DBTable>(table: T, column: DBTableColumn<T>) =>
     (userId: string|null|undefined, isAdmin:boolean) => ZodObjectFromTable(table, column)
-        .refine(_ => isAdmin || userId != null, "Must be logged or admin to access data")
-        .refine(a => isAdmin || (a as any).userId == userId, "Must be admin to access other users data");
+        .refine(a => a==undefined || isAdmin || userId != null, "Must be logged or admin to access data")
+        .refine(a => a==undefined || isAdmin || (a as any).userId == userId, "Must be admin to access other users data");
 
         /*
 export const ZodUserTarget = (request: ExtendedRequest, env: Env) => z

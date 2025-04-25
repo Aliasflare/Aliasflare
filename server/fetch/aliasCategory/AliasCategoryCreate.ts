@@ -33,6 +33,8 @@ export async function AliasCategoryCreate(request: ExtendedRequest, env: any) {
             .values({
                 ...createBody.data,
                 userID: createBody.data.user.id,
+                //@ts-expect-error
+                user: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow()

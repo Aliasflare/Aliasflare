@@ -18,7 +18,7 @@ export const ZodHashedPassword = ZodPassword
   .transform(async(a) => await hashPassword(a));
 
 export const ZodUserUntakenUsername = ZodUsername
-  .refine(a => !ExistsInTableFilter("user", "username")(a), "Must be a non-taken username address");
+  .refine(async(a) => !(await ExistsInTableFilter("user", "username")(a)), "Must be a non-taken username address");
 
 export const ZodUserUntakenMail = ZodMailAddress
-  .refine(a => !ExistsInTableFilter("user", "mail")(a), "Must be a non-taken mail address");
+  .refine(async(a) => !(await ExistsInTableFilter("user", "mail")(a)), "Must be a non-taken mail address");

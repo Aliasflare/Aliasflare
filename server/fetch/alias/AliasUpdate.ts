@@ -39,6 +39,10 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
                 ...updateBody.data,
                 aliasCategoryID: updateBody.data.aliasCategory?.id,
                 destinationID: updateBody.data.destination?.id,
+                //@ts-expect-error
+                alias: undefined,
+                aliasCategory: undefined,
+                destination: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow();

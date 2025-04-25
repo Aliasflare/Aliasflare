@@ -33,6 +33,8 @@ export async function AliasCategoryUpdate(request: ExtendedRequest, env: any) {
             .where("id", "==", updateBody.data.aliasCategory.id)
             .set({
                 ...updateBody.data,
+                //@ts-expect-error
+                aliasCategory: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow();

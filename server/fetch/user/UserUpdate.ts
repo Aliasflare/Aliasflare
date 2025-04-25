@@ -39,6 +39,9 @@ export async function UserUpdate(request: ExtendedRequest, env: Env) {
                 ...updateBody.data,
                 passwordHash: updateBody.data.password?.hash,
                 passwordSalt: updateBody.data.password?.salt,
+                //@ts-expect-error
+                user: undefined,
+                password: undefined,
             })
             .returningAll()
             .executeTakeFirstOrThrow();

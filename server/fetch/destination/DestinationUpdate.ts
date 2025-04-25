@@ -39,7 +39,9 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
             .where("id", "==", updateBody.data.destination.id)
             .set({
                 ...updateBody.data,
-                ...mailChanged ? { verified: updateBody.data.verified||(Boolean(env.disableDomainVerfication) ? 1 : 0) } : {}
+                ...mailChanged ? { verified: updateBody.data.verified||(Boolean(env.disableDomainVerfication) ? 1 : 0) } : {},
+                //@ts-expect-error
+                destination: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow();

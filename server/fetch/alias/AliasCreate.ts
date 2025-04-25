@@ -41,6 +41,9 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
                 userID: request.user.id,
                 aliasCategoryID: createBody.data.aliasCategory?.id,
                 destinationID: createBody.data.destination?.id,
+                //@ts-expect-error
+                aliasCategory: undefined,
+                destination: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow();
