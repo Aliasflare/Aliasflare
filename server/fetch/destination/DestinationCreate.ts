@@ -5,8 +5,9 @@ import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors
 import { ZodBoolean } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
-import { ZodMailBox, ZodMailName, ZodMailValidDomain } from "../../validators/MailValidators";
+import { ZodDomain, ZodMailBox, ZodMailName } from "../../validators/MailValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { TransformDestination } from "./DestinationTransformer";
 
 const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
@@ -15,14 +16,14 @@ const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     displayName: ZodDisplayName.optional(),
     mailName: ZodMailName,
     mailBox: ZodMailBox,
-    mailDomain: ZodMailValidDomain(env),
+    mailDomain: ZodDomain,
     enabled: ZodBoolean.optional(),
-    verified: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set verfied").default(Boolean(env.disableDomainVerfication)).optional(),
+    verified: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set verfied").default(env.disableDomainVerfication).optional(),
 }).readonly();
 
 export async function DestinationCreate(request: ExtendedRequest, env: any) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/alias/create")) {
+    if (url.pathname.startsWith("/api/destination/create")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
         if(!request.user) return NotAllowedError("Need to be logged in");
@@ -47,6 +48,6 @@ export async function DestinationCreate(request: ExtendedRequest, env: any) {
         //TODO: Send confirmation mail if not verified automatically
 
         console.log("[DestinationCreate]", `Created new Destination(${inserted.id})`);
-        return Response.json({ error: false, destination: { ...inserted, verifyToken: undefined } });
+        return Response.json({ error: false, destination: TransformDestination(inserted) });
     }
 }

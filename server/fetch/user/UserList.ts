@@ -3,6 +3,7 @@ import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
 import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from "../../validators/RequestValidators";
+import { TransformUser } from "./UserTransformer";
 
 const UserListBody = (request: ExtendedRequest, env: Env) => z.object({
     page: ZodListPaginationPage,
@@ -30,6 +31,6 @@ export async function UserList(request: ExtendedRequest, env: Env) {
             .execute();
          
         console.log("[UserList]", `Listed ${list.length} Users`);
-        return Response.json({ error: false, users: list.map(a => ({ ...a, passwordHash: undefined, passwordSalt : undefined })) });
+        return Response.json({ error: false, users: list.map(a => TransformUser(a)) });
     }
 }

@@ -4,6 +4,7 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from "../../validators/RequestValidators";
+import { TransformDestination } from "./DestinationTransformer";
 
 const DestinationListBody = (request: ExtendedRequest, env: Env) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
@@ -32,6 +33,6 @@ export async function DestinationList(request: ExtendedRequest, env: Env) {
             .execute();
 
         console.log("[DestinationList]", `Listed ${list.length} Destinations`);
-        return Response.json({ error: false, destinations: list.map(a => ({ ...a })) });
+        return Response.json({ error: false, destinations: list.map(a => TransformDestination(a)) });
     }
 }

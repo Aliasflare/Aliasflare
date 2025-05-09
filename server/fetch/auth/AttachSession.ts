@@ -34,7 +34,7 @@ export async function AttachSession(request: ExtendedRequest, env: Env) {
                 dropReason = session.invalidatedBecause;
                 delete cookies[sessionCookieName];
             } else {
-                console.info("[AttachSession]", `Attached session '${session.id}'`);
+                console.info("[AttachSession]", `Attached Session(${session.id})`);
                 request.session = session;
             }
         }
@@ -52,7 +52,7 @@ export async function AttachSession(request: ExtendedRequest, env: Env) {
                 expiresAfter: 1000 * 60 * 60 * 24 * 7
             })
             .execute();
-            console.info("[AttachSession]", "New session created:", randID);
+            console.info("[AttachSession]", `Created Session(${randID})`);
         return new Response(null, {
             status: 302,
             headers: {

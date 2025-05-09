@@ -4,6 +4,7 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
+import { TransformAliasCategory } from "./AliasCategoryTransformer";
 
 const AliasCategoryGetBody = (request: ExtendedRequest, env: Env) => z.object({
     aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin)
@@ -22,6 +23,6 @@ export async function AliasCategoryGet(request: ExtendedRequest, env: Env) {
         if(getBody.error) return InvalidBodyError(getBody.error.issues);
         
         console.log("[AliasCategoryGet]", `Get AliasCategory(${getBody.data.aliasCategory.id})`);
-        return Response.json({ error: false, aliasCategory: { ...getBody.data.aliasCategory } });
+        return Response.json({ error: false, aliasCategory: TransformAliasCategory(getBody.data.aliasCategory) });
     }
 }

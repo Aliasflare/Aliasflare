@@ -6,6 +6,7 @@ import { ZodBoolean } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { TransformAliasCategory } from "./AliasCategoryTransformer";
 
 const AliasCategoryUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin),
@@ -42,6 +43,6 @@ export async function AliasCategoryUpdate(request: ExtendedRequest, env: any) {
         //TODO: Send confirmation mail if not verfieid and mail changed
 
         console.log("[AliasCategoryUpdate]", `Updated AliasCategory(${updated.id})`);
-        return Response.json({ error: false, aliasCategory: { ...updated } });
+        return Response.json({ error: false, aliasCategory: TransformAliasCategory(updated) });
     }
 }

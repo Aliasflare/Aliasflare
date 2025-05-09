@@ -6,6 +6,7 @@ import { ZodBoolean } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { TransformAliasCategory } from "./AliasCategoryTransformer";
 
 const AliasCategoryCreateBody = (request: ExtendedRequest, env: any) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
@@ -42,6 +43,6 @@ export async function AliasCategoryCreate(request: ExtendedRequest, env: any) {
         //TODO: Send confirmation mail if not verified automatically
 
         console.log("[AliasCategoryCreate]", `Created new AliasCategory(${inserted.id})`);
-        return Response.json({ error: false, aliasCategory: { ...inserted } });
+        return Response.json({ error: false, aliasCategory: TransformAliasCategory(inserted) });
     }
 }

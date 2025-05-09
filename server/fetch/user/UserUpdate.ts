@@ -6,13 +6,14 @@ import { ZodBoolean, ZodNumber } from "../../validators/BasicValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodHashedPassword, ZodUserUntakenMail, ZodUserUntakenUsername } from "../../validators/CredentialValidators";
+import { TransformUser } from "./UserTransformer";
 
 const UserUpdateBody = (request: ExtendedRequest, env: Env) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
     username: ZodUserUntakenUsername.optional(),
     password: ZodHashedPassword.optional(),
     mail: ZodUserUntakenMail.optional(),
-    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set role").optional(),
+    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to make admin").optional(),
     maxIncomingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
     maxOutgoingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
     maxAliasCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
@@ -47,6 +48,6 @@ export async function UserUpdate(request: ExtendedRequest, env: Env) {
             .executeTakeFirstOrThrow();
 
         console.log("[UserUpdate]", `Updated User(${updated.id})`);
-        return Response.json({ error: false, user: { ...updated, passwordHash: undefined, passwordSalt: undefined } });
+        return Response.json({ error: false, user: TransformUser(updated) });
     }
 }

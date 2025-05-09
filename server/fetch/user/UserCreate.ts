@@ -5,12 +5,13 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodBoolean, ZodNumber } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodUserUntakenUsername, ZodUserUntakenMail, ZodHashedPassword } from "../../validators/CredentialValidators";
+import { TransformUser } from "./UserTransformer";
 
 const UserCreateBody = (request: ExtendedRequest, env: Env) => z.object({
     username: ZodUserUntakenUsername,
     password: ZodHashedPassword,
     mail: ZodUserUntakenMail,
-    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set role").optional(),
+    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to make admin").optional(),
     maxIncomingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
     maxOutgoingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
     maxAliasCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
@@ -44,6 +45,6 @@ export async function UserCreate(request: ExtendedRequest, env: Env) {
             .executeTakeFirstOrThrow()
 
         console.log("[UserCreate]", `Created new User(${inserted.id })`);
-		return Response.json({ error: false, user: { ...inserted, passwordHash: undefined, passwordSalt: undefined } });
+		return Response.json({ error: false, user: TransformUser(inserted) });
 	}
 }

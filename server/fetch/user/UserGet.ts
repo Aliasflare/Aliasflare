@@ -4,6 +4,7 @@ import { InvalidBodyError, InvalidMethodError, TargetNotFoundError } from "../Er
 import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
+import { TransformUser } from "./UserTransformer";
 
 const UserGetBody = (request: ExtendedRequest, env: Env) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin)
@@ -22,6 +23,6 @@ export async function UserGet(request: ExtendedRequest, env: Env) {
         if(getBody.error) return InvalidBodyError(getBody.error.issues);
 
         console.log("[UserGet]", `Get User(${getBody.data.user.id})`);
-		return Response.json({ error: false, user: { ...getBody.data.user, passwordHash: undefined, passwordSalt: undefined } });
+		return Response.json({ error: false, user: TransformUser(getBody.data.user) });
 	}
 }

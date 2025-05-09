@@ -1,6 +1,7 @@
 import { db } from "../../Database";
 import { InvalidMethodError, NotAllowedError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
+import { TransformUser } from "./UserTransformer";
 
 export async function UserSelf(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
@@ -10,6 +11,6 @@ export async function UserSelf(request: ExtendedRequest, env: Env) {
         if(!request.user) return NotAllowedError("Need to be logged in");
 
         console.log("[UserGet]", `Get User(${request.user.id})`);
-		return Response.json({ error: false, user: { ...request.user, passwordHash: undefined, passwordSalt: undefined } });
+		return Response.json({ error: false, user: TransformUser(request.user) });
     }
 }

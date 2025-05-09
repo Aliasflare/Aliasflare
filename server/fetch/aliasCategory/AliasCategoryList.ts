@@ -4,6 +4,7 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from "../../validators/RequestValidators";
+import { TransformAliasCategory } from "./AliasCategoryTransformer";
 
 const AliasCategoryListBody = (request: ExtendedRequest, env: Env) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
@@ -32,6 +33,6 @@ export async function AliasCategoryList(request: ExtendedRequest, env: Env) {
             .execute();
 
         console.log("[AliasCategoryList]", `Listed ${list.length} AliasCategories`);
-        return Response.json({ error: false, aliasCategories: list.map(a => ({ ...a })) });
+        return Response.json({ error: false, aliasCategories: list.map(a => TransformAliasCategory(a)) });
     }
 }

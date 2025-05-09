@@ -4,6 +4,7 @@ import { ZodRequestBody } from "../../validators/RequestValidators";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
+import { TransformDestination } from "./DestinationTransformer";
 
 const DestinationGetBody = (request: ExtendedRequest, env: Env) => z.object({
     destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin)
@@ -22,6 +23,6 @@ export async function DestinationGet(request: ExtendedRequest, env: Env) {
         if(getBody.error) return InvalidBodyError(getBody.error.issues);
         
         console.log("[DestinationGet]", `Get Destination(${getBody.data.destination.id})`);
-        return Response.json({ error: false, destination: { ...getBody.data.destination, verifyToken: undefined } });
+        return Response.json({ error: false, destination: TransformDestination(getBody.data.destination) });
     }
 }
