@@ -37,13 +37,12 @@ async function toggleEnabled(alias: any) {
     });
     await loadAliases();
 }
-
 </script>
 
 <template>
     <UserWrapper>
         <div class="flex flex-col w-full relative">
-            <div class="flex flex-row m-2">
+            <div class="flex flex-row items-center m-2">
                 <div class="text-2xl">Your Aliases</div>
                 <span class="ml-4 loading loading-circle loading-sm" v-if="pageState == 'LOADING'"></span>
                 <div class="flex-grow"></div>

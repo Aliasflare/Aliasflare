@@ -8,7 +8,7 @@ import AuthBox from './AuthBox.vue';
 onMounted(checkLogin);
 async function checkLogin() {
     console.log("[AuthCheckingView]", "Checking auth...");
-    const res = await fetch("/api/user/get", {
+    const res = await fetch("/api/user/self", {
         method: "POST",
         body: JSON.stringify({
             self: true

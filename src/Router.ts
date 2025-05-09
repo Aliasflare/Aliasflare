@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { AppState } from './AppState';
 import AuthLoginView from './views/auth/AuthLoginView.vue'
 import AuthCheckingView from './views/auth/AuthCheckingView.vue'
 import UserHome from './views/user/UserHome.vue';
-import { AppState } from './AppState';
 import AuthLogoutView from './views/auth/AuthLogoutView.vue';
+import UserDestinations from './views/user/UserDestinations.vue';
 import UserAliases from './views/user/UserAliases.vue';
 
 const router = createRouter({
@@ -14,6 +15,7 @@ const router = createRouter({
     { path: "/auth/checking", component: AuthCheckingView },
     { path: "/auth/logout", component: AuthLogoutView },
     { path: "/user/home", component: UserHome, meta: { requireAuth: true } },
+    { path: "/user/destinations", component: UserDestinations, meta: { requireAuth: true } },
     { path: "/user/aliases", component: UserAliases, meta: { requireAuth: true } }
   ],
 });
