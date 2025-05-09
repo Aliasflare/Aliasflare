@@ -32,6 +32,7 @@ export async function UserUpdate(request: ExtendedRequest, env: Env) {
 
         const updateBody = await UserUpdateBody(request, env).safeParseAsync(rawBody.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
+        if(Object.keys(updateBody.data).length < 2) return InvalidBodyError("At least one field has to be updated!");
 
         const updated = await db
             .updateTable("user")

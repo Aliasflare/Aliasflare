@@ -28,6 +28,7 @@ export async function AliasCategoryUpdate(request: ExtendedRequest, env: any) {
 
         const updateBody = await AliasCategoryUpdateBody(request,env).safeParseAsync(body.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
+        if(Object.keys(updateBody.data).length < 2) return InvalidBodyError("At least one field has to be updated!");
 
         const updated = await db
             .updateTable("destination")
