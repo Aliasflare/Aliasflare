@@ -3,12 +3,12 @@ let value = defineModel<string|undefined>({ required: true });
 const props = defineProps<{
     title: string,
     description: string,
-    disabled: boolean
+    disabled?: boolean
 }>();
 </script>
 
 <template>
-    <div class="flex flex-col my-2">
+    <div class="ColorInput flex flex-col my-2">
         <div class="text-sm font-semibold mb-2">{{ props.title }}</div>
         <div class="flex flex-row">
             <input type="color" class="h-full rounded-l" v-model="value" :disabled="props.disabled">

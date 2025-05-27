@@ -2,7 +2,7 @@
 let value = defineModel<boolean|undefined>({ required: true });
 const props = defineProps<{
     text: string,
-    disabled: boolean
+    disabled?: boolean
 }>();
 </script>
 

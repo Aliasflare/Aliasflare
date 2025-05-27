@@ -13,7 +13,7 @@ const pageError = ref<any>();
 const showCreationModal = ref<any>(false);
 const showCreationModalRenew = Math.random();
 
-async function loadDestinations() {
+async function load() {
     pageState.value = "LOADING";
     try {
         pageData.value = await destinationStore.list(AppState.currentUser.id, 0, 50);
@@ -25,7 +25,7 @@ async function loadDestinations() {
         pageState.value = "ERROR";
     }
 }
-onMounted(loadDestinations);
+onMounted(load);
 </script>
 
 <template>

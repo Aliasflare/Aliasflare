@@ -40,11 +40,11 @@ async function doConfirm() {
                     <div>{{ error }}</div>
                     <button class="btn btn-error" @click="show = false">Close</button>
                 </div>
-                <div class="flex flex-col w-full h-full overflow-auto p-4">
-                    <div class="text-2xl mb-2">{{ title }}</div>
+                <div class="SidebarDialogueContent flex flex-col w-full h-full overflow-auto p-4">
+                    <div class="SidebarDialogueTitle text-2xl mb-2">{{ title }}</div>
                     <slot></slot>
-                    <div class="flex-grow"></div>
-                    <div class="flex flex-row py-2">
+                    <div class="SidebarDialogueActionsSpacer flex-grow"></div>
+                    <div class="SidebarDialogueActions flex flex-row py-2">
                         <button class="btn btn-success mr-2" @click="doConfirm" :disabled="state == 'LOADING'">{{ confirmText }}</button>
                         <button class="btn btn-error" @click="show = state == 'LOADING'" :disabled="state == 'LOADING'">Close</button>
                     </div>
