@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
-import { AppState } from '@/AppState'
+import { onMounted, ref } from 'vue';
 import UserWrapper from './UserWrapper.vue';
 import DestinationManageDialogue from '@/components/destination/DestinationManageDialogue.vue';
 import DestinationCard from '@/components/destination/DestinationCard.vue';
+import { destinationStore } from '@/api/DestinationStore';
+import { AppState } from '@/AppState';
 
 const pageState = ref<"READY"|"LOADING"|"ERROR">("LOADING");
 const pageData = ref<any>();
@@ -14,23 +15,15 @@ const showCreationModalRenew = Math.random();
 
 async function loadDestinations() {
     pageState.value = "LOADING";
-    const res = await fetch("/api/destination/list", {
-        method: "POST",
-        body: JSON.stringify({
-            user: AppState.currentUser.id,
-            page: 0,
-            limit: 50
-        })
-    });
-    if(res.status != 200) {
-        pageData.value = null;;
-        pageError.value = await res.text();
+    try {
+        pageData.value = await destinationStore.list(AppState.currentUser.id, 0, 50);
+        pageError.value = null;
+        pageState.value = "READY";
+    } catch(err) {
+        pageData.value = null;
+        pageError.value = err;
         pageState.value = "ERROR";
-        return;
     }
-    pageError.value = null;
-    pageData.value = (await res.json()).destinations;
-    pageState.value = "READY";
 }
 onMounted(loadDestinations);
 </script>
@@ -45,9 +38,9 @@ onMounted(loadDestinations);
                 <button class="btn btn-primary btn-sm" @click="showCreationModal = true; showCreationModalRenew = Math.random();">+ Add Destination</button>
             </div>
             <div class="DestinationGrid mt-6 flex flex-row flex-wrap justify-center" v-if="pageData">
-                <DestinationCard v-for="destinationKey of Object.keys(pageData)" v-model:destination="pageData[destinationKey]"></DestinationCard>
+                <DestinationCard v-for="destination of destinationStore.getKeyedObjects()" :destinationId="destination.id"></DestinationCard>
             </div>
-            <DestinationManageDialogue v-if="showCreationModal" v-model:show="showCreationModal" @created="a => pageData.push(a)"></DestinationManageDialogue>
+            <DestinationManageDialogue v-if="showCreationModal" v-model:show="showCreationModal"></DestinationManageDialogue>
         </div>
     </UserWrapper>
 </template>

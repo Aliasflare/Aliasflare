@@ -7,24 +7,25 @@ import MaterialSymbolsDelete from '~icons/material-symbols/delete';
 import IconPicked from '../icons/IconPicked.vue';
 import DestinationManageDialogue from './DestinationManageDialogue.vue';
 import DestinationDeleteDialogue from './DestinationDeleteDialogue.vue';
+import { destinationStore } from '@/api/DestinationStore';
 
-let destination = defineModel<any>('destination', { required: true });
+let { destinationId } = defineProps<{ destinationId: string }>();
 const showEditModal = ref<boolean>(false);
 const showDeleteDialogue = ref<boolean>(false);
 </script>
 
 <template>
-    <div class="DestinationCard p-4 m-2 bg-base-300 text-base-300-content w-fit rounded-xl" :style="`border-top: 4px solid ${destination.displayColor||'black'};`" v-if="destination">
+    <div class="DestinationCard p-4 m-2 bg-base-300 text-base-300-content w-fit rounded-xl" :style="`border-top: 4px solid ${destinationStore.getKeyedObject(destinationId)?.displayColor||'black'};`">
         <div class="Header flex flex-row items-center">
-            <IconPicked :icon="destination.displayIcon" class="mr-1"></IconPicked>
-            <div class="font-semibold">{{ destination.displayName || 'Unnamed' }}</div>
+            <IconPicked :icon="destinationStore.getKeyedObject(destinationId)?.displayIcon" class="mr-1"></IconPicked>
+            <div class="font-semibold">{{ destinationStore.getKeyedObject(destinationId)?.displayName || 'Unnamed' }}</div>
         </div>
-        <div>to <a class="text-info">{{ destination.mailBox + "@" + destination.mailDomain }}</a></div>
-        <div class="EnabledBadge flex flex-row items-center text-sm text-success" v-if="destination.verfied == 1">
+        <div>to <a class="text-info">{{ destinationStore.getKeyedObject(destinationId)?.mailBox + "@" + destinationStore.getKeyedObject(destinationId)?.mailDomain }}</a></div>
+        <div class="EnabledBadge flex flex-row items-center text-sm text-success" v-if="destinationStore.getKeyedObject(destinationId)?.verfied == 1">
             <MaterialSymbolsCheckCircleOutlineRounded class="mr-1"></MaterialSymbolsCheckCircleOutlineRounded>
             <div>Verfied</div>
         </div>
-        <div class="DisabledBadge flex flex-row items-center text-sm text-warning" v-if="destination.verified == 0">
+        <div class="DisabledBadge flex flex-row items-center text-sm text-warning" v-if="destinationStore.getKeyedObject(destinationId)?.verified == 0">
             <MaterialSymbolsWarningOutline class="mr-1"></MaterialSymbolsWarningOutline>
             <div>Verification pending (check mail)</div>
         </div>
@@ -32,7 +33,7 @@ const showDeleteDialogue = ref<boolean>(false);
             <button class="btn btn-xs btn-success mr-2" @click="showEditModal = true"><MaterialSymbolsInkPen></MaterialSymbolsInkPen></button>
             <button class="btn btn-xs btn-error" @click="showDeleteDialogue = true"><MaterialSymbolsDelete></MaterialSymbolsDelete></button>
         </div>
-        <DestinationManageDialogue v-if="showEditModal" v-model:show="showEditModal" v-model:destination="destination"></DestinationManageDialogue>
-        <DestinationDeleteDialogue v-if="showDeleteDialogue" v-model:show="showDeleteDialogue" v-model:destination="destination"></DestinationDeleteDialogue>
+        <DestinationManageDialogue v-if="showEditModal" v-model:show="showEditModal" :updateDestinationId="destinationId"></DestinationManageDialogue>
+        <DestinationDeleteDialogue v-if="showDeleteDialogue" v-model:show="showDeleteDialogue" :destinationId="destinationId"></DestinationDeleteDialogue>
     </div>
 </template>
