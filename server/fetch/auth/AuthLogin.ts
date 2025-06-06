@@ -12,6 +12,7 @@ export const ZodValidCredentials = z.object({
     password: ZodPassword,
 })
 .refine(async(a) => {
+    if(!a.password || !a.username) return false;
     if(!verifyPassword(a.password, a.username.passwordSalt, a.username.passwordHash)) return false;
     return true;
 }, "Must be a valid username and password combination")
