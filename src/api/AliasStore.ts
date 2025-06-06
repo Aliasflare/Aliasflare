@@ -63,7 +63,7 @@ class AliasStore extends KeyedStore {
             })
         });
         if(res.status != 200) throw new Error(await res.text());
-        return this.setKeyedObjects((await res.json()).destinations);
+        return this.setKeyedObjects((await res.json()).aliases);
     }
 
 }

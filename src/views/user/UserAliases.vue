@@ -4,6 +4,7 @@ import UserWrapper from './UserWrapper.vue';
 import { AppState } from '@/AppState';
 import { aliasStore } from '@/api/AliasStore';
 import AliasCard from '@/components/alias/AliasCard.vue';
+import AliasManageDialogue from '@/components/alias/AliasManageDialogue.vue';
 
 const pageState = ref<"READY"|"LOADING"|"ERROR">("LOADING");
 const pageData = ref<any>();
@@ -39,7 +40,7 @@ onMounted(load);
             <div class="AliasGrid mt-6 flex flex-row flex-wrap justify-center" v-if="pageData">
                 <AliasCard v-for="alias of aliasStore.getKeyedObjects()" :aliasId="alias.id"></AliasCard>
             </div>
-            <!--<DestinationManageDialogue v-if="showCreationModal" v-model:show="showCreationModal"></DestinationManageDialogue>-->
+            <AliasManageDialogue v-if="showCreationModal" v-model:show="showCreationModal"></AliasManageDialogue>
         </div>
     </UserWrapper>
 </template>

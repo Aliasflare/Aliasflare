@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 
 let show = defineModel<boolean>('show', { required: true });
 const props = defineProps<{
     confirmText: string,
     confirmAction: () => Promise<void>,
+    preload?: () => Promise<void>,
     title: string,
 }>();
 const emits = defineEmits<{
@@ -27,6 +28,20 @@ async function doConfirm() {
         state.value = "ERROR";
     }
 }
+
+onBeforeMount(async() => {
+    if(!props.preload) return;
+    state.value = "LOADING";
+    try {
+        await props.preload();
+        error.value = null;
+        state.value = "READY";
+    } catch(err) {
+        error.value = err;
+        state.value = "ERROR";
+    }
+});
+
 </script>
 
 <template>

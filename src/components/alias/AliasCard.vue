@@ -6,6 +6,8 @@ import MaterialSymbolsInkPen from '~icons/material-symbols/ink-pen';
 import MaterialSymbolsDelete from '~icons/material-symbols/delete';
 import IconPicked from '../icons/IconPicked.vue';
 import { aliasStore } from '@/api/AliasStore';
+import AliasManageDialogue from './AliasManageDialogue.vue';
+import AliasDeleteDialogue from './AliasDeleteDialogue.vue';
 
 let { aliasId } = defineProps<{ aliasId: string }>();
 const showEditModal = ref<boolean>(false);
@@ -18,7 +20,7 @@ const showDeleteDialogue = ref<boolean>(false);
             <IconPicked :icon="aliasStore.getKeyedObject(aliasId)?.displayIcon" class="mr-1"></IconPicked>
             <div class="font-semibold">{{ aliasStore.getKeyedObject(aliasId)?.displayName || 'Unnamed' }}</div>
         </div>
-        <div>to <a class="text-info">{{ aliasStore.getKeyedObject(aliasId)?.mailBox + "@" + aliasStore.getKeyedObject(aliasId)?.mailDomain }}</a></div>
+        <div><a class="text-info">{{ aliasStore.getKeyedObject(aliasId)?.token + "@" + aliasStore.getKeyedObject(aliasId)?.domain }}</a></div>
         <div class="EnabledBadge flex flex-row items-center text-sm text-success" v-if="aliasStore.getKeyedObject(aliasId)?.verfied == 1">
             <MaterialSymbolsCheckCircleOutlineRounded class="mr-1"></MaterialSymbolsCheckCircleOutlineRounded>
             <div>Verfied</div>
@@ -31,5 +33,7 @@ const showDeleteDialogue = ref<boolean>(false);
             <button class="btn btn-xs btn-success mr-2" @click="showEditModal = true"><MaterialSymbolsInkPen></MaterialSymbolsInkPen></button>
             <button class="btn btn-xs btn-error" @click="showDeleteDialogue = true"><MaterialSymbolsDelete></MaterialSymbolsDelete></button>
         </div>
+        <AliasManageDialogue v-if="showEditModal" v-model:show="showEditModal" :updateAliasId="aliasId"></AliasManageDialogue>
+        <AliasDeleteDialogue v-if="showDeleteDialogue" v-model:show="showDeleteDialogue" :aliasId="aliasId"></AliasDeleteDialogue>
     </div>
 </template>
