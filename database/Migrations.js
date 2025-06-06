@@ -10,6 +10,7 @@ const db = new Kysely({ dialect });
 const JS_MIGRATIONS_DIR = "./migrations/";
 
 export async function getMigrations() {
+    console.log('[+] Loading migrations...');
     const migrationFiles = (await fsProm.readdir(path.resolve(import.meta.dirname, JS_MIGRATIONS_DIR))).map(a => path.resolve(import.meta.dirname, JS_MIGRATIONS_DIR, a));
     console.log(`   → Found ${migrationFiles.length} migration files!`);
     const migrations = {};
