@@ -4,6 +4,7 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
+import { TransformAlias } from "./AliasTransformer";
 
 const AliasGetBody = (request: ExtendedRequest, env: Env) => z.object({
     alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin)
@@ -22,6 +23,6 @@ export async function AliasGet(request: ExtendedRequest, env: Env) {
         if(getBody.error) return InvalidBodyError(getBody.error.issues);
         
         console.log("[AliasGet]", `Get Alias(${getBody.data.alias.id})`);
-        return Response.json({ error: false, alias: getBody.data.alias });
+        return Response.json({ error: false, alias: TransformAlias(getBody.data.alias) });
     }
 }

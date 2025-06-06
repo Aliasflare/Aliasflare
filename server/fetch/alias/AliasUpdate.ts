@@ -6,11 +6,12 @@ import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { TransformAlias } from "./AliasTransformer";
 
 const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin),
-    aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
+    aliasCategoryID: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
+    destinationID: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
     displayName: ZodDisplayName,
@@ -38,8 +39,8 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
             .where("id", "==", updateBody.data.alias.id)
             .set({
                 ...updateBody.data,
-                aliasCategoryID: updateBody.data.aliasCategory?.id,
-                destinationID: updateBody.data.destination?.id,
+                aliasCategoryID: updateBody.data.aliasCategoryID?.id,
+                destinationID: updateBody.data.destinationID?.id,
                 //@ts-expect-error
                 alias: undefined,
                 aliasCategory: undefined,
@@ -49,6 +50,6 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
             .executeTakeFirstOrThrow();
 
         console.log("[AliasUpdate]", `Updated Alias(${updated.id})`);
-        return Response.json({ error: false, alias: { ...updated } });
+        return Response.json({ error: false, alias: TransformAlias(updated) });
     }
 }

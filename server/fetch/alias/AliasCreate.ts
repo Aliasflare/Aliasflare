@@ -7,10 +7,11 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodMailValidDomain } from "../../validators/MailValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { TransformAlias } from "./AliasTransformer";
 
 const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
-    aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
+    aliasCategoryID: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
+    destinationID: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
     domain: ZodMailValidDomain(env),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
@@ -39,8 +40,8 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
             .values({
                 ...createBody.data,
                 userID: request.user.id,
-                aliasCategoryID: createBody.data.aliasCategory?.id,
-                destinationID: createBody.data.destination?.id,
+                aliasCategoryID: createBody.data.aliasCategoryID?.id,
+                destinationID: createBody.data.destinationID?.id,
                 //@ts-expect-error
                 aliasCategory: undefined,
                 destination: undefined
@@ -49,6 +50,6 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
             .executeTakeFirstOrThrow();
 
         console.log("[AliasCreate]", `Created new Alias(${inserted.id}) for Destination(${inserted.destinationID})`);
-        return Response.json({ error: false, alias: { ...inserted} });
+        return Response.json({ error: false, alias: TransformAlias(inserted) });
     }
 }

@@ -17,14 +17,14 @@ export const NotExistsInTableFilter = <T extends DBTable>(table: T, column: DBTa
 
 export const ZodObjectFromTable = <T extends DBTable>(table: T, column: DBTableColumn<T>) => ZodString
     .transform(async(a: any) => {
-    if(!db) throw new Error("Database error");
-    return (await db
-        .selectFrom(table)
-        .selectAll()
-        //@ts-expect-error
-        .where(column, "==", a)
-        .limit(1)
-        .executeTakeFirst()) as (DBTableFullObject<T>);
+        if(!db) throw new Error("Database error");
+        return (await db
+            .selectFrom(table)
+            .selectAll()
+            //@ts-expect-error
+            .where(column, "==", a)
+            .limit(1)
+            .executeTakeFirst()) as (DBTableFullObject<T>);
     })
     .refine(a => a!= undefined, "Must be a valid '" + column + "' of '" + table + "'")
     .transform(a => a as DBTableFullObject<T>);

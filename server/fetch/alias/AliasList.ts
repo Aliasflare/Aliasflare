@@ -4,6 +4,7 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from "../../validators/RequestValidators";
+import { TransformAlias } from "./AliasTransformer";
 
 const AliasListBody = (request: ExtendedRequest, env: Env) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
@@ -32,6 +33,6 @@ export async function AliasList(request: ExtendedRequest, env: Env) {
             .execute();
 
         console.log("[AliasList]", `Listed ${list.length} Aliases`);
-        return Response.json({ error: false, aliases: list.map(a => ({ ...a })) });
+        return Response.json({ error: false, aliases: list.map(a => TransformAlias(a)) });
     }
 }
