@@ -18,7 +18,7 @@ const UserUpdateBody = (request: ExtendedRequest, env: Env) => z.object({
     maxOutgoingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
     maxAliasCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
     maxDestinationCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-     maxCategoryCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    maxCategoryCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
 });
 
 export async function UserUpdate(request: ExtendedRequest, env: Env) {
@@ -27,10 +27,10 @@ export async function UserUpdate(request: ExtendedRequest, env: Env) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
-        const rawBody = await request.text().then(a => ZodRequestBody.safeParseAsync(a));
-        if(rawBody.error) return InvalidBodyError(rawBody.error.issues);
+        const body = await ZodRequestBody.safeParseAsync(request);
+        if(body.error) return InvalidBodyError(body.error.issues);
 
-        const updateBody = await UserUpdateBody(request, env).safeParseAsync(rawBody.data);
+        const updateBody = await UserUpdateBody(request, env).safeParseAsync(body.data);
         if(updateBody.error) return InvalidBodyError(updateBody.error.issues);
         if(Object.keys(updateBody.data).length < 2) return InvalidBodyError("At least one field has to be updated!");
 

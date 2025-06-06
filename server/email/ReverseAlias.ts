@@ -1,5 +1,5 @@
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
-import { db } from "../Database";
+import { db, aliasCategoryColumns, userColumns } from "../Database";
 import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader } from "../utils/MailHeaders";
 import { sendRawMail } from "../utils/MailSend";
 
@@ -32,14 +32,14 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
             jsonObjectFrom(
                 eb
                 .selectFrom("aliasCategory")
-                .selectAll()
-                .where("aliasCategory.id", "==", "alias.aliasCategoryID")
+                .select(aliasCategoryColumns)
+                .whereRef("aliasCategory.id", "=", "alias.aliasCategoryID")
             ).as("aliasCategory"),
             jsonObjectFrom(
                 eb
                 .selectFrom("user")
-                .selectAll()
-                .where("user.id", "==", "alias.userID")
+                .select(userColumns)
+                .whereRef("user.id", "=", "alias.userID")
             ).as("user")
         ])
         .limit(1)
@@ -107,7 +107,7 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
     }
 
 	// Modify headers so it comes from the alias and replies go to the alias
-    mailContent = setHeader(mailContent, "From", (alias.ownNameOverwriteOnOutgoing||from.name) + " <" + alias.id + "@" + env.domain + ">");
+    mailContent = setHeader(mailContent, "From", (alias.ownNameOverwriteOnOutgoing||from.name) + " <" + alias.token + "@" + alias.domain + ">");
     mailContent = setHeader(mailContent, "To", (alias.remoteNameOverwriteOnOutgoing||to.name) + " <" + reverseAlias.destinationMail + ">");
     mailContent = setHeader(mailContent, "Reply-To", getHeader(mailContent, "From"));
     console.log("[ReverseAlias] Modified headers!");

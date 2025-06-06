@@ -1,4 +1,4 @@
-import { db } from "../Database";
+import { db, aliasCategoryColumns, destinationColumns, userColumns } from "../Database";
 import { sendRawMail } from "../utils/MailSend";
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
@@ -21,25 +21,25 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 			jsonObjectFrom(
 				eb
 				.selectFrom("destination")
-				.selectAll()
-				.where("destination.id", "==", "alias.destinationID")
+				.select(destinationColumns)
+				.whereRef("destination.id", "=", "alias.destinationID")
 			).as("destination"),
 			jsonObjectFrom(
 				eb
 				.selectFrom("aliasCategory")
-				.selectAll()
-				.where("aliasCategory.id", "==", "alias.aliasCategoryID")
+				.select(aliasCategoryColumns)
+				.whereRef("aliasCategory.id", "=", "alias.aliasCategoryID")
 			).as("aliasCategory"),
 			jsonObjectFrom(
 				eb
 				.selectFrom("user")
-				.selectAll()
-				.where("user.id", "==", "alias.userID")
+				.select(userColumns)
+				.whereRef("user.id", "=", "alias.userID")
 			).as("user")
 		])
 		.limit(1)
 		.executeTakeFirst();
-	
+
 	// Ensure alias and its fields exists
 	if(!alias) {
 		console.warn("[NormalAlias]", `REJECT: Alias '${to.mailbox}' not found`);
