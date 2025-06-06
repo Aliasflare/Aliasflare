@@ -11,7 +11,7 @@ const AliasDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
 
 export async function AliasDelete(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/aliasCategory/delete")) {
+    if (url.pathname.startsWith("/api/alias/delete")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
