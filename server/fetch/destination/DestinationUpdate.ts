@@ -37,12 +37,19 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
 
         const mailChanged = (updateBody.data.mailBox||updateBody.data.mailDomain);
 
-        //Delete old destination from cloudflare if the mail has been changed
+        let newAddr;
         if(mailChanged) {
+            //Delete old destination from cloudflare if the mail has been changed
             await cloudflareClient.emailRouting.addresses.delete(
                 updateBody.data.destination.mailBox + "@" + updateBody.data.destination.mailDomain,
                 { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },
             );
+
+            //Add as destination to cloudflare if the mail has been changed
+            newAddr = await cloudflareClient.emailRouting.addresses.create({
+                account_id: env["CLOUDFLARE_ACCOUNT_ID"],
+                email: updateBody.data.mailBox + "@" + updateBody.data.mailDomain
+            });
         }
 
         const updated = await db
@@ -51,19 +58,12 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
             .set({
                 ...updateBody.data,
                 ...mailChanged ? { verified: false } : {},
+                ...newAddr ? { cloudflareDestinationID: newAddr.id } : {},
                 //@ts-expect-error
                 destination: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow();
-
-        //Add as destination to cloudflare if the mail has been changed
-        if(mailChanged) {
-            await cloudflareClient.emailRouting.addresses.create({
-                account_id: env["CLOUDFLARE_ACCOUNT_ID"],
-                email: updateBody.data.mailBox + "@" + updateBody.data.mailDomain
-            });
-        }
 
         console.log("[DestinationUpdate]", `Updated Destination(${updated.id})`);
         return Response.json({ error: false, destination: TransformDestination(updated) });

@@ -35,22 +35,26 @@ export async function DestinationCreate(request: ExtendedRequest, env: any) {
         const createBody = await DestinationCreateBody(request,env).safeParseAsync(body.data);
         if(createBody.error) return InvalidBodyError(createBody.error.issues);
 
+        //Add as destination mail address to cloudflare
+        const addr = await cloudflareClient.emailRouting.addresses.create({
+            account_id: env["CLOUDFLARE_ACCOUNT_ID"],
+            email: createBody.data.mailBox + "@" + createBody.data.mailDomain
+        });
+        if(!addr) throw new Error("Created destination on cloudflare but did return nothing?");
+
         const inserted = await db
             .insertInto("destination")
             .values({
                 ...createBody.data,
                 userID: createBody.data.user.id,
+                cloudflareDestinationID: addr.id as any,
                 //@ts-expect-error
                 user: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow()
 
-        //Add as destination mail address to cloudflare
-        await cloudflareClient.emailRouting.addresses.create({
-            account_id: env["CLOUDFLARE_ACCOUNT_ID"],
-            email: createBody.data.mailBox + "@" + createBody.data.mailDomain
-        });
+
 
         console.log("[DestinationCreate]", `Created new Destination(${inserted.id})`);
         return Response.json({ error: false, destination: TransformDestination(inserted) });

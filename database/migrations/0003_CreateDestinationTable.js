@@ -31,6 +31,7 @@ export async function up(db) {
 
     //Verification
     .addColumn("verified", "boolean", col => col.notNull().defaultTo(false))
+    .addColumn("cloudflareDestinationID", "text", col => col.notNull())
 
     //Timestamps
     .addColumn("updatedAt", "datetime", col => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))

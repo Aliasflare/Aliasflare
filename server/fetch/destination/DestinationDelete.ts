@@ -21,7 +21,7 @@ export async function DestinationDelete(request: ExtendedRequest, env: any) {
 
         const deleteBody = await DestinationDeleteBody(request, env).safeParseAsync(body.data);
         if(deleteBody.error) return InvalidBodyError(deleteBody.error.issues);
-
+    
         await db
             .deleteFrom("destination")
             .where("id", "==", deleteBody.data.destination.id)
@@ -29,7 +29,7 @@ export async function DestinationDelete(request: ExtendedRequest, env: any) {
 
         //Remove destination mail adress from cloudflare
         await cloudflareClient.emailRouting.addresses.delete(
-            deleteBody.data.destination.mailBox + "@" + deleteBody.data.destination.mailDomain,
+            deleteBody.data.destination.cloudflareDestinationID,
             { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },
         );
 

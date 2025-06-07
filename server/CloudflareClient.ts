@@ -8,7 +8,7 @@ export async function initCloudflareClientFetchHandler(request: Request, env: an
 
 export async function initCloudflareClient(env: any) {
     cloudflareClient = new Cloudflare({
-      apiToken: env["CLOUDFLARE_API_KEY"]
+      apiToken: env["CLOUDFLARE_API_TOKEN"]
     });
     console.log("[initCloudflareClient]", `Initialized Cloudflare Client for '${env["CLOUDFLARE_API_MAIL"]}'!`);
 }

@@ -78,7 +78,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	}
 
 	if(!alias.destination.verified) {
-		const address = await cloudflareClient.emailRouting.addresses.get(alias.destination.mailBox + "@" + alias.destination.mailDomain, {
+		const address = await cloudflareClient.emailRouting.addresses.get(alias.destination.cloudflareDestinationID, {
 			account_id: env["CLOUDFLARE_ACCOUNT_ID"]
 		});
 		if(!address.verified) {

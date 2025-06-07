@@ -4,7 +4,7 @@ import { Destination } from "../../../database/.generated/db";
 export function TransformDestination(destination: Selectable<Destination>) {
     return {
         ...destination,
-        verifyToken: undefined,
+        cloudflareDestinationID: undefined,
         enabled: Boolean(destination.enabled),
         verified: Boolean(destination.verified)
     }

@@ -22,6 +22,6 @@ export type DBTableColumn<Table extends DBTable> =
 export type DBTableFullObject<Table extends DBTable> = Selectable<DB[Table]>;
 
 //TODO: Dynamically determine these
-export const destinationColumns:any[] = ["id", "userID", "displayColor", "displayIcon", "displayName", "mailName", "mailBox", "mailDomain", "enabled", "verified", "updatedAt", "createdAt"];
+export const destinationColumns:any[] = ["id", "userID", "displayColor", "displayIcon", "displayName", "mailName", "mailBox", "mailDomain", "enabled", "verified", "cloudflareDestinationID", "updatedAt", "createdAt"];
 export const aliasCategoryColumns:any[] = ["id", "userID", "displayColor", "displayIcon", "displayName", "enabled", "updatedAt", "createdAt"];
 export const userColumns:any[] = ["id", "username", "mail", "passwordHash", "passwordSalt", "admin", "maxOutgoingPerDay", "maxIncomingPerDay", "maxAliasCount", "maxDestinationCount", "maxCategoryCount", "updatedAt", "createdAt"];
