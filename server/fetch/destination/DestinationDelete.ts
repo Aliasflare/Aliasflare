@@ -5,6 +5,8 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { cloudflareClient } from "../../CloudflareClient";
+import { sendRawMailViaCloudflare } from "../../utils/MailSend";
+import { BuildDestinationRemovedMail } from "../../utils/TemplateMails";
 
 const DestinationDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
     destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin)
@@ -28,6 +30,7 @@ export async function DestinationDelete(request: ExtendedRequest, env: any) {
             .executeTakeFirst();
 
         //Remove destination mail adress from cloudflare
+        await sendRawMailViaCloudflare(BuildDestinationRemovedMail(deleteBody.data.destination, env.domains.split(",")[0]), env);
         await cloudflareClient.emailRouting.addresses.delete(
             deleteBody.data.destination.cloudflareDestinationID,
             { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },

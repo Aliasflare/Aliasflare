@@ -9,6 +9,8 @@ import { ZodDomain, ZodMailBox, ZodMailName } from "../../validators/MailValidat
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
 import { TransformDestination } from "./DestinationTransformer";
 import { cloudflareClient } from "../../CloudflareClient";
+import { sendRawMailViaCloudflare } from "../../utils/MailSend";
+import { BuildDestinationRemovedMail } from "../../utils/TemplateMails";
 
 const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin),
@@ -40,6 +42,7 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
         let newAddr;
         if(mailChanged) {
             //Delete old destination from cloudflare if the mail has been changed
+            await sendRawMailViaCloudflare(BuildDestinationRemovedMail(updateBody.data.destination, env.domains.split(",")[0]), env);
             await cloudflareClient.emailRouting.addresses.delete(
                 updateBody.data.destination.mailBox + "@" + updateBody.data.destination.mailDomain,
                 { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },

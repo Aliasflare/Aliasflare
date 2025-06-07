@@ -3,6 +3,7 @@ import { sendRawMailViaCloudflare } from "../utils/MailSend";
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader, hasHeader } from "../utils/MailHeaders";
 import { cloudflareClient } from "../CloudflareClient";
+import { BuildDestinationVerifiedMail } from "../utils/TemplateMails";
 
 export async function NormalAlias(message: any, env: any, mailContent: string, data: any) {
 	if(!db) throw new Error("Database error");
@@ -89,6 +90,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		
 		//Verify address so we do not have to check in future
 		await db.updateTable("destination").where("id", "==", alias.destination.id).set({ verified: 1 }).execute();
+		await sendRawMailViaCloudflare(BuildDestinationVerifiedMail(alias.destination, alias.domain), env)
 	}
 
 	if(alias.aliasCategory && !alias.aliasCategory.enabled) {

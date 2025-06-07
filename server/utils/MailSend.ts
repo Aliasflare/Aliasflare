@@ -1,7 +1,7 @@
 import { EmailMessage } from "cloudflare:email";
 import { getHeader, parseAddressField } from "./MailHeaders";
 
-export async function sendRawMailViaCloudflare(mailContent: string, env: any, message: any) {
+export async function sendRawMailViaCloudflare(mailContent: string, env: any, message?: any) {
 	const from = parseAddressField(getHeader(mailContent, "From"))?.email;
 	if(!from) throw new Error("No from address at sendRawMail!");
 	const to = parseAddressField(getHeader(mailContent, "To"))?.email;
@@ -21,7 +21,7 @@ export async function sendRawMailViaCloudflare(mailContent: string, env: any, me
 	} catch(err) {
 		console.log("[sendRawMail]", "Failed to send mail:");
 		console.error("[sendRawMail]" ,"Error:", err);
-		message.setReject("Delivery failed");
+		if(message) message.setReject("Delivery failed");
 		return false;
 	}
 
@@ -29,7 +29,7 @@ export async function sendRawMailViaCloudflare(mailContent: string, env: any, me
 	return true;
 }
 
-export async function sendRawMailViaMailgun(mailContent: string, env: any, message: any) {
+export async function sendRawMailViaMailgun(mailContent: string, env: any, message?: any) {
 	const to = parseAddressField(getHeader(mailContent, "To"))?.email;
 	if(!to) throw new Error("No to address at sendRawMail!");
     console.log("[sendRawMail]", `Sending mail with ${mailContent.length} charcters to '${to}'`);
@@ -55,7 +55,7 @@ export async function sendRawMailViaMailgun(mailContent: string, env: any, messa
         console.log("[sendRawMail]", "Failed to send mail:");
 		console.error("[sendRawMail]" ,"Error Code:", sendRes.status);
 		console.error("[sendRawMail]", "Error Message:", await sendRes.text());
-		message.setReject("Delivery failed");
+		if(message) message.setReject("Delivery failed");
 		return false;
 	}
 
