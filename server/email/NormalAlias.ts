@@ -1,7 +1,7 @@
 import { db, aliasCategoryColumns, destinationColumns, userColumns } from "../Database";
 import { sendRawMailViaCloudflare } from "../utils/MailSend";
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
-import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
+import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader, hasHeader } from "../utils/MailHeaders";
 import { cloudflareClient } from "../CloudflareClient";
 
 export async function NormalAlias(message: any, env: any, mailContent: string, data: any) {
@@ -144,6 +144,10 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	mailContent = setHeader(mailContent, "To", alias.destination.mailName + " <" + alias.destination.mailBox + "@" + alias.destination.mailDomain + ">");
 	mailContent = setHeader(mailContent, "Reply-To", from.name + " <" + reverseAlias.token + "-" + alias.token + "@" + alias.domain + ">");
 	mailContent = setHeader(mailContent, "Sender", from.raw);
+	if(hasHeader(mailContent, "Message-ID")) mailContent = setHeader(mailContent, "Message-ID", getHeader(mailContent, "Message-ID")?.replaceAll(alias.domain, alias.destination.mailDomain));
+	if(hasHeader(mailContent, "References")) mailContent = setHeader(mailContent, "References", getHeader(mailContent, "References")?.replaceAll(alias.domain, alias.destination.mailDomain));
+	if(hasHeader(mailContent, "In-Reply-To")) mailContent = setHeader(mailContent, "In-Reply-To", getHeader(mailContent, "In-Reply-To")?.replaceAll(alias.domain, alias.destination.mailDomain));
+
 	console.log("[NormalAlias] Modified headers!");
 
 	// Remove invalid headers

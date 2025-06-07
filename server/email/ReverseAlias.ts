@@ -1,6 +1,6 @@
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { db, aliasCategoryColumns, userColumns } from "../Database";
-import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader } from "../utils/MailHeaders";
+import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader, hasHeader } from "../utils/MailHeaders";
 import { sendRawMailViaMailgun } from "../utils/MailSend";
 
 export async function ReverseAlias(message: any, env: any, mailContent: string, data: any) {
@@ -110,6 +110,9 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
     mailContent = setHeader(mailContent, "From", (alias.ownNameOverwriteOnOutgoing||from.name) + " <" + alias.token + "@" + alias.domain + ">");
     mailContent = setHeader(mailContent, "To", (alias.remoteNameOverwriteOnOutgoing||to.name) + " <" + reverseAlias.destinationMail + ">");
     mailContent = setHeader(mailContent, "Reply-To", getHeader(mailContent, "From"));
+	if(hasHeader(mailContent, "Message-ID")) mailContent = setHeader(mailContent, "Message-ID", getHeader(mailContent, "Message-ID")?.replaceAll(from.domain, alias.domain));
+    if(hasHeader(mailContent, "References-ID")) mailContent = setHeader(mailContent, "References", getHeader(mailContent, "References")?.replaceAll(from.domain, alias.domain));
+    if(hasHeader(mailContent, "In-Reply-To")) mailContent = setHeader(mailContent, "In-Reply-To", getHeader(mailContent, "In-Reply-To")?.replaceAll(from.domain, alias.domain));
     console.log("[ReverseAlias] Modified headers!");
 
 	// Remove invalid headers
