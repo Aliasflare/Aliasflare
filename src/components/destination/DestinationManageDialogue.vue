@@ -64,7 +64,6 @@ async function handleCreateOrUpdate() {
         
         <InputSection title="Settings">
             <CheckboxInput text="Enabled" v-model="destination.enabled"></CheckboxInput>
-            <CheckboxInput text="Verified" v-model="destination.verified"></CheckboxInput>
         </InputSection>
     </SidebarDialogue>
 </template>
