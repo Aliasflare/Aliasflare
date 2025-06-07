@@ -2,6 +2,7 @@ import { db, aliasCategoryColumns, destinationColumns, userColumns } from "../Da
 import { sendRawMailViaCloudflare } from "../utils/MailSend";
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
+import { cloudflareClient } from "../CloudflareClient";
 
 export async function NormalAlias(message: any, env: any, mailContent: string, data: any) {
 	if(!db) throw new Error("Database error");
@@ -74,6 +75,20 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		console.warn("[NormalAlias]", `REJECT: Aliases Destination is disabled`);
 		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
 		return true;
+	}
+
+	if(!alias.destination.verified) {
+		const address = await cloudflareClient.emailRouting.addresses.get(alias.destination.mailBox + "@" + alias.destination.mailDomain, {
+			account_id: env["CLOUDFLARE_ACCOUNT_ID"]
+		});
+		if(!address.verified) {
+			console.warn("[NormalAlias]", `REJECT: Aliases Destination is not verified`);
+			message.setReject(`Mailbox "${to.mailbox}" is disabled`);
+			return true;
+		}
+		
+		//Verify address so we do not have to check in future
+		await db.updateTable("destination").where("id", "==", alias.destination.id).set({ verified: 1 }).execute();
 	}
 
 	if(alias.aliasCategory && !alias.aliasCategory.enabled) {

@@ -30,7 +30,6 @@ export async function up(db) {
     .addColumn("enabled", "boolean", col => col.notNull().defaultTo(true))
 
     //Verification
-    .addColumn("verifyToken", "text", col => col.defaultTo(null))
     .addColumn("verified", "boolean", col => col.notNull().defaultTo(false))
 
     //Timestamps

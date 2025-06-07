@@ -8,6 +8,7 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { ZodDomain, ZodMailBox, ZodMailName } from "../../validators/MailValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
 import { TransformDestination } from "./DestinationTransformer";
+import { cloudflareClient } from "../../CloudflareClient";
 
 const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin),
@@ -18,7 +19,6 @@ const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     mailBox: ZodMailBox.optional(),
     mailDomain: ZodDomain.optional(),
     enabled: ZodBoolean.optional(),
-    verified: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set verfied").optional(),
 }).readonly();
 
 export async function DestinationUpdate(request: ExtendedRequest, env: any) {
@@ -36,19 +36,34 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
         if(Object.keys(updateBody.data).length < 2) return InvalidBodyError("At least one field has to be updated!");
 
         const mailChanged = (updateBody.data.mailBox||updateBody.data.mailDomain);
+
+        //Delete old destination from cloudflare if the mail has been changed
+        if(mailChanged) {
+            await cloudflareClient.emailRouting.addresses.delete(
+                updateBody.data.destination.mailBox + "@" + updateBody.data.destination.mailDomain,
+                { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },
+            );
+        }
+
         const updated = await db
             .updateTable("destination")
             .where("id", "==", updateBody.data.destination.id)
             .set({
                 ...updateBody.data,
-                ...mailChanged ? { verified: updateBody.data.verified||env.disableDomainVerfication } : {},
+                ...mailChanged ? { verified: false } : {},
                 //@ts-expect-error
                 destination: undefined
             })
             .returningAll()
             .executeTakeFirstOrThrow();
 
-        //TODO: Send confirmation mail if not verfieid and mail changed
+        //Add as destination to cloudflare if the mail has been changed
+        if(mailChanged) {
+            await cloudflareClient.emailRouting.addresses.create({
+                account_id: env["CLOUDFLARE_ACCOUNT_ID"],
+                email: updateBody.data.mailBox + "@" + updateBody.data.mailDomain
+            });
+        }
 
         console.log("[DestinationUpdate]", `Updated Destination(${updated.id})`);
         return Response.json({ error: false, destination: TransformDestination(updated) });
