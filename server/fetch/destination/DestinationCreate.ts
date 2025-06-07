@@ -8,6 +8,7 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { ZodDomain, ZodMailBox, ZodMailName } from "../../validators/MailValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
 import { TransformDestination } from "./DestinationTransformer";
+import { cloudflareClient } from "../../CloudflareClient";
 
 const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
@@ -45,7 +46,11 @@ export async function DestinationCreate(request: ExtendedRequest, env: any) {
             .returningAll()
             .executeTakeFirstOrThrow()
 
-        //TODO: Send confirmation mail if not verified automatically
+        //Add as destination mail address to cloudflare
+        await cloudflareClient.emailRouting.addresses.create({
+            account_id: env["CLOUDFLARE_ACCOUNT_ID"],
+            email: createBody.data.mailBox + "@" + createBody.data.mailDomain
+        });
 
         console.log("[DestinationCreate]", `Created new Destination(${inserted.id})`);
         return Response.json({ error: false, destination: TransformDestination(inserted) });

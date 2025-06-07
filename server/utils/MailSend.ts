@@ -1,6 +1,35 @@
+import { EmailMessage } from "cloudflare:email";
 import { getHeader, parseAddressField } from "./MailHeaders";
 
-export async function sendRawMail(mailContent: string, env: any, message: any) {
+export async function sendRawMailViaCloudflare(mailContent: string, env: any, message: any) {
+	const from = parseAddressField(getHeader(mailContent, "From"))?.email;
+	if(!from) throw new Error("No from address at sendRawMail!");
+	const to = parseAddressField(getHeader(mailContent, "To"))?.email;
+	if(!to) throw new Error("No to address at sendRawMail!");
+    console.log("[sendRawMail]", `Sending mail with ${mailContent.length} charcters to '${to}'`);
+
+	// Put mail into cloudflare mail object
+	const outgoingMessage = new EmailMessage(
+		from,
+		to,
+		mailContent
+	);
+
+	//Send mail
+	try {
+		await env.email.send(outgoingMessage);
+	} catch(err) {
+		console.log("[sendRawMail]", "Failed to send mail:");
+		console.error("[sendRawMail]" ,"Error:", err);
+		message.setReject("Delivery failed");
+		return false;
+	}
+
+	console.log("[sendRawMail] Mail sent successfully!");
+	return true;
+}
+
+export async function sendRawMailViaMailgun(mailContent: string, env: any, message: any) {
 	const to = parseAddressField(getHeader(mailContent, "To"))?.email;
 	if(!to) throw new Error("No to address at sendRawMail!");
     console.log("[sendRawMail]", `Sending mail with ${mailContent.length} charcters to '${to}'`);
@@ -31,4 +60,5 @@ export async function sendRawMail(mailContent: string, env: any, message: any) {
 	}
 
 	console.log("[sendRawMail] Mail sent successfully!");
+	return true;
 }

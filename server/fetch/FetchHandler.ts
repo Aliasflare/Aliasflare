@@ -2,6 +2,7 @@ import { ExtendedRequest } from './ExtendedRequest'
 
 //Handlers
 import { initDBFetchHandler } from "../Database";
+import { initCloudflareClientFetchHandler } from '../CloudflareClient';
 import { AttachSession } from "./auth/AttachSession";
 import { AttachUser } from "./auth/AttachUser";
 import { AttachAdmin } from "./auth/AttachAdmin";
@@ -31,7 +32,7 @@ import { AliasCategoryDelete } from './aliasCategory/AliasCategoryDelete';
 import { GenericApi } from "./GenericApi";
 
 const fetchHandlers = [
-    ...[initDBFetchHandler, AttachSession, AttachUser, AttachAdmin],
+    ...[initDBFetchHandler, initCloudflareClientFetchHandler, AttachSession, AttachUser, AttachAdmin],
     ...[AuthLogin, AuthLogout],
     ...[UserCreate, UserDelete, UserGet, UserList, UserSelf, UserUpdate],
     ...[DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationUpdate],

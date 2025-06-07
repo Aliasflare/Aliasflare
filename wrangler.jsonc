@@ -26,6 +26,9 @@
 	"routes": [
 		{ "pattern": "tononym.de", "custom_domain": true },
 		{ "pattern": "www.tononym.de", "custom_domain": true }
+	],
+	"send_email": [
+		{ "name": "email" }
 	]
 	/**
 	 * Smart Placement

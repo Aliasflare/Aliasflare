@@ -1,11 +1,13 @@
 import { streamToString } from "../utils/Streams";
 import { getHeader, parseAddressField, unfoldHeaders } from "../utils/MailHeaders";
-import { NormalAlias } from "./NormalAlias";
 import { initDB } from "../Database";
+import { initCloudflareClient } from "../CloudflareClient";
 import { ReverseAlias } from "./ReverseAlias";
+import { NormalAlias } from "./NormalAlias";
 
 export async function EmailHandler(message: any, env: any, ctx: any) {
 	await initDB(env.D1);
+	await initCloudflareClient(env);
 
 	const data:any = new Object();
 	// Recieve entire mail

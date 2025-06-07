@@ -1,5 +1,5 @@
 import { db, aliasCategoryColumns, destinationColumns, userColumns } from "../Database";
-import { sendRawMail } from "../utils/MailSend";
+import { sendRawMailViaCloudflare } from "../utils/MailSend";
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader } from "../utils/MailHeaders";
 
@@ -136,7 +136,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	console.log("[NormalAlias] Removed all untrusted headers!");
 
 	// Send mail
-	await sendRawMail(mailContent, env, message);
+	await sendRawMailViaCloudflare(mailContent, env, message);
 	console.log(`[NormalAlias] Redirected to Destination(${alias.destination.id})!`);
 
 	// Update quota for reverse alias

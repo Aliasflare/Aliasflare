@@ -24,6 +24,7 @@ export async function up(db) {
     .addColumn("mailName", "text", col => col.defaultTo(null))
     .addColumn("mailBox", "text", col => col.notNull())
     .addColumn("mailDomain", "text", col => col.notNull())
+    .addUniqueConstraint("destination_only_once", ["mailBox", "mailDomain"])
 
     //State
     .addColumn("enabled", "boolean", col => col.notNull().defaultTo(true))

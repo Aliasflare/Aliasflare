@@ -1,7 +1,7 @@
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { db, aliasCategoryColumns, userColumns } from "../Database";
 import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader } from "../utils/MailHeaders";
-import { sendRawMail } from "../utils/MailSend";
+import { sendRawMailViaMailgun } from "../utils/MailSend";
 
 export async function ReverseAlias(message: any, env: any, mailContent: string, data: any) {
 	if(!db) throw new Error("Database error");
@@ -117,7 +117,7 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
 	console.log("[ReverseAlias] Removed all untrusted headers!");
 
 	// Send mail
-	await sendRawMail(mailContent, env, message);
+	await sendRawMailViaMailgun(mailContent, env, message);
 	console.log(`[ReverseAlias] Redirected to ReverseAlias(${reverseAlias.id})!`);
 
 	// Update quota for reverse alias
