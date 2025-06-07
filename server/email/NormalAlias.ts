@@ -90,7 +90,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		
 		//Verify address so we do not have to check in future
 		await db.updateTable("destination").where("id", "==", alias.destination.id).set({ verified: 1 }).execute();
-		await sendRawMailViaCloudflare(BuildDestinationVerifiedMail(alias.destination, alias.domain), env)
+		await sendRawMailViaCloudflare(BuildDestinationVerifiedMail(alias.destination, env.domains.split(",")[0]), env)
 	}
 
 	if(alias.aliasCategory && !alias.aliasCategory.enabled) {
