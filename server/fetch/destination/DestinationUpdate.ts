@@ -2,7 +2,7 @@ import { z } from "zod";
 import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
-import { ZodBoolean } from "../../validators/BasicValidators";
+import { ZodBoolean, ZodEmptyString } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodDomain, ZodMailBox, ZodMailName } from "../../validators/MailValidators";
@@ -17,7 +17,7 @@ const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
-    mailName: ZodMailName.optional(),
+    mailName: z.union([ZodMailName, ZodEmptyString]),
     mailBox: ZodMailBox.optional(),
     mailDomain: ZodDomain.optional(),
     enabled: ZodBoolean.optional(),

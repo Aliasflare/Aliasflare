@@ -6,6 +6,11 @@ export const ZodNumber = z
 export const ZodString = z
   .string();
 
+export const ZodEmptyString = ZodString
+  .max(0)
+  .min(0)
+  .transform(a => null)
+
 export const ZodBoolean = z
   .boolean()
   .transform(a => a ? 1 : 0);
