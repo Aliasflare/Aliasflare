@@ -1,5 +1,4 @@
 export const diff = (a: any, b: any) => {
-    console.log(a, b);
     const d:Record<string, any> = {};
     for(const key of [...Object.keys(a), ...Object.keys(b)]) {
         if(JSON.stringify(a[key]) != JSON.stringify(b[key]))

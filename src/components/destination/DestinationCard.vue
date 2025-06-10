@@ -15,6 +15,7 @@ const showDeleteDialogue = ref<boolean>(false);
 </script>
 
 <template>
+    <!--
     <div class="DestinationCard p-4 m-2 bg-base-300 text-base-300-content w-fit rounded-xl" :style="`border-top: 4px solid ${destinationStore.getKeyedObject(destinationId)?.displayColor||'black'};`">
         <div class="Header flex flex-row items-center">
             <IconPicked :icon="destinationStore.getKeyedObject(destinationId)?.displayIcon" class="mr-1"></IconPicked>
@@ -35,5 +36,23 @@ const showDeleteDialogue = ref<boolean>(false);
         </div>
         <DestinationManageDialogue v-if="showEditModal" v-model:show="showEditModal" :updateDestinationId="destinationId"></DestinationManageDialogue>
         <DestinationDeleteDialogue v-if="showDeleteDialogue" v-model:show="showDeleteDialogue" :destinationId="destinationId"></DestinationDeleteDialogue>
-    </div>
+    </div>-->
+    <v-card
+        class="mx-auto"
+        prepend-icon="$vuetify"
+        width="400"
+    >
+        <v-card-title>
+            <span class="font-weight-black">{{ destinationStore.getKeyedObject(destinationId)?.displayName || 'Unnamed' }}</span>
+        </v-card-title>
+
+        <v-card-subtitle>
+            <span class="text-primary">{{ destinationStore.getKeyedObject(destinationId)?.mailBox + '@' + destinationStore.getKeyedObject(destinationId)?.mailDomain }}</span>
+        </v-card-subtitle>
+
+        <v-card-text>
+            <div class="text-success" v-if="destinationStore.getKeyedObject(destinationId).verified"><v-icon icon="mdi-check"></v-icon> Verified</div>
+            <div class="text-warning" v-else><v-icon icon="mdi-alert" ></v-icon> Verification is pending</div>
+        </v-card-text>
+    </v-card>
 </template>

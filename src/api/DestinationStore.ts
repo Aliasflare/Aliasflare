@@ -29,7 +29,6 @@ class DestinationStore extends KeyedStore {
     }
 
     async update(destinationId: string, newData: any) {
-        console.log(destinationId, newData);
         const res = await fetch("/api/destination/update", {
             method: "POST",
             body: JSON.stringify({
@@ -50,6 +49,17 @@ class DestinationStore extends KeyedStore {
         });
         if(res.status != 200) throw new Error(await res.text());
         this.removeKeyedObject(destinationId);
+    }
+
+    async checkVerification(destinationId: string) {
+        const res = await fetch("/api/destination/checkVerification", {
+            method: "POST",
+            body: JSON.stringify({
+                destination: destinationId,
+            }),
+        });
+        if(res.status != 200) throw new Error(await res.text());
+        return this.setKeyedObject((await res.json()).destination);
     }
 
     // ===== STATIC METHODS =====

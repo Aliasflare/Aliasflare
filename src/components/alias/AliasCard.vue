@@ -15,7 +15,7 @@ const showDeleteDialogue = ref<boolean>(false);
 </script>
 
 <template>
-    <div class="AliasCard p-4 m-2 bg-base-300 text-base-300-content w-fit rounded-xl" :style="`border-top: 4px solid ${aliasStore.getKeyedObject(aliasId)?.displayColor||'black'};`">
+    <div class="AliasCard p-4 m-2 bg-base-100 text-base-content w-fit rounded-xl" :style="`border-top: 4px solid ${aliasStore.getKeyedObject(aliasId)?.displayColor||'black'};`">
         <div class="Header flex flex-row items-center">
             <IconPicked :icon="aliasStore.getKeyedObject(aliasId)?.displayIcon" class="mr-1"></IconPicked>
             <div class="font-semibold">{{ aliasStore.getKeyedObject(aliasId)?.displayName || 'Unnamed' }}</div>

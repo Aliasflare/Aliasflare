@@ -37,17 +37,10 @@ async function performLogout() {
             <Logo class="w-48 mb-4"></Logo>
             <div class="text-2xl text-center mb-4">Logout</div>
 
-            <div role="alert" class="alert alert-error mb-4" v-if="error">
-                <MaterialSymbolsError></MaterialSymbolsError>
-                <span>{{ error }}</span>
-            </div>
+            <Message v-if="error" severity="error" icon="pi pi-times-circle" class="mb-4">{{ error }}</Message>
+            <Message v-if="success" severity="success" icon="pi pi-check" class="mb-4">Logged out!</Message>
 
-            <div role="alert" class="alert alert-success mb-4" v-if="success">
-                <MaterialSymbolsCheck></MaterialSymbolsCheck>
-                <span>Logged out!</span>
-            </div>
-
-            <button class="btn btn-primary" @click="router.push({ path: '/auth/login', query: { originalPath: '/user/home' } })" :disabled="loading">Login</button>
+            <Button label="Login again" class="w-full" :loading="loading" @click="router.push({ path: '/auth/login', query: { originalPath: '/user/home' } })" raised />
         </div>
     </AuthBox>
 </template>

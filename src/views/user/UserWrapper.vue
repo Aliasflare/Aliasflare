@@ -1,109 +1,43 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { AppState } from '@/AppState';
-import Logo from '@/components/Logo.vue';
 import router from '@/Router';
-import MaterialSymbolsFormatListBulleted from '~icons/material-symbols/format-list-bulleted';
-import MaterialSymbolsAccountCircle from '~icons/material-symbols/account-circle';
-import MaterialSymbolsHome from '~icons/material-symbols/home';
-import MaterialSymbolsMarkunreadMailbox from '~icons/material-symbols/markunread-mailbox';
-import MaterialSymbolsCategory from '~icons/material-symbols/category';
-import MaterialSymbolsPassword from '~icons/material-symbols/password';
-import MaterialSymbolsSettings from '~icons/material-symbols/settings';
+import Logo from '@/components/Logo.vue';
+
+const tabItems = ref([
+    { route: '/user/home', label: 'Home', icon: 'pi pi-home' },
+    { route: '/user/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
+    { route: '/user/aliases', label: 'Aliases', icon: 'pi pi-chart-line' },
+]);
+
 </script>
 
 <template>
-    <div class="UserWrapper h-full w-full flex flex-col">
-        <div class="UserNavbar navbar bg-base-300 shadow-sm">
-            <div class="navbar-start">
-                <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-                    <MaterialSymbolsFormatListBulleted></MaterialSymbolsFormatListBulleted>
-                </div>
-                <ul
-                    tabindex="0"
-                    class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                    <li @click="$router.push({ path: '/user/home' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsHome></MaterialSymbolsHome> 
-                            <a>Home</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/destinations' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsMarkunreadMailbox></MaterialSymbolsMarkunreadMailbox> 
-                            <a>Destinations</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/aliasCategories' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsCategory></MaterialSymbolsCategory> 
-                            <a>Categories</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/aliases' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsPassword></MaterialSymbolsPassword> 
-                            <a>Aliases</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/settings' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsSettings></MaterialSymbolsSettings> 
-                            <a>Settings</a>
-                        </div>
-                    </li>
-                </ul>
-                </div>
+    <div class="UserWrapper h-full w-full flex flex-col bg-base-300">
+        <Menubar>
+            <template #start>
                 <Logo class="w-32"></Logo>
-            </div>
-            <div class="navbar-center hidden lg:flex">
-                <ul class="menu menu-horizontal px-1">
-                    <li @click="$router.push({ path: '/user/home' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsHome></MaterialSymbolsHome> 
-                            <a>Home</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/destinations' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsMarkunreadMailbox></MaterialSymbolsMarkunreadMailbox> 
-                            <a>Destinations</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/aliasCategories' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsCategory></MaterialSymbolsCategory> 
-                            <a>Categories</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/aliases' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsPassword></MaterialSymbolsPassword> 
-                            <a>Aliases</a>
-                        </div>
-                    </li>
-                    <li @click="$router.push({ path: '/user/settings' })">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsSettings></MaterialSymbolsSettings> 
-                            <a>Settings</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="navbar-end">
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost">
-                        <div class="flex flex-row items-center">
-                            <MaterialSymbolsAccountCircle class="text-2xl"></MaterialSymbolsAccountCircle>
-                            <div class="ml-2">{{ AppState.currentUser.username }}</div>
-                        </div>
-                    </div>
-                    <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                        <li @click="router.push({ path: '/auth/logout' })"><a>Logout</a></li>
-                    </ul>
+            </template>
+            <template #end>
+                <div class="flex flex-row justify-center gap-2">
+                    <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
+                        <div>{{ AppState.currentUser.username }}</div>
+                        <Avatar icon="pi pi-user" shape="circle" />
+                    </Button>
+                    <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" />
                 </div>
-            </div>
-        </div>
+            </template>
+        </Menubar>
+        <Tabs :value="router.currentRoute.value.fullPath">
+            <TabList>
+                <Tab v-for="tab in tabItems" :key="tab.label" :value="tab.route" @click="router.push(tab.route)" >
+                    <a class="flex items-center gap-2 text-inherit">
+                        <i :class="tab.icon" />
+                        <span>{{ tab.label }}</span>
+                    </a>
+                </Tab>
+            </TabList>
+        </Tabs>
         <div class="UserContent flex flex-grow relative">
             <div class="UserContentNoFlexOverflow absolute w-full h-full overflow-auto p-4">
                 <slot></slot>

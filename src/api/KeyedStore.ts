@@ -13,8 +13,10 @@ export class KeyedStore {
 
     setKeyedObject(obj: any) {
         if(!obj.id) throw new Error("Cannot set object without id!");
-        if(!this.data.find(a => a.id == obj.id)) return this.data[this.data.push(new Object(obj))];
-        else return Object.assign(this.data.find(a => a.id), obj);
+        const existent = this.data.find(a => a.id == obj.id);
+        if(!existent) this.data[this.data.push(new Object(obj))];
+        else Object.assign(existent, obj);
+        return this.data.find(a => a.id == obj.id);
     }
 
     getKeyedObject(id: any) {

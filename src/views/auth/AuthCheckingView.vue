@@ -33,10 +33,10 @@ async function checkLogin() {
 <template>
     <AuthBox class="AuthCheckingView">
         <div class="flex flex-col justify-center items-center">
-            <Logo class="w-48 mb-4"></Logo>
+            <Logo class="w-48 mb-4" />
             <div class="text-2xl text-center mb-4">Checking Auth...</div>
             <div class="text-center mb-4">One second, we are validating you are really logged in and ready to go...</div>
-            <span class="loading loading-dots loading-md"></span>
+            <Button variant="outlined" label="Checking" :loading="true" />
         </div>
     </AuthBox>
 </template>

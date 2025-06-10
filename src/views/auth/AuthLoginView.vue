@@ -46,31 +46,30 @@ async function performLogin() {
             <Logo class="w-48 mb-4"></Logo>
             <div class="text-2xl text-center mb-4">Login</div>
 
-            <div role="alert" class="alert alert-error mb-4" v-if="error">
-                <MaterialSymbolsError></MaterialSymbolsError>
-                <span>{{ error }}</span>
-            </div>
+            <Message v-if="error" severity="error" icon="pi pi-times-circle" class="mb-4">{{ error }}</Message>
+            <Message v-if="success" severity="success" icon="pi pi-check" class="mb-4">Logged in! Redirecting...</Message>
 
-            <div role="alert" class="alert alert-success mb-4" v-if="success">
-                <MaterialSymbolsCheck></MaterialSymbolsCheck>
-                <span>Logged in! Redirecting...</span>
-            </div>
+            <InputGroup class="mb-2">
+                <InputGroupAddon>
+                    <i class="pi pi-user" />
+                </InputGroupAddon>
+                <IftaLabel>
+                    <InputText id="username" v-model="username" type="username" variant="filled" />
+                    <label for="username">Username</label>
+                </IftaLabel>
+            </InputGroup>
 
-            <label class="input mb-2">
-                <MaterialSymbolsPerson></MaterialSymbolsPerson>
-                <input type="text" placeholder="Max Mustermann" v-model="username" :disabled="loading||success" />
-            </label>
+            <InputGroup class="mb-4">
+                <InputGroupAddon>
+                    <i class="pi pi-key"></i>
+                </InputGroupAddon>
+                <IftaLabel>
+                    <InputText id="password" v-model="password" type="password" variant="filled" />
+                    <label for="password">Password</label>
+                </IftaLabel>
+            </InputGroup>
 
-            <label class="input mb-8">
-                <MaterialSymbolsPassword></MaterialSymbolsPassword>
-                <input type="password" placeholder="***********" v-model="password" :disabled="loading||success" />
-            </label>
-
-            <button class="btn btn-primary" @click="performLogin" :disabled="loading||success">
-                <span class="loading loading-dots loading-md" v-if="loading"></span>
-                <MaterialSymbolsCheck v-else-if="success"></MaterialSymbolsCheck>
-                <a v-else>Login</a>
-            </button>
+            <Button label="Login" class="w-full" :loading="loading" @click="performLogin()" raised />
         </div>
     </AuthBox>
 </template>

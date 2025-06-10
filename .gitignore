@@ -41,3 +41,4 @@ coverage
 
 #Generated-SQL-Migrations
 .generated
+9999_CreateAdminUser.js
