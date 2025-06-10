@@ -15,7 +15,7 @@ const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
-    mailName: z.union([ZodMailName, ZodEmptyString]),
+    mailName: z.union([ZodMailName, ZodEmptyString]).optional(),
     mailBox: ZodMailBox,
     mailDomain: ZodDomain,
     enabled: ZodBoolean.optional(),

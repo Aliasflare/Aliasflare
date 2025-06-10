@@ -17,7 +17,7 @@ const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
-    mailName: z.union([ZodMailName, ZodEmptyString]),
+    mailName: z.union([ZodMailName, ZodEmptyString]).optional(),
     mailBox: ZodMailBox.optional(),
     mailDomain: ZodDomain.optional(),
     enabled: ZodBoolean.optional(),
@@ -44,14 +44,14 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
             //Delete old destination from cloudflare if the mail has been changed
             await sendRawMailViaCloudflare(BuildDestinationRemovedMail(updateBody.data.destination, env.domains.split(",")[0]), env);
             await cloudflareClient.emailRouting.addresses.delete(
-                updateBody.data.destination.mailBox + "@" + updateBody.data.destination.mailDomain,
+                updateBody.data.destination.cloudflareDestinationID,
                 { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },
             );
 
             //Add as destination to cloudflare if the mail has been changed
             newAddr = await cloudflareClient.emailRouting.addresses.create({
                 account_id: env["CLOUDFLARE_ACCOUNT_ID"],
-                email: updateBody.data.mailBox + "@" + updateBody.data.mailDomain
+                email: (updateBody.data.mailBox||updateBody.data.destination.mailBox) + "@" + (updateBody.data.mailDomain||updateBody.data.destination.mailDomain)
             });
         }
 

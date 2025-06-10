@@ -27,7 +27,8 @@ export async function DestinationCheckVerification(request: ExtendedRequest, env
             const address = await cloudflareClient.emailRouting.addresses.get(checkVerficationBody.data.destination.cloudflareDestinationID, {
                 account_id: env["CLOUDFLARE_ACCOUNT_ID"]
             });
-            if(address.verified) checkVerficationBody.data.destination = await db.updateTable("destination").where("id", "==", checkVerficationBody.data.destination.id).set({ verified: 1 }).limit(1).returningAll().executeTakeFirstOrThrow();
+            if(address.verified)
+                checkVerficationBody.data.destination = await db.updateTable("destination").where("id", "==", checkVerficationBody.data.destination.id).set({ verified: 1 }).returningAll().executeTakeFirstOrThrow();
         }
         
         console.log("[DestinationCheckVerification]", `Check Destination(${checkVerficationBody.data.destination.id})`);
