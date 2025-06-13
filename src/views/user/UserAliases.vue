@@ -2,7 +2,6 @@
 import { AppState } from '@/AppState';
 import { aliasStore } from '@/api/AliasStore';
 import AliasTable from '@/componentsV2/AliasTable.vue';
-import UserWrapper from './UserWrapper.vue';
 import { destinationStore } from '@/api/DestinationStore';
 
 async function load() {
@@ -16,7 +15,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <UserWrapper>
-        <AliasTable :load="load" :value="aliasStore.getKeyedObjects()" ></AliasTable>
-    </UserWrapper>
+    <AliasTable :load="load" :value="aliasStore.getKeyedObjects()" ></AliasTable>
 </template>

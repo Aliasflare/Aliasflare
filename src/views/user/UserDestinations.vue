@@ -2,7 +2,6 @@
 import { AppState } from '@/AppState';
 import { destinationStore } from '@/api/DestinationStore';
 import DestinationTable from '@/componentsV2/DestinationTable.vue';
-import UserWrapper from './UserWrapper.vue';
 
 async function load() {
     try {
@@ -14,7 +13,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <UserWrapper>
-        <DestinationTable :load="load" :value="destinationStore.getKeyedObjects()" ></DestinationTable>
-    </UserWrapper>
+    <DestinationTable :load="load" :value="destinationStore.getKeyedObjects()" ></DestinationTable>
 </template>

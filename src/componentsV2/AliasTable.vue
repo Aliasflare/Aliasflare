@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
+import router from '@/Router';
 import { aliasStore } from '@/api/AliasStore';
+import { destinationStore } from '@/api/DestinationStore';
 import AliasDeleteDialog from './AliasDeleteDialog.vue';
 import AliasModifyDialog from '@/componentsV2/AliasModifyDialog.vue';
-import { destinationStore } from '@/api/DestinationStore';
 
 const props = defineProps<{
     load: () => Promise<void>,
@@ -35,7 +36,9 @@ const loading = ref(false);
         <template #loading> Loading... </template>
         <Column header="Color" style="width: 16px;">
             <template #body="slotProps">
-                <ColorPicker :modelValue="slotProps.data.displayColor||'#000000'" class="pointer-events-none"></ColorPicker>
+                <div :id="slotProps.data.id">
+                    <ColorPicker :modelValue="slotProps.data.displayColor||'#000000'" class="pointer-events-none"></ColorPicker>
+                </div>
             </template>
         </Column>
         <Column header="Icon" style="width: 16px;">
@@ -56,7 +59,7 @@ const loading = ref(false);
         </Column>
         <Column header="Destination">
             <template #body="slotProps">
-                <div class="flex items-center">
+                <div class="flex items-center hover:cursor-alias hover:underline" @click="router.push('/user/destinations#' + slotProps.data.destinationID)">
                     <ColorPicker :modelValue="destinationStore.getKeyedObject(slotProps.data.destinationID)?.displayColor" v-if="destinationStore.getKeyedObject(slotProps.data.destinationID)" class="pointer-events-none mr-2"></ColorPicker>
                     <i :class="`pi pi-${destinationStore.getKeyedObject(slotProps.data.destinationID)?.displayIcon||'question'} mr-2`"></i>
                     <div>{{ destinationStore.getKeyedObject(slotProps.data.destinationID)?.displayName || "(Unassigned)" }}</div>

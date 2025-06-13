@@ -16,7 +16,7 @@ const tabItems = ref([
     <div class="UserWrapper h-full w-full flex flex-col bg-base-300">
         <Menubar>
             <template #start>
-                <Logo class="w-32"></Logo>
+                <Logo class="w-32" />
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
@@ -40,7 +40,7 @@ const tabItems = ref([
         </Tabs>
         <div class="UserContent flex flex-grow relative">
             <div class="UserContentNoFlexOverflow absolute w-full h-full overflow-auto p-4">
-                <slot></slot>
+                <router-view />
             </div>
         </div>
     </div>

@@ -34,7 +34,9 @@ const loading = ref(false);
         <template #loading> Loading... </template>
         <Column header="Color" style="width: 16px;">
             <template #body="slotProps">
-                <ColorPicker :modelValue="slotProps.data.displayColor||'000000'" class="pointer-events-none"></ColorPicker>
+                <div :id="slotProps.data.id">
+                    <ColorPicker :modelValue="slotProps.data.displayColor||'000000'" class="pointer-events-none"></ColorPicker>
+                </div>
             </template>
         </Column>
         <Column header="Icon" style="width: 16px;">
