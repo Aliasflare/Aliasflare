@@ -5,6 +5,7 @@ import { aliasStore } from '@/api/AliasStore';
 import { destinationStore } from '@/api/DestinationStore';
 import AliasDeleteDialog from './AliasDeleteDialog.vue';
 import AliasModifyDialog from '@/componentsV2/AliasModifyDialog.vue';
+import Display from './Display.vue';
 
 const props = defineProps<{
     load: () => Promise<void>,
@@ -34,22 +35,9 @@ const loading = ref(false);
         </template>
         <template #empty> No aliases found </template>
         <template #loading> Loading... </template>
-        <Column header="Color" style="width: 16px;">
+        <Column header="Display" style="width: 16px;">
             <template #body="slotProps">
-                <div :id="slotProps.data.id">
-                    <ColorPicker :modelValue="slotProps.data.displayColor||'#000000'" class="pointer-events-none"></ColorPicker>
-                </div>
-            </template>
-        </Column>
-        <Column header="Icon" style="width: 16px;">
-            <template #body="slotProps">
-                <i v-if="slotProps.data.displayIcon" :class="`pi pi-${slotProps.data.displayIcon}`"></i>
-                <a v-else>/</a>
-            </template>
-        </Column>
-        <Column header="Name">
-            <template #body="slotProps">
-                {{ slotProps.data.displayName||"(Unnamed)" }}
+                <Display :object="slotProps.data" />
             </template>
         </Column>
         <Column header="Address">
@@ -59,11 +47,7 @@ const loading = ref(false);
         </Column>
         <Column header="Destination">
             <template #body="slotProps">
-                <div class="flex items-center hover:cursor-alias hover:underline" @click="router.push('/user/destinations#' + slotProps.data.destinationID)">
-                    <ColorPicker :modelValue="destinationStore.getKeyedObject(slotProps.data.destinationID)?.displayColor" v-if="destinationStore.getKeyedObject(slotProps.data.destinationID)" class="pointer-events-none mr-2"></ColorPicker>
-                    <i :class="`pi pi-${destinationStore.getKeyedObject(slotProps.data.destinationID)?.displayIcon||'question'} mr-2`"></i>
-                    <div>{{ destinationStore.getKeyedObject(slotProps.data.destinationID)?.displayName || "(Unassigned)" }}</div>
-                </div>
+                <Display class="hover:cursor-alias hover:underline" :object="destinationStore.getKeyedObject(slotProps.data.destinationID)" @click="router.push('/user/destinations#' + slotProps.data.destinationID)"></Display>
             </template>
         </Column>
         <Column header="Enabled">

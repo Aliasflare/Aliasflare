@@ -3,6 +3,7 @@ import { onMounted, ref, useTemplateRef } from 'vue';
 import { destinationStore } from '@/api/DestinationStore';
 import DestinationDeleteDialog from '@/componentsV2/DestinationDeleteDialog.vue';
 import DestinationModifyDialog from '@/componentsV2/DestinationModifyDialog.vue';
+import Display from './Display.vue';
 
 const props = defineProps<{
     load: () => Promise<void>,
@@ -32,22 +33,9 @@ const loading = ref(false);
         </template>
         <template #empty> No destinations found </template>
         <template #loading> Loading... </template>
-        <Column header="Color" style="width: 16px;">
+        <Column header="Display" style="width: 16px;">
             <template #body="slotProps">
-                <div :id="slotProps.data.id">
-                    <ColorPicker :modelValue="slotProps.data.displayColor||'000000'" class="pointer-events-none"></ColorPicker>
-                </div>
-            </template>
-        </Column>
-        <Column header="Icon" style="width: 16px;">
-            <template #body="slotProps">
-                <i v-if="slotProps.data.displayIcon" :class="`pi pi-${slotProps.data.displayIcon}`"></i>
-                <a v-else>/</a>
-            </template>
-        </Column>
-        <Column header="Name">
-            <template #body="slotProps">
-                {{ slotProps.data.displayName||"(Unnamed)" }}
+                <Display :object="slotProps.data" />
             </template>
         </Column>
         <Column header="Address">
