@@ -32,7 +32,7 @@ export async function CategoryList(request: ExtendedRequest, env: Env) {
             .offset(listBody.data.page)
             .execute();
 
-        console.log("[CategoryList]", `Listed ${list.length} AliasCategories`);
-        return Response.json({ error: false, aliasCategories: list.map(a => TransformCategory(a)) });
+        console.log("[CategoryList]", `Listed ${list.length} Categories`);
+        return Response.json({ error: false, categories: list.map(a => TransformCategory(a)) });
     }
 }
