@@ -2,7 +2,7 @@ import { z } from "zod";
 import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors";
-import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
+import { ZodBoolean, ZodEmptyString, ZodString } from "../../validators/BasicValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodMailValidDomain } from "../../validators/MailValidators";
@@ -10,8 +10,8 @@ import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validator
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
-    aliasCategoryID: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
-    destinationID: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
+    aliasCategoryID: z.union([ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     domain: ZodMailValidDomain(env),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
@@ -40,8 +40,8 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
             .values({
                 ...createBody.data,
                 userID: request.user.id,
-                aliasCategoryID: createBody.data.aliasCategoryID?.id,
-                destinationID: createBody.data.destinationID?.id,
+                ...createBody.data.aliasCategoryID !== undefined ? { aliasCategoryID: createBody.data.aliasCategoryID?.id||null } : {},
+                ...createBody.data.destinationID !== undefined ? { destinationID: createBody.data.destinationID?.id||null } : {},
                 //@ts-expect-error
                 aliasCategory: undefined,
                 destination: undefined

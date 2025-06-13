@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { AppState } from '@/AppState';
-import { destinationStore } from '@/api/DestinationStore';
 import { ref } from 'vue';
+import { AppState } from '@/AppState';
+import { aliasStore } from '@/api/aliasStore';
 import SelectIcon from './SelectIcon.vue';
+import SelectDestination from './SelectDestination.vue';
+import SelectDomain from './SelectDomain.vue';
 
 const show = ref(false);
 const target = ref<undefined|string>(undefined);
@@ -28,16 +30,16 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await destinationStore.update(target.value, fields.value);
+        await aliasStore.update(target.value, fields.value);
     else 
-        await destinationStore.create(AppState.currentUser.id, fields.value);
+        await aliasStore.create(AppState.currentUser.id, fields.value);
     show.value = false;
 }
 </script>
 
 <template>
     <!-- MODIFY DIAGLOUE -->
-        <Dialog v-model:visible="show" modal :header="target ? 'Update Destination' : 'Create Destination'" class="w-96">
+        <Dialog v-model:visible="show" modal :header="target ? 'Update Alias' : 'Create Alias'" class="w-96">
             <div class="flex flex-col gap-2 mb-8">
                 <label>Display</label>
                 <InputGroup>
@@ -47,19 +49,28 @@ async function createOrUpdate() {
                     </InputGroupAddon>
                     <InputText v-model="fields.displayName" placeholder="Primary" />
                 </InputGroup>
-                <Message size="small" severity="secondary" variant="simple">Controls how this destination will shop up in the webinterface</Message>
+                <Message size="small" severity="secondary" variant="simple">Controls how this alias will shop up in the webinterface</Message>
             </div>
 
             <div class="flex flex-col gap-2 mb-8">
-                <label>Mail Address</label>
+                <label>Alias</label>
                 <InputGroup>
-                    <InputText v-model="fields.mailBox" placeholder="mustermann" />
+                    <InputText v-model="fields.token" placeholder="*Random*" :disabled="target != undefined" />
                     <InputGroupAddon>
                         <i class="pi pi-at"></i>
                     </InputGroupAddon>
-                    <InputText v-model="fields.mailDomain" placeholder="mail.com" />
+                    <SelectDomain v-model="fields.domain" :disabled="target != undefined" />
                 </InputGroup>
-                <Message size="small" severity="secondary" variant="simple">Controls where mails should go when taking this destination</Message>
+                <Message size="small" severity="secondary" variant="simple">Controls on which domain and with which token you alias should be created</Message>
+            </div>
+
+
+            <div class="flex flex-col gap-2 mb-8">
+                <label>Destination</label>
+                <InputGroup>
+                    <SelectDestination v-model="fields.destinationID"></SelectDestination>
+                </InputGroup>
+                <Message size="small" severity="secondary" variant="simple">Controls where mails to this alias are delivered to</Message>
             </div>
 
             <div class="flex justify-end gap-2">

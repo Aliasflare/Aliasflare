@@ -2,7 +2,7 @@ import { z } from "zod";
 import { db } from "../../Database";
 import { ExtendedRequest } from "../ExtendedRequest";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
-import { ZodBoolean, ZodString } from "../../validators/BasicValidators";
+import { ZodBoolean, ZodEmptyString, ZodString } from "../../validators/BasicValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
@@ -10,8 +10,8 @@ import { TransformAlias } from "./AliasTransformer";
 
 const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin),
-    aliasCategoryID: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin).optional(),
-    destinationID: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin).optional(),
+    aliasCategoryID: z.union([ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
     displayName: ZodDisplayName,
@@ -39,8 +39,8 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
             .where("id", "==", updateBody.data.alias.id)
             .set({
                 ...updateBody.data,
-                aliasCategoryID: updateBody.data.aliasCategoryID?.id,
-                destinationID: updateBody.data.destinationID?.id,
+                ...updateBody.data.aliasCategoryID !== undefined ? { aliasCategoryID: updateBody.data.aliasCategoryID?.id||null } : {},
+                ...updateBody.data.destinationID !== undefined ? { destinationID: updateBody.data.destinationID?.id||null } : {},
                 //@ts-expect-error
                 alias: undefined,
                 aliasCategory: undefined,
