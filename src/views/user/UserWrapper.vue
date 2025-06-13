@@ -6,6 +6,7 @@ import Logo from '@/components/Logo.vue';
 
 const tabItems = ref([
     { route: '/user/home', label: 'Home', icon: 'pi pi-home' },
+    { route: '/user/categories', label: 'Categories', icon: 'pi pi-tags' },
     { route: '/user/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
     { route: '/user/aliases', label: 'Aliases', icon: 'pi pi-eye-slash' },
 ]);

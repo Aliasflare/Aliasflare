@@ -5,6 +5,7 @@ import { aliasStore } from '@/api/AliasStore';
 import SelectIcon from './SelectIcon.vue';
 import SelectDestination from './SelectDestination.vue';
 import SelectDomain from './SelectDomain.vue';
+import SelectCategory from './SelectCategory.vue';
 
 const show = ref(false);
 const target = ref<undefined|string>(undefined);
@@ -48,6 +49,10 @@ async function createOrUpdate() {
                         <ColorPicker defaultColor="000000" v-model="fields.displayColor"></ColorPicker>
                     </InputGroupAddon>
                     <InputText v-model="fields.displayName" placeholder="Primary" />
+                </InputGroup>
+                <label>Category</label>
+                <InputGroup>
+                    <SelectCategory v-model="fields.categoryID" />
                 </InputGroup>
                 <Message size="small" severity="secondary" variant="simple">Controls how this alias will shop up in the webinterface</Message>
             </div>

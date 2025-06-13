@@ -4,6 +4,7 @@ import { destinationStore } from '@/api/DestinationStore';
 import DestinationDeleteDialog from '@/componentsV2/DestinationDeleteDialog.vue';
 import DestinationModifyDialog from '@/componentsV2/DestinationModifyDialog.vue';
 import Display from './Display.vue';
+import { categoryStore } from '@/api/CategoryStore';
 
 const props = defineProps<{
     load: () => Promise<void>,
@@ -11,6 +12,7 @@ const props = defineProps<{
     class?: any
 }>();
 
+const expandedRowGroups = ref([]);
 const expandedRows = ref([]);
 const deleteDialog = useTemplateRef('deleteDialog');
 const modifyDialog = useTemplateRef('modifyDialog');
@@ -22,7 +24,7 @@ const loading = ref(false);
 <template>
     <DestinationDeleteDialog ref="deleteDialog" />
     <DestinationModifyDialog ref="modifyDialog" />
-    <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" dataKey="id" tableStyle="min-width: 50rem" :loading="loading">
+    <DataTable v-model:expandedRows="expandedRows" v-model:expandedRowGroups="expandedRowGroups" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading" expandableRowGroups rowGroupMode="subheader" groupRowsBy="categoryID">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="text-xl font-bold">Your Destinations</span>
@@ -33,6 +35,12 @@ const loading = ref(false);
         </template>
         <template #empty> No destinations found </template>
         <template #loading> Loading... </template>
+        <template #groupheader="slotProps">
+            <div class="inline-block ml-2">
+                <Display :object="categoryStore.getKeyedObject(slotProps.data.categoryID)" />
+            </div>
+        </template>
+        <Column field="categoryID" header="Category"></Column>
         <Column header="Display" style="width: 16px;">
             <template #body="slotProps">
                 <Display :object="slotProps.data" />
@@ -58,7 +66,7 @@ const loading = ref(false);
                 <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => destinationStore.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
             </template>
         </Column>
-        <Column expander style="width: 5rem" />
+       <Column expander style="width: 5rem" />
         <template #expansion="slotProps">
             <div class="flex flex-wrap items-center gap-2">
                 <Button label="Edit" severity="info" icon="pi pi-pen-to-square" @click="modifyDialog?.handleUpdate(slotProps.data);" />

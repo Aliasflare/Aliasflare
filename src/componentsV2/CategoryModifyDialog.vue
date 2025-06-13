@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { AppState } from '@/AppState';
-import { destinationStore } from '@/api/DestinationStore';
+import { categoryStore } from '@/api/CategoryStore';
 import { ref } from 'vue';
 import SelectIcon from './SelectIcon.vue';
-import SelectCategory from './SelectCategory.vue';
 
 const show = ref(false);
 const target = ref<undefined|string>(undefined);
@@ -29,16 +28,16 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await destinationStore.update(target.value, fields.value);
+        await categoryStore.update(target.value, fields.value);
     else 
-        await destinationStore.create(AppState.currentUser.id, fields.value);
+        await categoryStore.create(AppState.currentUser.id, fields.value);
     show.value = false;
 }
 </script>
 
 <template>
     <!-- MODIFY DIAGLOUE -->
-        <Dialog v-model:visible="show" modal :header="target ? 'Update Destination' : 'Create Destination'" class="w-96">
+        <Dialog v-model:visible="show" modal :header="target ? 'Update Category' : 'Create Category'" class="w-96">
             <div class="flex flex-col gap-2 mb-8">
                 <label>Display</label>
                 <InputGroup>
@@ -48,23 +47,7 @@ async function createOrUpdate() {
                     </InputGroupAddon>
                     <InputText v-model="fields.displayName" placeholder="Primary" />
                 </InputGroup>
-                <label>Category</label>
-                <InputGroup>
-                    <SelectCategory v-model="fields.categoryID" />
-                </InputGroup>
-                <Message size="small" severity="secondary" variant="simple">Controls how this destination will shop up in the webinterface</Message>
-            </div>
-
-            <div class="flex flex-col gap-2 mb-8">
-                <label>Mail Address</label>
-                <InputGroup>
-                    <InputText v-model="fields.mailBox" placeholder="mustermann" />
-                    <InputGroupAddon>
-                        <i class="pi pi-at"></i>
-                    </InputGroupAddon>
-                    <InputText v-model="fields.mailDomain" placeholder="mail.com" />
-                </InputGroup>
-                <Message size="small" severity="secondary" variant="simple">Controls where mails should go when taking this destination</Message>
+                <Message size="small" severity="secondary" variant="simple">Controls how this category will shop up in the webinterface</Message>
             </div>
 
             <div class="flex justify-end gap-2">

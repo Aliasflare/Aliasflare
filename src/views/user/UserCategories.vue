@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { AppState } from '@/AppState';
-import { destinationStore } from '@/api/DestinationStore';
 import { categoryStore } from '@/api/CategoryStore';
-import DestinationTable from '@/componentsV2/DestinationTable.vue';
+import CategoryTable from '@/componentsV2/CategoryTable.vue';
 
 async function load() {
     try {
-        await destinationStore.list(AppState.currentUser.id, 0, 50);
         await categoryStore.list(AppState.currentUser.id, 0, 50);
     } catch(err) {}
 }
@@ -15,5 +13,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <DestinationTable :load="load" :value="destinationStore.getKeyedObjects()" />
+    <CategoryTable :load="load" :value="categoryStore.getKeyedObjects()" />
 </template>
