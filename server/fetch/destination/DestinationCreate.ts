@@ -12,6 +12,7 @@ import { cloudflareClient } from "../../CloudflareClient";
 
 const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
@@ -48,6 +49,7 @@ export async function DestinationCreate(request: ExtendedRequest, env: any) {
                 ...createBody.data,
                 userID: createBody.data.user.id,
                 cloudflareDestinationID: addr.id as any,
+                ...createBody.data.categoryID !== undefined ? { categoryID: createBody.data.categoryID?.id||null } : {},
                 //@ts-expect-error
                 user: undefined
             })

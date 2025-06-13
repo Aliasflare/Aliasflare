@@ -25,11 +25,11 @@ import { AliasDelete } from './alias/AliasDelete';
 import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
 import { AliasUpdate } from "./alias/AliasUpdate";
-import { AliasCategoryCreate } from './aliasCategory/AliasCategoryCreate';
-import { AliasCategoryUpdate } from './aliasCategory/AliasCategoryUpdate';
-import { AliasCategoryGet } from './aliasCategory/AliasCategoryGet';
-import { AliasCategoryList } from './aliasCategory/AliasCategoryList';
-import { AliasCategoryDelete } from './aliasCategory/AliasCategoryDelete';
+import { CategoryCreate } from './category/CategoryCreate';
+import { CategoryUpdate } from './category/CategoryUpdate';
+import { CategoryGet } from './category/CategoryGet';
+import { CategoryList } from './category/CategoryList';
+import { CategoryDelete } from './category/CategoryDelete';
 import { GenericApi } from "./GenericApi";
 
 const fetchHandlers = [
@@ -38,7 +38,7 @@ const fetchHandlers = [
     ...[UserCreate, UserDelete, UserGet, UserList, UserSelf, UserUpdate],
     ...[DestinationCheckVerification, DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationUpdate],
     ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasUpdate],
-    ...[AliasCategoryCreate, AliasCategoryDelete, AliasCategoryGet, AliasCategoryList, AliasCategoryUpdate],
+    ...[CategoryCreate, CategoryDelete, CategoryGet, CategoryList, CategoryUpdate],
     ...[GenericApi],
 ];
 

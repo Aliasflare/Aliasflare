@@ -10,7 +10,7 @@ import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validator
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
-    aliasCategoryID: z.union([ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     domain: ZodMailValidDomain(env),
     displayColor: ZodDisplayColor,
@@ -40,10 +40,10 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
             .values({
                 ...createBody.data,
                 userID: request.user.id,
-                ...createBody.data.aliasCategoryID !== undefined ? { aliasCategoryID: createBody.data.aliasCategoryID?.id||null } : {},
+                ...createBody.data.categoryID !== undefined ? { categoryID: createBody.data.categoryID?.id||null } : {},
                 ...createBody.data.destinationID !== undefined ? { destinationID: createBody.data.destinationID?.id||null } : {},
                 //@ts-expect-error
-                aliasCategory: undefined,
+                category: undefined,
                 destination: undefined
             })
             .returningAll()

@@ -5,28 +5,28 @@ import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 
-const AliasCategoryDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
-    aliasCategory: ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin)
+const CategoryDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
+    category: ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin)
 });
 
-export async function AliasCategoryDelete(request: ExtendedRequest, env: Env) {
+export async function CategoryDelete(request: ExtendedRequest, env: Env) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/aliasCategory/delete")) {
+    if (url.pathname.startsWith("/api/category/delete")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
-        const deleteBody = await AliasCategoryDeleteBody(request, env).safeParseAsync(body.data);
+        const deleteBody = await CategoryDeleteBody(request, env).safeParseAsync(body.data);
         if(deleteBody.error) return InvalidBodyError(deleteBody.error.issues);
 
         await db
-            .deleteFrom("aliasCategory")
-            .where("id", "==", deleteBody.data.aliasCategory.id)
+            .deleteFrom("category")
+            .where("id", "==", deleteBody.data.category.id)
             .executeTakeFirst();
 
-        console.log("[AliasCategoryDelete]", `Deleted AliasCategory(${deleteBody.data.aliasCategory.id})`);    
+        console.log("[CategoryDelete]", `Deleted Category(${deleteBody.data.category.id})`);    
         return Response.json({ error: false });
     }
 }

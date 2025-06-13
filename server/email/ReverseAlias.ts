@@ -1,5 +1,5 @@
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
-import { db, aliasCategoryColumns, userColumns } from "../Database";
+import { db, categoryColumns, userColumns } from "../Database";
 import { TrustedHeaders, removeHeadersExcept, parseAddressField, getHeader, setHeader, hasHeader } from "../utils/MailHeaders";
 import { sendRawMailViaMailgun } from "../utils/MailSend";
 
@@ -31,10 +31,10 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
         .select((eb) => [
             jsonObjectFrom(
                 eb
-                .selectFrom("aliasCategory")
-                .select(aliasCategoryColumns)
-                .whereRef("aliasCategory.id", "=", "alias.aliasCategoryID")
-            ).as("aliasCategory"),
+                .selectFrom("category")
+                .select(categoryColumns)
+                .whereRef("category.id", "=", "alias.categoryID")
+            ).as("category"),
             jsonObjectFrom(
                 eb
                 .selectFrom("user")
@@ -68,7 +68,7 @@ export async function ReverseAlias(message: any, env: any, mailContent: string, 
         return true;
     }
 
-    if(alias.aliasCategory && !alias.aliasCategory.enabled) {
+    if(alias.category && !alias.category.enabled) {
         console.warn("[ReverseAlias]", `REJECT: Aliases Category is disabled`);
         message.setReject(`Mailbox "${to.mailbox}" is disabled`);
         return true;

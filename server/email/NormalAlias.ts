@@ -1,4 +1,4 @@
-import { db, aliasCategoryColumns, destinationColumns, userColumns } from "../Database";
+import { db, categoryColumns, destinationColumns, userColumns } from "../Database";
 import { sendRawMailViaCloudflare } from "../utils/MailSend";
 import { jsonObjectFrom } from "kysely/helpers/sqlite";
 import { getHeader, TrustedHeaders, removeHeadersExcept, parseAddressField, setHeader, hasHeader } from "../utils/MailHeaders";
@@ -28,10 +28,10 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 			).as("destination"),
 			jsonObjectFrom(
 				eb
-				.selectFrom("aliasCategory")
-				.select(aliasCategoryColumns)
-				.whereRef("aliasCategory.id", "=", "alias.aliasCategoryID")
-			).as("aliasCategory"),
+				.selectFrom("category")
+				.select(categoryColumns)
+				.whereRef("category.id", "=", "alias.categoryID")
+			).as("category"),
 			jsonObjectFrom(
 				eb
 				.selectFrom("user")
@@ -93,7 +93,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 		await sendRawMailViaCloudflare(BuildDestinationVerifiedMail(alias.destination, env.domains.split(",")[0]), env)
 	}
 
-	if(alias.aliasCategory && !alias.aliasCategory.enabled) {
+	if(alias.category && !alias.category.enabled) {
 		console.warn("[NormalAlias]", `REJECT: Aliases Category is disabled`);
 		message.setReject(`Mailbox "${to.mailbox}" is disabled`);
 		return true;

@@ -14,6 +14,7 @@ import { BuildDestinationRemovedMail } from "../../utils/TemplateMails";
 
 const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
@@ -62,6 +63,7 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
                 ...updateBody.data,
                 ...mailChanged ? { verified: false } : {},
                 ...newAddr ? { cloudflareDestinationID: newAddr.id } : {},
+                ...updateBody.data.categoryID !== undefined ? { categoryID: updateBody.data.categoryID?.id||null } : {},
                 //@ts-expect-error
                 destination: undefined
             })

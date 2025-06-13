@@ -10,7 +10,7 @@ import { TransformAlias } from "./AliasTransformer";
 
 const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin),
-    aliasCategoryID: z.union([ZodAccessibleObjectFromTable("aliasCategory", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
@@ -39,11 +39,11 @@ export async function AliasUpdate(request: ExtendedRequest, env: Env) {
             .where("id", "==", updateBody.data.alias.id)
             .set({
                 ...updateBody.data,
-                ...updateBody.data.aliasCategoryID !== undefined ? { aliasCategoryID: updateBody.data.aliasCategoryID?.id||null } : {},
+                ...updateBody.data.categoryID !== undefined ? { categoryID: updateBody.data.categoryID?.id||null } : {},
                 ...updateBody.data.destinationID !== undefined ? { destinationID: updateBody.data.destinationID?.id||null } : {},
                 //@ts-expect-error
                 alias: undefined,
-                aliasCategory: undefined,
+                category: undefined,
                 destination: undefined
             })
             .returningAll()

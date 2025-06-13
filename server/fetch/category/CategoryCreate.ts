@@ -6,9 +6,9 @@ import { ZodBoolean } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
-import { TransformAliasCategory } from "./AliasCategoryTransformer";
+import { TransformCategory } from "./CategoryTransformer";
 
-const AliasCategoryCreateBody = (request: ExtendedRequest, env: any) => z.object({
+const CategoryCreateBody = (request: ExtendedRequest, env: any) => z.object({
     user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
@@ -16,9 +16,9 @@ const AliasCategoryCreateBody = (request: ExtendedRequest, env: any) => z.object
     enabled: ZodBoolean.optional(),
 }).readonly();
 
-export async function AliasCategoryCreate(request: ExtendedRequest, env: any) {
+export async function CategoryCreate(request: ExtendedRequest, env: any) {
     const url = new URL(request.url);
-    if (url.pathname.startsWith("/api/aliasCategory/create")) {
+    if (url.pathname.startsWith("/api/category/create")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
         if(!request.user) return NotAllowedError("Need to be logged in");
@@ -26,11 +26,11 @@ export async function AliasCategoryCreate(request: ExtendedRequest, env: any) {
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
 
-        const createBody = await AliasCategoryCreateBody(request,env).safeParseAsync(body.data);
+        const createBody = await CategoryCreateBody(request,env).safeParseAsync(body.data);
         if(createBody.error) return InvalidBodyError(createBody.error.issues);
 
         const inserted = await db
-            .insertInto("aliasCategory")
+            .insertInto("category")
             .values({
                 ...createBody.data,
                 userID: createBody.data.user.id,
@@ -42,7 +42,7 @@ export async function AliasCategoryCreate(request: ExtendedRequest, env: any) {
 
         //TODO: Send confirmation mail if not verified automatically
 
-        console.log("[AliasCategoryCreate]", `Created new AliasCategory(${inserted.id})`);
-        return Response.json({ error: false, aliasCategory: TransformAliasCategory(inserted) });
+        console.log("[CategoryCreate]", `Created new Category(${inserted.id})`);
+        return Response.json({ error: false, category: TransformCategory(inserted) });
     }
 }
