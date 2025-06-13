@@ -38,7 +38,7 @@ export async function down(db) {
   const sqls = [];
   sqls.push(
   db.schema
-    .dropTable("aliasCategory")
+    .dropTable("category")
     .compile()
   );
   return sqls
