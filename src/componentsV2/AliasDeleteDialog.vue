@@ -22,7 +22,7 @@ async function performDelete() {
 
 <template>
     <Dialog v-model:visible="show" modal header="Delete Destination?" class="w-96">
-        <Message icon="pi pi-exclamation-triangle" severity="warn" class="mt-1">Mails going to this destination will be rejected!</Message>
+        <Message icon="pi pi-exclamation-triangle" severity="warn" class="mt-1">Mails going to this alias will be rejected!</Message>
         <Message icon="pi pi-exclamation-triangle" severity="error" class="mt-2">You <b>CANNOT</b> recreate the same alias after deletion!</Message>
         <div class="mt-2">Do you really want to delete this alias (<a class="text-blue-500">{{ fields.token + "@" + fields.domain }}</a>)?</div>
         <div class="flex justify-end gap-2 mt-4">
