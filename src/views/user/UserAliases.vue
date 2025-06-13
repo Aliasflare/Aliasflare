@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppState } from '@/AppState';
-import { aliasStore } from '@/api/aliasStore';
+import { aliasStore } from '@/api/AliasStore';
 import AliasTable from '@/componentsV2/AliasTable.vue';
 import UserWrapper from './UserWrapper.vue';
 import { destinationStore } from '@/api/DestinationStore';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
-import { aliasStore } from '@/api/aliasStore';
+import { aliasStore } from '@/api/AliasStore';
 import AliasDeleteDialog from './AliasDeleteDialog.vue';
 import AliasModifyDialog from '@/componentsV2/AliasModifyDialog.vue';
 import { destinationStore } from '@/api/DestinationStore';

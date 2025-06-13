@@ -28,5 +28,5 @@ async function performDelete() {
             <Button type="button" label="Abort" severity="secondary" variant="outlined" @click="show = false"></Button>
             <Button type="button" label="Delete" severity="danger" @click="performDelete()"></Button>
         </div>
-        </Dialog>
+    </Dialog>
 </template>

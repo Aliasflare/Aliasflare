@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { AppState } from '@/AppState';
-import { aliasStore } from '@/api/aliasStore';
+import { aliasStore } from '@/api/AliasStore';
 import SelectIcon from './SelectIcon.vue';
 import SelectDestination from './SelectDestination.vue';
 import SelectDomain from './SelectDomain.vue';
