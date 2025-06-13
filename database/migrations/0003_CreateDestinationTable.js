@@ -14,6 +14,7 @@ export async function up(db) {
 
     //Relations
     .addColumn("userID", "uuid", col => col.notNull().references("user.id").onDelete("cascade"))
+    .addColumn("categoryID", "uuid", col => col.references("category.id").onDelete("set null"))
 
     //Display
     .addColumn("displayColor", "text", col => col.defaultTo(null))

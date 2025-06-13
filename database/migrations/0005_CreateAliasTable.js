@@ -14,7 +14,7 @@ export async function up(db) {
 
     //Relations
     .addColumn("userID", "uuid", col => col.notNull().references("user.id").onDelete("cascade"))
-    .addColumn("aliasCategoryID", "uuid", col => col.references("aliasCategory.id").onDelete("set null"))
+    .addColumn("categoryID", "uuid", col => col.references("category.id").onDelete("set null"))
     .addColumn("destinationID", "uuid", col => col.references("destination.id").onDelete("set null"))
 
     //Alias

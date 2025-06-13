@@ -8,7 +8,7 @@ export async function up(db) {
   const sqls = [];
   sqls.push(
   db.schema
-    .createTable("aliasCategory")
+    .createTable("category")
     //ID
     .addColumn("id", "uuid", col => col.notNull().defaultTo(RANDOM_UUID).primaryKey())
 
