@@ -29,7 +29,6 @@ class AliasStore extends KeyedStore {
     }
 
     async update(aliasId: string, newData: any) {
-        console.log(aliasId, newData);
         const res = await fetch("/api/alias/update", {
             method: "POST",
             body: JSON.stringify({

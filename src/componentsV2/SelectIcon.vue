@@ -1,9 +1,6 @@
 <script setup lang="ts">
-const icons = [
-    { name: '(None)', code: undefined },
-    { name: 'Dollar', code: 'dollar' },
-    { name: 'At', code: 'at' },
-];
+import IconData from '../../database/SelectIconsData.json';
+const icons = IconData.icons.map(a => ({ name: a.properties.name, code: a.properties.name })).sort((a,b) => a.name.localeCompare(b.name));
 </script>
 
 <template>

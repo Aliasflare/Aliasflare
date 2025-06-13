@@ -24,6 +24,7 @@
 		"@primeuix/themes": "^1.1.1",
 		"@tailwindcss/vite": "^4.1.8",
 		"better-sqlite3": "^11.10.0",
+		"chart.js": "^4.4.9",
 		"cloudflare": "^4.3.0",
 		"cookie": "^1.0.2",
 		"daisyui": "^5.0.43",
