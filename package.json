@@ -4,8 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "npm run database:generateTypes && vite",
-		"build": "npm run database:generateTypes && run-p type-check \"build-only {@}\" --",
+		"dev": "npm run cf-typegen && npm run database:generateTypes && vite",
+		"build": "npm run cf-typegen && npm run database:generateTypes && run-p type-check \"build-only {@}\" --",
 		"preview": "npm run build && wrangler dev",
 		"database:generateTypes": "node database/GenerateTypes.js",
 		"database:generateMigrations": "node database/GenerateMigrations.js",
@@ -39,7 +39,6 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.5.0",
-		"@cloudflare/workers-types": "^4.20250610.0",
 		"@iconify/json": "^2.2.347",
 		"@tsconfig/node22": "^22.0.2",
 		"@types/node": "^24.0.0",
