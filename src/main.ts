@@ -24,7 +24,6 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import Tabs from 'primevue/tabs';
 import TabList from 'primevue/tablist';
 import Tab from 'primevue/tab';
-import Ripple from 'primevue/ripple';
 import Menubar from 'primevue/menubar';
 import Avatar from 'primevue/avatar';
 import Dialog from 'primevue/dialog';
@@ -37,6 +36,8 @@ import Select from 'primevue/select';
 import IftaLabel from 'primevue/iftalabel';
 import Password from 'primevue/password';
 import ConfirmDialog from 'primevue/confirmdialog';
+import Ripple from 'primevue/ripple';
+import Tooltip from 'primevue/tooltip';
 
 app.use(PrimeVue, {
     theme: {
@@ -70,6 +71,7 @@ app.component('Select', Select);
 app.component('IftaLabel', IftaLabel);
 app.component('Password', Password);
 app.directive('ripple', Ripple);
+app.directive('tooltip', Tooltip);
 
 //app.use(vuetify);
 app.mount('#app');

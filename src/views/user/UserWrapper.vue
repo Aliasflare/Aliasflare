@@ -7,7 +7,7 @@ import Logo from '@/components/Logo.vue';
 const tabItems = ref([
     { route: '/user/home', label: 'Home', icon: 'pi pi-home' },
     { route: '/user/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
-    { route: '/user/aliases', label: 'Aliases', icon: 'pi pi-chart-line' },
+    { route: '/user/aliases', label: 'Aliases', icon: 'pi pi-eye-slash' },
 ]);
 
 </script>
@@ -24,7 +24,7 @@ const tabItems = ref([
                         <div>{{ AppState.currentUser.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
                     </Button>
-                    <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" />
+                    <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" v-tooltip.bottom="'Logout'" />
                 </div>
             </template>
         </Menubar>
