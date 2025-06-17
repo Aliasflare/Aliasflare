@@ -37,7 +37,7 @@ async function createOrUpdate() {
     if(target.value)
         await stores.destinationStore.update(target.value, fields.value);
     else 
-        await stores.destinationStore.create(AppState.authUserId, fields.value);
+        await stores.destinationStore.create(stores.perspective, fields.value);
     show.value = false;
 }
 </script>

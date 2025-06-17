@@ -53,5 +53,4 @@ watch(() => AppState.viewAsUserId, () => {
         </div>
         <div class="m-4" v-else>Loading user...</div>
     </div>
-
 </template>
