@@ -62,6 +62,13 @@ async function createOrUpdate() {
                 </InputGroup>
             </div>
 
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('admin')">
+                <label>Admin</label>
+                <InputGroup>
+                    <ToggleSwitch v-model="fields.admin" />
+                </InputGroup>
+            </div>
+
             <div class="flex justify-end gap-2">
                 <Button type="button" label="Discard" severity="secondary" @click="show = false"></Button>
                 <Button type="button" :label="target ? 'Update' : 'Create'" @click="createOrUpdate()"></Button>

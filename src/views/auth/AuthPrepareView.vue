@@ -23,7 +23,7 @@ async function checkLogin() {
         AppState.prepared = false;
         console.log("[AuthPrepareView]", "Failed to fetch config!");
     }
-    setTimeout(() => router.push({ path: router.currentRoute.value.query.originalPath as any }), 500);
+    setTimeout(() => router.push({ path: (router.currentRoute.value.query.originalPath as any)||'/' }), 500);
     return;
 }
 </script>

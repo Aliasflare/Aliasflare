@@ -20,7 +20,7 @@ async function checkLogin() {
         AppState.currentUser = null;
         console.log("[AuthCheckingView]", "User is logged out!");
     }
-    setTimeout(() => router.push({ path: router.currentRoute.value.query.originalPath as any }), 500);
+    setTimeout(() => router.push({ path: (router.currentRoute.value.query.originalPath as any)||'/' }), 500);
     return;
 }
 </script>

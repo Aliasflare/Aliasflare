@@ -11,7 +11,7 @@ const modifyDialog = useTemplateRef('modifyDialog');
 <template>
     <UserDeleteDialog ref="deleteDialog" />
     <UserModifyDialog ref="modifyDialog" /> 
-    <div class="text-2xl m-2">Your Account</div>
+    <span class="m-2 text-xl font-bold">Your Account</span>
     <div class="m-2 flex flex-col gap-2">
         <div class="flex flex-row items-center gap-2">
             <div><b>Username</b></div>
