@@ -19,7 +19,9 @@ export async function up(db) {
     .addColumn("displayColor", "text", col => col.defaultTo(null))
     .addColumn("displayIcon", "text", col => col.defaultTo(null))
     .addColumn("displayName", "text", col => col.defaultTo(null))
-
+    .addColumn("displayURL", "text", col => col.defaultTo(null))
+    .addColumn("displayImage", "text", col => col.defaultTo(null))
+    
     //State
     .addColumn("enabled", "boolean", col => col.notNull().defaultTo(true))
 
