@@ -6,6 +6,7 @@ import UserHome from './views/user/UserHome.vue';
 import UserCategories from './views/user/UserCategories.vue';
 import UserDestinations from './views/user/UserDestinations.vue';
 import UserAliases from './views/user/UserAliases.vue';
+import UserSettings from './views/user/UserSettings.vue';
 import AuthLoginView from './views/auth/AuthLoginView.vue'
 import AuthCheckingView from './views/auth/AuthCheckingView.vue'
 import AuthLogoutView from './views/auth/AuthLogoutView.vue';
@@ -21,6 +22,7 @@ const router = createRouter({
       { path: "home", component: UserHome, meta: { requireAuth: true, requirePrepared: true } },
       { path: "destinations", component: UserDestinations, meta: { requireAuth: true, requirePrepared: true } },
       { path: "aliases", component: UserAliases, meta: { requireAuth: true, requirePrepared: true } },
+      { path: "settings", component: UserSettings, meta: { requireAuth: true, requirePrepared: true } },
     ] },
     { path: "/auth/login", component: AuthLoginView },
     { path: "/auth/checking", component: AuthCheckingView },

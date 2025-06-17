@@ -4,15 +4,19 @@ import { categoryStore } from '@/api/CategoryStore';
 import { ref } from 'vue';
 import SelectIcon from './SelectIcon.vue';
 
+const showFields = ref<undefined|string[]>();
+function renderField(field: string) { return !showFields.value || showFields?.value?.includes('*') || showFields?.value?.includes(field); }
+
 const show = ref(false);
 const target = ref<undefined|string>(undefined);
 const fields = ref<any>({});
 
-function handleUpdate(destination: any) {
+function handleUpdate(destination: any, pShowFields?: string[]) {
     target.value = destination.id;
     fields.value = {};
     Object.assign(fields.value, destination);
     show.value = true;
+    showFields.value = pShowFields;
 }
 
 function handleCreate() {
@@ -38,7 +42,7 @@ async function createOrUpdate() {
 <template>
     <!-- MODIFY DIAGLOUE -->
         <Dialog v-model:visible="show" modal :header="target ? 'Update Category' : 'Create Category'" class="w-96">
-            <div class="flex flex-col gap-2 mb-8">
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('display')">
                 <label>Display</label>
                 <InputGroup>
                     <SelectIcon v-model="fields.displayIcon"></SelectIcon>

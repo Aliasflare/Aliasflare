@@ -9,6 +9,7 @@ const tabItems = ref([
     { route: '/user/categories', label: 'Categories', icon: 'pi pi-tags' },
     { route: '/user/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
     { route: '/user/aliases', label: 'Aliases', icon: 'pi pi-eye-slash' },
+    { route: '/user/settings', label: 'Settings', icon: 'pi pi-cog' },
 ]);
 
 </script>
@@ -29,7 +30,7 @@ const tabItems = ref([
                 </div>
             </template>
         </Menubar>
-        <Tabs :value="router.currentRoute.value.fullPath">
+        <Tabs :value="router.currentRoute.value.fullPath" scrollable>
             <TabList>
                 <Tab v-for="tab in tabItems" :key="tab.label" :value="tab.route" @click="router.push(tab.route)" >
                     <a class="flex items-center gap-2 text-inherit">

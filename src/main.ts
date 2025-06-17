@@ -5,6 +5,7 @@ import Router from '@/Router'
 import { AppState } from '@/AppState';
 import { destinationStore } from '@/api/DestinationStore';
 import { aliasStore } from '@/api/AliasStore';
+import { userStore } from './api/UserStore';
 
 const app = createApp(App);
 app.config.globalProperties.navigator = navigator;
@@ -84,5 +85,7 @@ app.mount('#app');
 window.destinationStore = destinationStore;
 //@ts-ignore
 window.aliasStore = aliasStore;
+//@ts-ignore
+window.userStore = userStore;
 //@ts-ignore
 window.AppState = AppState;

@@ -5,15 +5,19 @@ import { ref } from 'vue';
 import SelectIcon from './SelectIcon.vue';
 import SelectCategory from './SelectCategory.vue';
 
+const showFields = ref<undefined|string[]>();
+function renderField(field: string) { return !showFields.value || showFields?.value?.includes('*') || showFields?.value?.includes(field); }
+
 const show = ref(false);
 const target = ref<undefined|string>(undefined);
 const fields = ref<any>({});
 
-function handleUpdate(destination: any) {
+function handleUpdate(destination: any, pShowFields?: string[]) {
     target.value = destination.id;
     fields.value = {};
     Object.assign(fields.value, destination);
     show.value = true;
+    showFields.value = pShowFields;
 }
 
 function handleCreate() {
@@ -39,7 +43,7 @@ async function createOrUpdate() {
 <template>
     <!-- MODIFY DIAGLOUE -->
         <Dialog v-model:visible="show" modal :header="target ? 'Update Destination' : 'Create Destination'" class="w-96">
-            <div class="flex flex-col gap-2 mb-8">
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('display')">
                 <label>Display</label>
                 <InputGroup>
                     <SelectIcon v-model="fields.displayIcon"></SelectIcon>
@@ -60,7 +64,7 @@ async function createOrUpdate() {
                 <Message size="small" severity="secondary" variant="simple">Controls how this destination will shop up in the webinterface</Message>
             </div>
 
-            <div class="flex flex-col gap-2 mb-8">
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('mail')">
                 <label>Mail Address</label>
                 <InputGroup>
                     <InputText v-model="fields.mailBox" placeholder="mustermann" />

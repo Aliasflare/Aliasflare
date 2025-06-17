@@ -7,15 +7,19 @@ import SelectDestination from './SelectDestination.vue';
 import SelectDomain from './SelectDomain.vue';
 import SelectCategory from './SelectCategory.vue';
 
+const showFields = ref<undefined|string[]>();
+function renderField(field: string) { return !showFields.value || showFields?.value?.includes('*') || showFields?.value?.includes(field); }
+
 const show = ref(false);
 const target = ref<undefined|string>(undefined);
 const fields = ref<any>({});
 
-function handleUpdate(destination: any) {
+function handleUpdate(destination: any, pShowFields?: string[]) {
     target.value = destination.id;
     fields.value = {};
     Object.assign(fields.value, destination);
     show.value = true;
+    showFields.value = pShowFields;
 }
 
 function handleCreate() {
@@ -41,7 +45,7 @@ async function createOrUpdate() {
 <template>
     <!-- MODIFY DIAGLOUE -->
         <Dialog v-model:visible="show" modal :header="target ? 'Update Alias' : 'Create Alias'" class="w-96">
-            <div class="flex flex-col gap-2 mb-8">
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('display')">
                 <label>Display</label>
                 <InputGroup>
                     <SelectIcon v-model="fields.displayIcon"></SelectIcon>
@@ -62,7 +66,7 @@ async function createOrUpdate() {
                 <Message size="small" severity="secondary" variant="simple">Controls how this alias will shop up in the webinterface</Message>
             </div>
 
-            <div class="flex flex-col gap-2 mb-8">
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('alias')">
                 <label>Alias</label>
                 <InputGroup>
                     <InputText v-model="fields.token" placeholder="*Random*" :disabled="target != undefined" />
@@ -75,7 +79,7 @@ async function createOrUpdate() {
             </div>
 
 
-            <div class="flex flex-col gap-2 mb-8">
+            <div class="flex flex-col gap-2 mb-8" v-if="renderField('destination')">
                 <label>Destination</label>
                 <InputGroup>
                     <SelectDestination v-model="fields.destinationID"></SelectDestination>

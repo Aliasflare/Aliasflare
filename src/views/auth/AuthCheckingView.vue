@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, } from 'vue';
 import { AppState } from '@/AppState';
+import { userStore } from '@/api/UserStore';
 import router from '@/Router';
 import Logo from '@/components/Logo.vue';
 import AuthBox from './AuthBox.vue';
@@ -8,18 +9,12 @@ import AuthBox from './AuthBox.vue';
 onMounted(checkLogin);
 async function checkLogin() {
     console.log("[AuthCheckingView]", "Checking auth...");
-    const res = await fetch("/api/user/self", {
-        method: "POST",
-        body: JSON.stringify({
-            self: true
-        })
-    });
-    if(res.status == 200) {
+    try {
         AppState.authChecked = true;
         AppState.loggedIn = true;
-        AppState.currentUser = (await res.json()).user;
+        AppState.currentUser = await userStore.self();
         console.log("[AuthCheckingView]", "User is logged in!");
-    } else {
+    } catch(err) {
         AppState.authChecked = true;
         AppState.loggedIn = false;
         AppState.currentUser = null;
