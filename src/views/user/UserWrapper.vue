@@ -27,6 +27,7 @@ watch(() => AppState.viewAsUserId, () => {
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
+                    <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto" v-if="AppState.authUserId != AppState.viewAsUserId">VIEWING AS ANOTHER USER</div>
                     <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="AppState.authUser?.admin" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
                         <div>{{ AppState.authUser.username }}</div>

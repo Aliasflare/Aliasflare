@@ -21,7 +21,7 @@ const tabItems = ref([
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
-                    <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto">ADMIN MODE ACTIVATED</div>
+                    <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto">ADMIN MODE</div>
                     <Button icon="pi pi-user" severity="secondary" aria-label="User" @click="router.push({ path: '/user/' })" v-tooltip.bottom="'User Mode'" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
                         <div>{{ AppState.authUser.username }}</div>
