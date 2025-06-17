@@ -19,11 +19,13 @@ import { DestinationCreate } from "./destination/DestinationCreate";
 import { DestinationDelete } from "./destination/DestinationDelete";
 import { DestinationGet } from "./destination/DestinationGet";
 import { DestinationList } from './destination/DestinationList';
+import { DestinationListAll } from './destination/DestinationListAll';
 import { DestinationUpdate } from "./destination/DestinationUpdate";
 import { AliasCreate } from "./alias/AliasCreate";
 import { AliasDelete } from './alias/AliasDelete';
 import { AliasGet } from "./alias/AliasGet";
 import { AliasList } from "./alias/AliasList";
+import { AliasListAll } from './alias/AliasListAll';
 import { AliasUpdate } from "./alias/AliasUpdate";
 import { CategoryCreate } from './category/CategoryCreate';
 import { CategoryUpdate } from './category/CategoryUpdate';
@@ -37,8 +39,8 @@ const fetchHandlers = [
     ...[initDBFetchHandler, initCloudflareClientFetchHandler, AttachSession, AttachUser, AttachAdmin],
     ...[AuthLogin, AuthLogout],
     ...[UserCreate, UserDelete, UserGet, UserList, UserSelf, UserUpdate],
-    ...[DestinationCheckVerification, DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationUpdate],
-    ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasUpdate],
+    ...[DestinationCheckVerification, DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationListAll, DestinationUpdate],
+    ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasListAll, AliasUpdate],
     ...[CategoryCreate, CategoryDelete, CategoryGet, CategoryList, CategoryUpdate],
     ...[ConfigGet],
     ...[GenericApi],
