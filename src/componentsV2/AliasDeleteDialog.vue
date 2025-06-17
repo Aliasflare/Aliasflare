@@ -1,27 +1,28 @@
 <script setup lang="ts">
-import { aliasStore } from '@/api/AliasStore';
+import { Stores } from '@/api/Stores';
 import { ref } from 'vue';
 
+const { stores } = defineProps<{ stores: Stores }>();
 const show = ref(false);
 const target = ref<string>("");
 const fields = ref<any>({});
 
-function handleDelete(destination: any) {
-    target.value = destination.id;
+function handleDelete(alias: any) {
+    target.value = alias.id;
     fields.value = {};
-    Object.assign(fields.value, destination);
+    Object.assign(fields.value, alias);
     show.value = true;
 }
 defineExpose({ handleDelete });
 
 async function performDelete() {
-    await aliasStore.delete(target.value);
+    await stores.aliasStore.delete(target.value);
     show.value = false;
 }
 </script>
 
 <template>
-    <Dialog v-model:visible="show" modal header="Delete Destination?" class="w-96">
+    <Dialog v-model:visible="show" modal header="Delete Alias?" class="w-96">
         <Message icon="pi pi-exclamation-triangle" severity="warn" class="mt-1">Mails going to this alias will be rejected!</Message>
         <Message icon="pi pi-exclamation-triangle" severity="error" class="mt-2">You <b>CANNOT</b> recreate the same alias after deletion!</Message>
         <div class="mt-2">Do you really want to delete this alias (<a class="text-blue-500">{{ fields.token + "@" + fields.domain }}</a>)?</div>

@@ -30,5 +30,4 @@ export class KeyedStore {
     removeKeyedObject(id: any) {
         this.data.splice(this.data.findIndex(a => a.id == id), 1);
     }
-
 }

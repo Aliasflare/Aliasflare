@@ -1,7 +1,7 @@
 import { diff } from "@/Utils";
 import { KeyedStore } from "./KeyedStore";
 
-class AliasStore extends KeyedStore {
+export class AliasStore extends KeyedStore {
     
     // ===== OBJECT METHODS =====
     async get(aliasId: string, fromCache: boolean = false) {
@@ -65,6 +65,15 @@ class AliasStore extends KeyedStore {
         return this.setKeyedObjects((await res.json()).aliases);
     }
 
+    async listAll(page: number = 0, limit: number = 50) {
+        const res = await fetch("/api/alias/listAll", {
+            method: "POST",
+            body: JSON.stringify({
+                page,
+                limit
+            })
+        });
+        if(res.status != 200) throw new Error(await res.text());
+        return this.setKeyedObjects((await res.json()).aliases);
+    }
 }
-
-export const aliasStore = new AliasStore();

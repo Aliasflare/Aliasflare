@@ -1,7 +1,7 @@
 import { diff } from "@/Utils";
 import { KeyedStore } from "./KeyedStore";
 
-class UserStore extends KeyedStore {
+export class UserStore extends KeyedStore {
     
     selfId?: string;
 
@@ -83,6 +83,15 @@ class UserStore extends KeyedStore {
         return this.setKeyedObjects((await res.json()).users);
     }
 
+    async listAll(page: number = 0, limit: number = 50) {
+        const res = await fetch("/api/user/listAll", {
+            method: "POST",
+            body: JSON.stringify({
+                page,
+                limit
+            })
+        });
+        if(res.status != 200) throw new Error(await res.text());
+        return this.setKeyedObjects((await res.json()).users);
+    }
 }
-
-export const userStore = new UserStore();

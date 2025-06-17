@@ -3,9 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import Router from '@/Router'
 import { AppState } from '@/AppState';
-import { destinationStore } from '@/api/DestinationStore';
-import { aliasStore } from '@/api/AliasStore';
-import { userStore } from './api/UserStore';
+import { Stores } from './api/Stores';
 
 const app = createApp(App);
 app.config.globalProperties.navigator = navigator;
@@ -82,10 +80,6 @@ app.directive('tooltip', Tooltip);
 app.mount('#app');
 
 //@ts-ignore
-window.destinationStore = destinationStore;
-//@ts-ignore
-window.aliasStore = aliasStore;
-//@ts-ignore
-window.userStore = userStore;
+window.Stores = Stores;
 //@ts-ignore
 window.AppState = AppState;

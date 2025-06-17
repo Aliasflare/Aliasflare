@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
-import { destinationStore } from '@/api/DestinationStore';
+import router from '@/Router';
+import { Stores } from '@/api/Stores';
 import DestinationDeleteDialog from '@/componentsV2/DestinationDeleteDialog.vue';
 import DestinationModifyDialog from '@/componentsV2/DestinationModifyDialog.vue';
 import Display from './Display.vue';
-import { categoryStore } from '@/api/CategoryStore';
 
 const props = defineProps<{
     load: () => Promise<void>,
     value: any,
-    class?: any
+    class?: any,
+    admin?: boolean,
+    stores: Stores
 }>();
 
 const expandedRows = ref([]);
@@ -21,12 +23,12 @@ const loading = ref(false);
 </script>
 
 <template>
-    <DestinationDeleteDialog ref="deleteDialog" />
-    <DestinationModifyDialog ref="modifyDialog" />
+    <DestinationDeleteDialog ref="deleteDialog" :stores="stores" />
+    <DestinationModifyDialog ref="modifyDialog" :stores="stores" />
     <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xl font-bold">Your Destinations</span>
+                <span class="text-xl font-bold">Destinations</span>
                 <div class="flex-grow"></div>
                 <Button icon="pi pi-refresh" severity="info" rounded raised @click="loading = true; props.load().then(_ => loading = false)" />
                 <Button icon="pi pi-plus" severity="success" rounded raised @click="modifyDialog?.handleCreate();" />
@@ -34,14 +36,14 @@ const loading = ref(false);
         </template>
         <template #empty> No destinations found </template>
         <template #loading> Loading... </template>
-        <Column header="Name">
+        <Column header="Name" v-if="!props.admin">
             <template #body="slotProps">
                 <Display :object="slotProps.data" />
             </template>
         </Column>
-        <Column header="Category">
+        <Column header="Category" v-if="!props.admin">
             <template #body="slotProps">
-                <Display :object="categoryStore.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
+                <Display :object="stores.categoryStore.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
             </template>
         </Column>
         <Column header="Address">
@@ -56,18 +58,27 @@ const loading = ref(false);
                     :value="slotProps.data.verified ? 'Verified' : 'Pending'"
                     :severity="slotProps.data.verified ? 'sucess' : 'warn'"
                 />
-                <Button icon="pi pi-refresh" rounded severity="warn" class="ml-2" size="small" v-if="!slotProps.data.verified" @click="destinationStore.checkVerification(slotProps.data.id)" />
+                <Button icon="pi pi-refresh" rounded severity="warn" class="ml-2" size="small" v-if="!slotProps.data.verified" @click="stores.destinationStore.checkVerification(slotProps.data.id)" />
+            </template>
+        </Column>
+        <Column header="UserID" v-if="props.admin">
+            <template #body="slotProps">
+                <div>{{ slotProps.data.userID }}</div>
             </template>
         </Column>
         <Column header="Enabled">
             <template #body="slotProps">
-                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => destinationStore.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
+                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => stores.destinationStore.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
             </template>
         </Column>
        <Column expander style="width: 5rem" />
         <template #expansion="slotProps">
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2" v-if="!props.admin">
                 <Button label="Edit" severity="info" icon="pi pi-pen-to-square" @click="modifyDialog?.handleUpdate(slotProps.data);" />
+                <Button label="Delete" severity="danger" icon="pi pi-trash" @click="deleteDialog?.handleDelete(slotProps.data)" />
+            </div>
+            <div class="flex flex-wrap items-center gap-2" v-if="props.admin">
+                <Button label="View as user" severity="primary" icon="pi pi-eye" @click="router.push({ path: '/user/categories', query: { as: slotProps.data.userID }})" />
                 <Button label="Delete" severity="danger" icon="pi pi-trash" @click="deleteDialog?.handleDelete(slotProps.data)" />
             </div>
         </template>

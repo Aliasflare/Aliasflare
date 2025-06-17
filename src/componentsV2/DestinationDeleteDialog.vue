@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { destinationStore } from '@/api/DestinationStore';
+import { Stores } from '@/api/Stores';
 import { ref } from 'vue';
 
+const { stores } = defineProps<{ stores: Stores }>();
 const show = ref(false);
 const target = ref<string>("");
 const fields = ref<any>({});
@@ -15,7 +16,7 @@ function handleDelete(destination: any) {
 defineExpose({ handleDelete });
 
 async function performDelete() {
-    await destinationStore.delete(target.value);
+    await stores.destinationStore.delete(target.value);
     show.value = false;
 }
 </script>

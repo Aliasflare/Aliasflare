@@ -10,6 +10,8 @@ import UserSettings from './views/user/UserSettings.vue';
 import AdminWrapper from './views/admin/AdminWrapper.vue';
 import AdminHome from './views/admin/AdminHome.vue';
 import AdminUsers from './views/admin/AdminUsers.vue';
+import AdminDestinations from './views/admin/AdminDestinations.vue';
+import AdminAliases from './views/admin/AdminAliases.vue';
 import AuthLoginView from './views/auth/AuthLoginView.vue'
 import AuthCheckingView from './views/auth/AuthCheckingView.vue'
 import AuthLogoutView from './views/auth/AuthLogoutView.vue';
@@ -31,6 +33,8 @@ const router = createRouter({
       { path: "", redirect: "/admin/home" },
       { path: "home", component: AdminHome, meta: { requireAuth: true, requirePrepared: true, requireAdmin: true } },
       { path: "users", component: AdminUsers, meta: { requireAuth: true, requirePrepared: true, requireAdmin: true } },
+      { path: "destinations", component: AdminDestinations, meta: { requireAuth: true, requirePrepared: true, requireAdmin: true } },
+      { path: "aliases", component: AdminAliases, meta: { requireAuth: true, requirePrepared: true, requireAdmin: true } },
     ] },
     { path: "/auth/login", component: AuthLoginView },
     { path: "/auth/checking", component: AuthCheckingView },
@@ -42,11 +46,12 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   if(to.meta.requireAuth) {
     if(AppState.authChecked == false) return { path: "/auth/checking", query: { originalPath: to.fullPath } };
-    if(AppState.loggedIn == false) return { path: "/auth/login", query: { originalPath: to.fullPath } };
+    if(AppState.authUserId == null) return { path: "/auth/login", query: { originalPath: to.fullPath } };
   }
 
+  //TODO: FIX IF
   if(to.meta.requireAdmin) {
-    if(!AppState.currentUser.admin) return { path: "/user/home", query: { originalPath: to.fullPath } };
+    if(!true) return { path: "/user/home", query: { originalPath: to.fullPath } };
   }
 
   if(to.meta.requirePrepared) {

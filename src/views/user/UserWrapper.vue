@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { AppState } from '@/AppState';
 import router from '@/Router';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/componentsV2/Logo.vue';
 
 const tabItems = ref([
     { route: '/user/home', label: 'Home', icon: 'pi pi-home' },
@@ -22,9 +22,10 @@ const tabItems = ref([
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
-                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="AppState.currentUser.admin" />
+                    <!-- TODO!!!! FIX v-If -->
+                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="true" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
-                        <div>{{ AppState.currentUser.username }}</div>
+                        <div>{{ AppState.authUser.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
                     </Button>
                     <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" v-tooltip.bottom="'Logout'" />

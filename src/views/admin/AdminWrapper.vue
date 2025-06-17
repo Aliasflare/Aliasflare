@@ -2,11 +2,13 @@
 import { ref } from 'vue';
 import { AppState } from '@/AppState';
 import router from '@/Router';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/componentsV2/Logo.vue';
 
 const tabItems = ref([
     { route: '/admin/home', label: 'Home', icon: 'pi pi-home' },
     { route: '/admin/users', label: 'Users', icon: 'pi pi-user' },
+    { route: '/admin/aliases', label: 'Aliases', icon: 'pi pi-eye-slash' },
+    { route: '/admin/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
 ]);
 
 </script>
@@ -20,9 +22,9 @@ const tabItems = ref([
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
                     <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto">ADMIN MODE ACTIVATED</div>
-                    <Button icon="pi pi-user" severity="secondary" aria-label="User" @click="router.push({ path: '/user/' })" v-tooltip.bottom="'User Mode'" v-if="AppState.currentUser.admin" />
+                    <Button icon="pi pi-user" severity="secondary" aria-label="User" @click="router.push({ path: '/user/' })" v-tooltip.bottom="'User Mode'" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
-                        <div>{{ AppState.currentUser.username }}</div>
+                        <div>{{ AppState.authUser.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
                     </Button>
                     <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" v-tooltip.bottom="'Logout'" />

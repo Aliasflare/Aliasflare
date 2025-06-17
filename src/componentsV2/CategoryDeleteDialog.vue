@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { categoryStore } from '@/api/CategoryStore';
+import { Stores } from '@/api/Stores';
 import { ref } from 'vue';
 
+const { stores } = defineProps<{ stores: Stores }>();
 const show = ref(false);
 const target = ref<string>("");
 const fields = ref<any>({});
@@ -15,7 +16,7 @@ function handleDelete(category: any) {
 defineExpose({ handleDelete });
 
 async function performDelete() {
-    await categoryStore.delete(target.value);
+    await stores.categoryStore.delete(target.value);
     show.value = false;
 }
 </script>

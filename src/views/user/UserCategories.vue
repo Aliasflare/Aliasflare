@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { AppState } from '@/AppState';
-import { categoryStore } from '@/api/CategoryStore';
+import { Stores } from '@/api/Stores';
 import CategoryTable from '@/componentsV2/CategoryTable.vue';
 
 async function load() {
     try {
-        await categoryStore.list(AppState.currentUser.id, 0, 50);
+        await Stores.withPerspective(AppState.authUserId).categoryStore.list(AppState.authUserId, 0, 50);
     } catch(err) {}
 }
 </script>
@@ -13,5 +13,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <CategoryTable :load="load" :value="categoryStore.getKeyedObjects()" />
+    <CategoryTable :load="load" :value="Stores.withPerspective(AppState.authUserId).categoryStore.getKeyedObjects()" :stores="Stores.withPerspective(AppState.authUserId)" />
 </template>

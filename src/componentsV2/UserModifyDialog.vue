@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { AppState } from '@/AppState';
-import { userStore } from '@/api/UserStore';
+import { Stores } from '@/api/Stores';
 import { ref } from 'vue';
+
+const { stores } = defineProps<{ stores: Stores }>();
 
 const showFields = ref<undefined|string[]>();
 function renderField(field: string) { return !showFields.value || showFields.value?.includes('*') || showFields.value?.includes(field); }
@@ -31,9 +33,9 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await userStore.update(target.value, fields.value);
+        await stores.userStore.update(target.value, fields.value);
     else 
-        await userStore.create(AppState.currentUser.id, fields.value);
+        await stores.userStore.create(AppState.authUserId, fields.value);
     show.value = false;
 }
 </script>

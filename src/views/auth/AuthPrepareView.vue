@@ -2,7 +2,7 @@
 import { onMounted, } from 'vue';
 import { AppState } from '@/AppState';
 import router from '@/Router';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/componentsV2/Logo.vue';
 import AuthBox from './AuthBox.vue';
 
 onMounted(checkLogin);
@@ -11,7 +11,7 @@ async function checkLogin() {
     const res = await fetch("/api/config", {
         method: "POST",
         body: JSON.stringify({
-            user: AppState.currentUser?.id
+            user: AppState.authUserId
         })
     });
     if(res.status == 200) {

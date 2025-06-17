@@ -1,25 +1,25 @@
 <script setup lang="ts">
 import { onMounted, } from 'vue';
 import { AppState } from '@/AppState';
-import { userStore } from '@/api/UserStore';
+import { Stores } from '@/api/Stores';
 import router from '@/Router';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/componentsV2/Logo.vue';
 import AuthBox from './AuthBox.vue';
 
 onMounted(checkLogin);
 async function checkLogin() {
     console.log("[AuthCheckingView]", "Checking auth...");
     try {
-        AppState.authChecked = true;
-        AppState.loggedIn = true;
-        AppState.currentUser = await userStore.self();
+        AppState.authUser = await Stores.withPerspective("AUTH").userStore.self();
+        AppState.authUserId = AppState.authUser.id;
         console.log("[AuthCheckingView]", "User is logged in!");
     } catch(err) {
-        AppState.authChecked = true;
-        AppState.loggedIn = false;
-        AppState.currentUser = null;
+        console.log(err);
+        AppState.authUser = null;
+        AppState.authUserId = null;
         console.log("[AuthCheckingView]", "User is logged out!");
     }
+    AppState.authChecked = true;
     setTimeout(() => router.push({ path: (router.currentRoute.value.query.originalPath as any)||'/' }), 500);
     return;
 }

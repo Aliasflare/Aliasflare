@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import router from '@/Router';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/componentsV2/Logo.vue';
 import AuthBox from './AuthBox.vue';
 import { AppState } from '@/AppState';
 
@@ -20,7 +20,6 @@ async function performLogout() {
     if(res.status == 200) {
         loading.value = false;
         success.value = true;
-        AppState.loggedIn = false;
         AppState.authChecked = false;
         return true;
     }

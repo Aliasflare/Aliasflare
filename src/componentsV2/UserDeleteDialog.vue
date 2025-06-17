@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { userStore } from '@/api/UserStore';
+import { Stores } from '@/api/Stores';
 import { ref } from 'vue';
 
+const { stores } = defineProps<{ stores: Stores }>();
 const deleteCount = ref(0);
 const show = ref(false);
 const target = ref<string>("");
@@ -21,7 +22,7 @@ async function performDelete() {
         deleteCount.value++;
         return;
     }
-    await userStore.delete(target.value);
+    await stores.userStore.delete(target.value);
     show.value = false;
 }
 </script>

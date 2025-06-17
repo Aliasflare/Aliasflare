@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import router from '@/Router';
-import Logo from '@/components/Logo.vue';
+import Logo from '@/componentsV2/Logo.vue';
 import AuthBox from './AuthBox.vue';
 import { AppState } from '@/AppState';
 
@@ -26,7 +26,6 @@ async function performLogin() {
         loading.value = false;
         success.value = true;
         AppState.authChecked = false;
-        AppState.loggedIn = true;
         setTimeout(() => router.push({ path: router.currentRoute.value.query.originalPath as any }), 1000);
         return true;
     }

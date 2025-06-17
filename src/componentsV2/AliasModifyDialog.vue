@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { AppState } from '@/AppState';
-import { aliasStore } from '@/api/AliasStore';
+import { Stores } from '@/api/Stores';
 import SelectIcon from './SelectIcon.vue';
 import SelectDestination from './SelectDestination.vue';
 import SelectDomain from './SelectDomain.vue';
 import SelectCategory from './SelectCategory.vue';
+
+const { stores } = defineProps<{ stores: Stores }>();
 
 const showFields = ref<undefined|string[]>();
 function renderField(field: string) { return !showFields.value || showFields?.value?.includes('*') || showFields?.value?.includes(field); }
@@ -35,9 +37,9 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await aliasStore.update(target.value, fields.value);
+        await stores.aliasStore.update(target.value, fields.value);
     else 
-        await aliasStore.create(AppState.currentUser.id, fields.value);
+        await stores.aliasStore.create(AppState.authUserId, fields.value);
     show.value = false;
 }
 </script>
@@ -56,7 +58,7 @@ async function createOrUpdate() {
                 </InputGroup>
                 <label>Category</label>
                 <InputGroup>
-                    <SelectCategory v-model="fields.categoryID" />
+                    <SelectCategory v-model="fields.categoryID" :stores="stores" />
                 </InputGroup>
                 <label>Custom</label>
                 <InputGroup>
@@ -82,7 +84,7 @@ async function createOrUpdate() {
             <div class="flex flex-col gap-2 mb-8" v-if="renderField('destination')">
                 <label>Destination</label>
                 <InputGroup>
-                    <SelectDestination v-model="fields.destinationID"></SelectDestination>
+                    <SelectDestination v-model="fields.destinationID" :stores="stores"></SelectDestination>
                 </InputGroup>
                 <Message size="small" severity="secondary" variant="simple">Controls where mails to this alias are delivered to</Message>
             </div>

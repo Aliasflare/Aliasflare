@@ -3,7 +3,7 @@ import { AppState } from '@/AppState';
 </script>
 
 <template>
-    <div class="text-2xl m-2">Welcome '{{ AppState.currentUser.username }}'!</div>
+    <div class="text-2xl m-2">Welcome '{{ AppState.authUser.username }}'!</div>
     <div class="m-2">
         <div>👏 Thank you very much for testing AliasFlare in it's early stages!</div>
         <div class="text-purple-500">🚧 If you encounter any bugs, please report them directly to me</div>

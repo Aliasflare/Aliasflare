@@ -2,14 +2,15 @@ import { reactive } from "vue";
 
 export const AppState = reactive<{
     authChecked: boolean,
-    loggedIn: boolean,
-    currentUser: null|any,
+    authUserId: any|null,
+    authUser: any|null,
+
     config: null|any
     prepared: boolean
 }>({
     authChecked: false,
-    loggedIn: false,
-    currentUser: null,
+    authUserId: null,
+    authUser: null,
     config: null,
     prepared: false
 });

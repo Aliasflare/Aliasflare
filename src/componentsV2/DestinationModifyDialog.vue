@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { AppState } from '@/AppState';
-import { destinationStore } from '@/api/DestinationStore';
+import { Stores } from '@/api/Stores';
 import { ref } from 'vue';
 import SelectIcon from './SelectIcon.vue';
 import SelectCategory from './SelectCategory.vue';
+
+const { stores } = defineProps<{ stores: Stores }>();
 
 const showFields = ref<undefined|string[]>();
 function renderField(field: string) { return !showFields.value || showFields?.value?.includes('*') || showFields?.value?.includes(field); }
@@ -33,9 +35,9 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await destinationStore.update(target.value, fields.value);
+        await stores.destinationStore.update(target.value, fields.value);
     else 
-        await destinationStore.create(AppState.currentUser.id, fields.value);
+        await stores.destinationStore.create(AppState.authUserId, fields.value);
     show.value = false;
 }
 </script>
@@ -54,7 +56,7 @@ async function createOrUpdate() {
                 </InputGroup>
                 <label>Category</label>
                 <InputGroup>
-                    <SelectCategory v-model="fields.categoryID" />
+                    <SelectCategory v-model="fields.categoryID" :stores="stores" />
                 </InputGroup>
                 <label>Custom</label>
                 <InputGroup>
