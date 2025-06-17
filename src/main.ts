@@ -1,9 +1,10 @@
 import './App.css'
 import { createApp } from 'vue'
 import App from './App.vue'
-import Router from './Router'
+import Router from '@/Router'
+import { AppState } from '@/AppState';
 import { destinationStore } from '@/api/DestinationStore';
-import { aliasStore } from './api/AliasStore';
+import { aliasStore } from '@/api/AliasStore';
 
 const app = createApp(App);
 app.config.globalProperties.navigator = navigator;
@@ -83,3 +84,5 @@ app.mount('#app');
 window.destinationStore = destinationStore;
 //@ts-ignore
 window.aliasStore = aliasStore;
+//@ts-ignore
+window.AppState = AppState;

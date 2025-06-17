@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const domains = ["tononym.de"];
+import { AppState } from '@/AppState';
+const domains = AppState.config?.domains || [];
 </script>
 
 <template>

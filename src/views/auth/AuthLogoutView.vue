@@ -3,8 +3,6 @@ import { onMounted, ref } from 'vue';
 import router from '@/Router';
 import Logo from '@/components/Logo.vue';
 import AuthBox from './AuthBox.vue';
-import MaterialSymbolsCheck from '~icons/material-symbols/check';
-import MaterialSymbolsError from '~icons/material-symbols/error';
 import { AppState } from '@/AppState';
 
 const loading = ref<boolean>(false);

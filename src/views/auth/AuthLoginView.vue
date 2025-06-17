@@ -3,10 +3,6 @@ import { ref } from 'vue';
 import router from '@/Router';
 import Logo from '@/components/Logo.vue';
 import AuthBox from './AuthBox.vue';
-import MaterialSymbolsCheck from '~icons/material-symbols/check';
-import MaterialSymbolsError from '~icons/material-symbols/error';
-import MaterialSymbolsPerson from '~icons/material-symbols/person';
-import MaterialSymbolsPassword from '~icons/material-symbols/password';
 import { AppState } from '@/AppState';
 
 const username = ref<string>("");
