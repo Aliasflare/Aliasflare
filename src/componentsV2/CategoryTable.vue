@@ -33,9 +33,9 @@ const loading = ref(false);
         </template>
         <template #empty> No categories found </template>
         <template #loading> Loading... </template>
-        <Column header="Display" style="width: 16px;">
+        <Column header="Display">
             <template #body="slotProps">
-                <Display :object="slotProps.data" />
+                <Display :object="slotProps.data" :tag="true" />
             </template>
         </Column>
         <Column header="Enabled">

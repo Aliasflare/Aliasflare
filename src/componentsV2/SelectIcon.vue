@@ -4,7 +4,7 @@ const icons = IconData.icons.map(a => ({ name: a.properties.name, code: a.proper
 </script>
 
 <template>
-    <Select :options="icons" filter optionLabel="name" optionValue="code" placeholder="Icon" checkmark :highlightOnSelect="false" class="w-16">
+    <Select :options="[{ name: '(None)', code: '' }, ...icons]" filter optionLabel="name" optionValue="code" placeholder="Icon" checkmark :highlightOnSelect="false" class="w-16">
         <template #value="slotProps">
             <div v-if="slotProps.value" class="flex items-center h-full w-full">
                 <i :class="`pi pi-${slotProps.value} mr-2`"></i>

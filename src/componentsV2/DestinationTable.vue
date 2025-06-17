@@ -12,7 +12,6 @@ const props = defineProps<{
     class?: any
 }>();
 
-const expandedRowGroups = ref([]);
 const expandedRows = ref([]);
 const deleteDialog = useTemplateRef('deleteDialog');
 const modifyDialog = useTemplateRef('modifyDialog');
@@ -24,7 +23,7 @@ const loading = ref(false);
 <template>
     <DestinationDeleteDialog ref="deleteDialog" />
     <DestinationModifyDialog ref="modifyDialog" />
-    <DataTable v-model:expandedRows="expandedRows" v-model:expandedRowGroups="expandedRowGroups" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading" expandableRowGroups rowGroupMode="subheader" groupRowsBy="categoryID">
+    <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="text-xl font-bold">Your Destinations</span>
@@ -35,15 +34,14 @@ const loading = ref(false);
         </template>
         <template #empty> No destinations found </template>
         <template #loading> Loading... </template>
-        <template #groupheader="slotProps">
-            <div class="inline-block ml-2">
-                <Display :object="categoryStore.getKeyedObject(slotProps.data.categoryID)" />
-            </div>
-        </template>
-        <Column field="categoryID" header="Category"></Column>
-        <Column header="Display" style="width: 16px;">
+        <Column header="Name">
             <template #body="slotProps">
                 <Display :object="slotProps.data" />
+            </template>
+        </Column>
+        <Column header="Category">
+            <template #body="slotProps">
+                <Display :object="categoryStore.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
             </template>
         </Column>
         <Column header="Address">

@@ -54,6 +54,11 @@ async function createOrUpdate() {
                 <InputGroup>
                     <SelectCategory v-model="fields.categoryID" />
                 </InputGroup>
+                <label>Custom</label>
+                <InputGroup>
+                    <InputText v-model="fields.displayImage" placeholder="Image URL" />
+                    <InputText v-model="fields.displayURL" placeholder="URL" />
+                </InputGroup>
                 <Message size="small" severity="secondary" variant="simple">Controls how this alias will shop up in the webinterface</Message>
             </div>
 

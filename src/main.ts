@@ -6,6 +6,9 @@ import { destinationStore } from '@/api/DestinationStore';
 import { aliasStore } from './api/AliasStore';
 
 const app = createApp(App);
+app.config.globalProperties.navigator = navigator;
+app.config.globalProperties.window = window;
+app.config.globalProperties.document = document;
 app.use(Router);
 
 import 'primeicons/primeicons.css'

@@ -7,6 +7,7 @@ import AliasDeleteDialog from './AliasDeleteDialog.vue';
 import AliasModifyDialog from '@/componentsV2/AliasModifyDialog.vue';
 import Display from './Display.vue';
 import { categoryStore } from '@/api/CategoryStore';
+import { useToast } from 'primevue/usetoast';
 
 const props = defineProps<{
     load: () => Promise<void>,
@@ -15,18 +16,24 @@ const props = defineProps<{
 }>();
 
 const expandedRows = ref([]);
-const expandedRowGroups = ref([]);
 const deleteDialog = useTemplateRef('deleteDialog');
 const modifyDialog = useTemplateRef('modifyDialog');
 onMounted(props.load);
 
 const loading = ref(false);
+
+const toast = useToast();
+function handleAliasCopy(slotProps: any) {
+    navigator.clipboard.writeText(slotProps.data.token + '@' + slotProps.data.domain);
+    toast.add({ severity: 'success', summary: 'Copied Alias to clipboard', life: 2000 })
+}
 </script>
 
 <template>
+    <Toast />
     <AliasDeleteDialog ref="deleteDialog" />
     <AliasModifyDialog ref="modifyDialog" />
-    <DataTable v-model:expandedRows="expandedRows" v-model:expandedRowGroups="expandedRowGroups" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading" expandableRowGroups rowGroupMode="subheader" groupRowsBy="categoryID">
+    <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
                 <span class="text-xl font-bold">Your Aliases</span>
@@ -37,20 +44,22 @@ const loading = ref(false);
         </template>
         <template #empty> No aliases found </template>
         <template #loading> Loading... </template>
-        <template #groupheader="slotProps">
-            <div class="inline-block ml-2">
-                <Display :object="categoryStore.getKeyedObject(slotProps.data.categoryID)" />
-            </div>
-        </template>
-        <Column field="categoryID" header="Category"></Column>
-        <Column header="Display" style="width: 16px;">
+        <Column header="Name">
             <template #body="slotProps">
                 <Display :object="slotProps.data" />
             </template>
         </Column>
+        <Column header="Category">
+            <template #body="slotProps">
+                <Display :object="categoryStore.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
+            </template>
+        </Column>
         <Column header="Address">
             <template #body="slotProps">
-                {{ slotProps.data.token + '@' + slotProps.data.domain }}
+                <div class="flex items-center">
+                    <div class="mr-2">{{ slotProps.data.token + '@' + slotProps.data.domain }}</div>
+                    <Button icon="pi pi-copy" severity="secondary" aria-label="Copy" size="small" @click="handleAliasCopy(slotProps)" />
+                </div>
             </template>
         </Column>
         <Column header="Destination">

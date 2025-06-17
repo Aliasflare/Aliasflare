@@ -47,6 +47,11 @@ async function createOrUpdate() {
                     </InputGroupAddon>
                     <InputText v-model="fields.displayName" placeholder="Primary" />
                 </InputGroup>
+                <label>Custom</label>
+                <InputGroup>
+                    <InputText v-model="fields.displayImage" placeholder="Image URL" />
+                    <InputText v-model="fields.displayURL" placeholder="URL" />
+                </InputGroup>
                 <Message size="small" severity="secondary" variant="simple">Controls how this category will shop up in the webinterface</Message>
             </div>
 
