@@ -27,8 +27,7 @@ watch(() => AppState.viewAsUserId, () => {
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
-                    <div>{{ AppState.viewAsUserId }}</div>
-                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="Stores.withPerspective(AppState.viewAsUserId).userStore.getKeyedObject(AppState.viewAsUserId)?.admin" />
+                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="AppState.authUser?.admin" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
                         <div>{{ AppState.authUser.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
