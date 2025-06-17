@@ -5,7 +5,7 @@ import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ZodBoolean, ZodEmptyString, ZodString } from "../../validators/BasicValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
-import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDisplayURL } from "../../validators/DisplayValidators";
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
@@ -15,6 +15,8 @@ const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
     displayName: ZodDisplayName,
+    displayURL: ZodDisplayURL,
+    displayImage: ZodDisplayImage,
     remoteNameOverwriteOnIncoming: ZodString.optional(),
     remoteNameOverwriteOnOutgoing: ZodString.optional(),
     ownNameOverwriteOnOutgoing: ZodString.optional(),

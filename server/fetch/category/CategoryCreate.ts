@@ -5,7 +5,7 @@ import { InvalidBodyError, InvalidMethodError, NotAllowedError } from "../Errors
 import { ZodBoolean } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
-import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDisplayURL } from "../../validators/DisplayValidators";
 import { TransformCategory } from "./CategoryTransformer";
 
 const CategoryCreateBody = (request: ExtendedRequest, env: any) => z.object({
@@ -13,6 +13,8 @@ const CategoryCreateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
+    displayURL: ZodDisplayURL,
+    displayImage: ZodDisplayImage,
     enabled: ZodBoolean.optional(),
 }).readonly();
 

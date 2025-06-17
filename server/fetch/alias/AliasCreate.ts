@@ -6,7 +6,7 @@ import { ZodBoolean, ZodEmptyString, ZodString } from "../../validators/BasicVal
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodMailValidDomain } from "../../validators/MailValidators";
-import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDisplayURL } from "../../validators/DisplayValidators";
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
@@ -16,6 +16,8 @@ const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
     displayName: ZodDisplayName,
+    displayURL: ZodDisplayURL,
+    displayImage: ZodDisplayImage,
     remoteNameOverwriteOnIncoming: ZodString.optional(),
     remoteNameOverwriteOnOutgoing: ZodString.optional(),
     ownNameOverwriteOnOutgoing: ZodString.optional(),

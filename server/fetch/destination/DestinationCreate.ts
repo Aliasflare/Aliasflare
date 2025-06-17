@@ -6,7 +6,7 @@ import { ZodBoolean, ZodEmptyString } from "../../validators/BasicValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodDomain, ZodMailBox, ZodMailName } from "../../validators/MailValidators";
-import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayName } from "../../validators/DisplayValidators";
+import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDisplayURL } from "../../validators/DisplayValidators";
 import { TransformDestination } from "./DestinationTransformer";
 import { cloudflareClient } from "../../CloudflareClient";
 
@@ -16,6 +16,8 @@ const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
+    displayURL: ZodDisplayURL,
+    displayImage: ZodDisplayImage,
     mailName: z.union([ZodMailName, ZodEmptyString]).optional(),
     mailBox: ZodMailBox,
     mailDomain: ZodDomain,
