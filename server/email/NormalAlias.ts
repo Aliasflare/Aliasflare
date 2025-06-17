@@ -150,6 +150,25 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	if(hasHeader(mailContent, "References")) mailContent = setHeader(mailContent, "References", getHeader(mailContent, "References")?.replaceAll(alias.domain, alias.destination.mailDomain));
 	if(hasHeader(mailContent, "In-Reply-To")) mailContent = setHeader(mailContent, "In-Reply-To", getHeader(mailContent, "In-Reply-To")?.replaceAll(alias.domain, alias.destination.mailDomain));
 
+	//Add aliasflare headers
+	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-ID", alias.destination?.id);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-Display-Name", alias.destination?.displayName);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-Display-Color", alias.destination?.displayColor);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-Display-Icon", alias.destination?.displayIcon);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-Display-URL", alias.destination?.displayURL);
+
+	mailContent = setHeader(mailContent, "X-Aliasflare-Category-ID", alias.category?.id);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Category-Display-Name", alias.category?.displayName);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Category-Display-Color", alias.category?.displayColor);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Category-Display-Icon", alias.category?.displayIcon);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Category-Display-URL", alias.category?.displayURL);
+
+	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-ID", alias?.id);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-Name", alias?.displayName);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-Color", alias?.displayColor);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-Icon", alias?.displayIcon);
+	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-URL", alias?.displayURL);
+
 	console.log("[NormalAlias] Modified headers!");
 
 	// Remove invalid headers
