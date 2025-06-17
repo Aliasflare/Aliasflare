@@ -6,11 +6,11 @@ import Display from './Display.vue';
 <template>
     <Select :options="[{ id: '' }, ...categoryStore.getKeyedObjects()]" optionLabel="displayName" optionValue="id" placeholder="Category" checkmark :highlightOnSelect="false" class="w-16">
         <template #value="slotProps">
-            <Display :object="categoryStore.getKeyedObject(slotProps.value)" />
+            <Display :object="categoryStore.getKeyedObject(slotProps.value)" :tag="true" />
         </template>
 
         <template #option="slotProps">
-            <Display :object="slotProps.option" />
+            <Display :object="slotProps.option" :tag="true" />
         </template>
     </Select>
 </template>
