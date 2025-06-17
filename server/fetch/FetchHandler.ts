@@ -31,6 +31,7 @@ import { CategoryGet } from './category/CategoryGet';
 import { CategoryList } from './category/CategoryList';
 import { CategoryDelete } from './category/CategoryDelete';
 import { GenericApi } from "./GenericApi";
+import { ConfigGet } from './others/ConfigGet';
 
 const fetchHandlers = [
     ...[initDBFetchHandler, initCloudflareClientFetchHandler, AttachSession, AttachUser, AttachAdmin],
@@ -39,6 +40,7 @@ const fetchHandlers = [
     ...[DestinationCheckVerification, DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationUpdate],
     ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasUpdate],
     ...[CategoryCreate, CategoryDelete, CategoryGet, CategoryList, CategoryUpdate],
+    ...[ConfigGet],
     ...[GenericApi],
 ];
 
