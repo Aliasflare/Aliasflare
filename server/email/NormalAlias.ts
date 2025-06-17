@@ -150,6 +150,12 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	if(hasHeader(mailContent, "References")) mailContent = setHeader(mailContent, "References", getHeader(mailContent, "References")?.replaceAll(alias.domain, alias.destination.mailDomain));
 	if(hasHeader(mailContent, "In-Reply-To")) mailContent = setHeader(mailContent, "In-Reply-To", getHeader(mailContent, "In-Reply-To")?.replaceAll(alias.domain, alias.destination.mailDomain));
 
+	console.log("[NormalAlias] Modified headers!");
+
+	// Remove invalid headers
+	mailContent = removeHeadersExcept(mailContent, TrustedHeaders);
+	console.log("[NormalAlias] Removed all untrusted headers!");
+
 	//Add aliasflare headers
 	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-ID", alias.destination?.id);
 	mailContent = setHeader(mailContent, "X-Aliasflare-Destination-Display-Name", alias.destination?.displayName);
@@ -168,12 +174,7 @@ export async function NormalAlias(message: any, env: any, mailContent: string, d
 	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-Color", alias?.displayColor);
 	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-Icon", alias?.displayIcon);
 	mailContent = setHeader(mailContent, "X-Aliasflare-Alias-Display-URL", alias?.displayURL);
-
-	console.log("[NormalAlias] Modified headers!");
-
-	// Remove invalid headers
-	mailContent = removeHeadersExcept(mailContent, TrustedHeaders);
-	console.log("[NormalAlias] Removed all untrusted headers!");
+	console.log("[NormalAlias] Added aliasflare headers!");
 
 	// Send mail
 	await sendRawMailViaCloudflare(mailContent, env, message);
