@@ -12,6 +12,7 @@ async function checkLogin() {
     try {
         AppState.authUser = await Stores.withPerspective("AUTH").userStore.self();
         AppState.authUserId = AppState.authUser.id;
+        AppState.viewAsUserId = AppState.authUserId;
         console.log("[AuthCheckingView]", "User is logged in!");
     } catch(err) {
         console.log(err);

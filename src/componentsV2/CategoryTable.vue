@@ -53,7 +53,7 @@ const loading = ref(false);
                 <Button label="Delete" severity="danger" icon="pi pi-trash" @click="deleteDialog?.handleDelete(slotProps.data)" />
             </div>
             <div class="flex flex-wrap items-center gap-2" v-if="props.admin">
-                <Button label="View as user" severity="primary" icon="pi pi-eye" @click="router.push({ path: '/user/categories', query: { as: slotProps.data.userID }})" />
+                <Button label="View as user" severity="primary" icon="pi pi-eye" @click="router.push({ path: `/user/${slotProps.data.userID}/categories` })" />
                 <Button label="Delete" severity="danger" icon="pi pi-trash" @click="deleteDialog?.handleDelete(slotProps.data)" />
             </div>
         </template>

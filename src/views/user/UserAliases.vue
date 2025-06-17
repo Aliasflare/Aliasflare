@@ -3,11 +3,13 @@ import { AppState } from '@/AppState';
 import { Stores } from '@/api/Stores';
 import AliasTable from '@/componentsV2/AliasTable.vue';
 
+const { stores } = defineProps<{ stores: Stores }>();
+
 async function load() {
     try {
-        await Stores.withPerspective(AppState.authUserId).aliasStore.list(AppState.authUserId, 0, 50);
-        await Stores.withPerspective(AppState.authUserId).destinationStore.list(AppState.authUserId, 0, 50);
-        await Stores.withPerspective(AppState.authUserId).categoryStore.list(AppState.authUserId, 0, 50);
+        await stores.aliasStore.list(stores.perspective, 0, 50);
+        await stores.destinationStore.list(stores.perspective, 0, 50);
+        await stores.categoryStore.list(stores.perspective, 0, 50);
     } catch(err) {}
 }
 </script>
@@ -15,5 +17,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <AliasTable :load="load" :value="Stores.withPerspective(AppState.authUserId).aliasStore.getKeyedObjects()" :stores="Stores.withPerspective(AppState.authUserId)" />
+    <AliasTable :load="load" :value="stores.aliasStore.getKeyedObjects()" :stores="stores" />
 </template>

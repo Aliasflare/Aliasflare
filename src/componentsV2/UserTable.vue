@@ -52,7 +52,7 @@ const loading = ref(false);
         <Column expander style="width: 5rem" />
         <template #expansion="slotProps">
             <div class="flex flex-wrap items-center gap-2">
-                <Button label="View as user" severity="primary" icon="pi pi-eye" @click="router.push({ path: '/user', query: { as: slotProps.data.id }})" />
+                <Button label="View as user" severity="primary" icon="pi pi-eye" @click="router.push({ path: `/user/${slotProps.data.id}/home` })" />
                 <Button label="Edit" severity="info" icon="pi pi-pen-to-square" @click="modifyDialog?.handleUpdate(slotProps.data);" />
                 <Button label="Delete" severity="danger" icon="pi pi-trash" @click="deleteDialog?.handleDelete(slotProps.data)" />
             </div>

@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { AppState } from '@/AppState';
 import router from '@/Router';
 import Logo from '@/componentsV2/Logo.vue';
+import { Stores } from '@/api/Stores';
 
 const tabItems = ref([
-    { route: '/user/home', label: 'Home', icon: 'pi pi-home' },
-    { route: '/user/categories', label: 'Categories', icon: 'pi pi-tags' },
-    { route: '/user/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
-    { route: '/user/aliases', label: 'Aliases', icon: 'pi pi-eye-slash' },
-    { route: '/user/settings', label: 'Settings', icon: 'pi pi-cog' },
+    { route: '/user/:userId?/home', label: 'Home', icon: 'pi pi-home' },
+    { route: '/user/:userId?/categories', label: 'Categories', icon: 'pi pi-tags' },
+    { route: '/user/:userId?/destinations', label: 'Destinations', icon: 'pi pi-inbox' },
+    { route: '/user/:userId?/aliases', label: 'Aliases', icon: 'pi pi-eye-slash' },
+    { route: '/user/:userId?/settings', label: 'Settings', icon: 'pi pi-cog' },
 ]);
 
+watch(() => AppState.viewAsUserId, () => {
+    Stores.withPerspective(AppState.viewAsUserId).userStore.get(AppState.viewAsUserId);
+    
+}, { immediate: true });
 </script>
 
 <template>
@@ -22,8 +27,8 @@ const tabItems = ref([
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
-                    <!-- TODO!!!! FIX v-If -->
-                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="true" />
+                    <div>{{ AppState.viewAsUserId }}</div>
+                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="Stores.withPerspective(AppState.viewAsUserId).userStore.getKeyedObject(AppState.viewAsUserId)?.admin" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
                         <div>{{ AppState.authUser.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
@@ -32,9 +37,9 @@ const tabItems = ref([
                 </div>
             </template>
         </Menubar>
-        <Tabs :value="router.currentRoute.value.fullPath" scrollable>
+        <Tabs :value="router.currentRoute.value.matched.at(-1)?.path||0" scrollable>
             <TabList>
-                <Tab v-for="tab in tabItems" :key="tab.label" :value="tab.route" @click="router.push(tab.route)" >
+                <Tab v-for="tab in tabItems" :key="tab.label" :value="tab.route" @click="router.push({ path: tab.route.replaceAll(':userId?/', router.currentRoute.value.params.userId ? router.currentRoute.value.params.userId + '/' : '') })" >
                     <a class="flex items-center gap-2 text-inherit">
                         <i :class="tab.icon" />
                         <span>{{ tab.label }}</span>
@@ -42,11 +47,12 @@ const tabItems = ref([
                 </Tab>
             </TabList>
         </Tabs>
-        <div class="UserContent flex flex-grow relative">
+        <div class="UserContent flex flex-grow relative" v-if="Stores.withPerspective(AppState.viewAsUserId).userStore.getKeyedObject(AppState.viewAsUserId)">
             <div class="UserContentNoFlexOverflow absolute w-full h-full overflow-auto p-4">
-                <router-view />
+                <router-view :stores="Stores.withPerspective(AppState.viewAsUserId)" />
             </div>
         </div>
+        <div class="m-4" v-else>Loading user...</div>
     </div>
 
 </template>

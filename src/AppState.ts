@@ -4,6 +4,7 @@ export const AppState = reactive<{
     authChecked: boolean,
     authUserId: any|null,
     authUser: any|null,
+    viewAsUserId: any|null,
 
     config: null|any
     prepared: boolean
@@ -12,5 +13,6 @@ export const AppState = reactive<{
     authUserId: null,
     authUser: null,
     config: null,
-    prepared: false
+    prepared: false,
+    viewAsUserId: null,
 });

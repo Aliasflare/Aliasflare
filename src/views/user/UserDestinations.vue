@@ -3,10 +3,12 @@ import { AppState } from '@/AppState';
 import { Stores } from '@/api/Stores';
 import DestinationTable from '@/componentsV2/DestinationTable.vue';
 
+const { stores } = defineProps<{ stores: Stores }>();
+
 async function load() {
     try {
-        await Stores.withPerspective(AppState.authUserId).destinationStore.list(AppState.authUserId, 0, 50);
-        await Stores.withPerspective(AppState.authUserId).categoryStore.list(AppState.authUserId, 0, 50);
+        await stores.destinationStore.list(AppState.viewAsUserId, 0, 50);
+        await stores.categoryStore.list(AppState.viewAsUserId, 0, 50);
     } catch(err) {}
 }
 </script>
@@ -14,5 +16,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <DestinationTable :load="load" :value="Stores.withPerspective(AppState.authUserId).destinationStore.getKeyedObjects()" :stores="Stores.withPerspective(AppState.authUserId)" />
+    <DestinationTable :load="load" :value="stores.destinationStore.getKeyedObjects()" :stores="stores" />
 </template>

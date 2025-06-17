@@ -21,7 +21,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: "", redirect: "/user" },
-    { path: "/user", component: UserWrapper, children: [
+    { path: "/user/:userId?", component: UserWrapper, children: [
       { path: "", redirect: "/user/home" },
       { path: "categories", component: UserCategories, meta: { requireAuth: true, requirePrepared: true } },
       { path: "home", component: UserHome, meta: { requireAuth: true, requirePrepared: true } },
@@ -49,10 +49,11 @@ router.beforeEach((to, from) => {
     if(AppState.authUserId == null) return { path: "/auth/login", query: { originalPath: to.fullPath } };
   }
 
-  //TODO: FIX IF
   if(to.meta.requireAdmin) {
-    if(!true) return { path: "/user/home", query: { originalPath: to.fullPath } };
+    if(!AppState.authUser.admin) return { path: "/user/home", query: { originalPath: to.fullPath } };
   }
+
+  AppState.viewAsUserId = to.params.userId||AppState.authUserId;
 
   if(to.meta.requirePrepared) {
       if(AppState.prepared == false) return { path: "/auth/prepare", query: { originalPath: to.fullPath } };
