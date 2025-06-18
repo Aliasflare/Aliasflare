@@ -18,7 +18,8 @@
 		"type-check": "vue-tsc --build",
 		"deploy": "npm run build && wrangler deploy",
 		"cf-typegen": "wrangler types --env template",
-		"tail": "wrangler tail"
+		"tail": "wrangler tail",
+		"cf-configgen": "node helpers/generate-wrangler-config.js"
 	},
 	"dependencies": {
 		"@primeuix/themes": "^1.1.1",

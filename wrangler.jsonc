@@ -1,67 +1,39 @@
-/**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
- */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "aliasflare-ts",
-	"compatibility_date": "2025-04-16",
-	"main": "server/index.ts",
-	"assets": {
-		"not_found_handling": "single-page-application"
-	},
-	"observability": {
-		"enabled": true
-	},
-	"compatibility_flags": ["nodejs_compat"],
-	"d1_databases": [
-		{
-			"binding": "D1",
-			"database_name": "aliasflare-ts",
-			"database_id": "3361547d-5d74-4728-9ed8-fe558023e11f",
-			"preview_database_id": "D1",
-			"migrations_dir": "./database/.generated/migrations"
-		}
-	],
-	"routes": [
-		{ "pattern": "tononym.de", "custom_domain": true },
-		{ "pattern": "www.tononym.de", "custom_domain": true }
-	],
-	"send_email": [
-		{ "name": "email" }
-	],
-	/**
-	 * Smart Placement
-	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
-	 */
-	// "placement": { "mode": "smart" },
-
-	/**
-	 * Bindings
-	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
-	 * databases, object storage, AI inference, real-time communication and more.
-	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
-	 */
-
-	/**
-	 * Environment Variables
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
-	 */
-	// "vars": { "MY_VARIABLE": "production_value" },
-	/**
-	 * Note: Use secrets to store sensitive data.
-	 * https://developers.cloudflare.com/workers/configuration/secrets/
-	 */
-
-	/**
-	 * Static Assets
-	 * https://developers.cloudflare.com/workers/static-assets/binding/
-	 */
-	// "assets": { "directory": "./public/", "binding": "ASSETS" },
-
-	/**
-	 * Service Bindings (communicate between multiple Workers)
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
-	 */
-	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aliasflare-ts",
+  "compatibility_date": "2025-04-16",
+  "main": "server/index.ts",
+  "assets": {
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "D1",
+      "database_name": "aliasflare",
+      "database_id": "3a751b60-29c8-4aa3-af12-861968d08e41",
+      "preview_database_id": "D1",
+      "migrations_dir": "./database/.generated/migrations"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "tononym.de",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.tononym.de",
+      "custom_domain": true
+    }
+  ],
+  "send_email": [
+    {
+      "name": "email"
+    }
+  ]
 }
