@@ -37,7 +37,7 @@ const tasks = new Listr([
       { title: 'Create Worker', skip: async(ctx, task) => ctx.WORKER, task: async(ctx, task) => { throw new Error('Worker creation is not implemented in this script. Please create worker manually using the Cloudflare dashboard.'); } },
       {
         title: 'Set Worker Secrets',
-        skip: _ => process.env.FOR_DEPLOY,
+        skip: _ => !process.env.FOR_DEPLOY,
         task: () => new Listr([
           { title: 'CLOUDFLARE_API_TOKEN', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_API_TOKEN', text: process.env.CLOUDFLARE_API_TOKEN, type: 'secret_text' }); } },
           { title: 'CLOUDFLARE_ACCOUNT_ID', task: async(ctx, task) => {await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_ACCOUNT_ID', text: ctx.ACCOUNT.id, type: 'secret_text' }); } },
