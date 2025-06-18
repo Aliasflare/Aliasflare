@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
-import { Cloudflare, toFile } from 'cloudflare';
+import { Cloudflare } from 'cloudflare';
 
 if (!process.env.DOMAINS) throw new Error('Missing DOMAINS in environment');
 if (!process.env.CLOUDFLARE_API_TOKEN) throw new Error('Missing CLOUDFLARE_API_TOKEN in environment');
@@ -51,7 +51,18 @@ async function getOrCreateWorker(accountId, workerName) {
   return worker;
 }
 
-function generateWranglerConfig(worker, database, domains) {
+async function setWorkerSecret(accountId, workerId, secretName, secretValue) {
+  console.log(`⏳ Setting worker secret "${secretName}" on "${workerId}"...`);
+  await cf.workers.scripts.secrets.update(workerId, {
+    account_id: accountId,
+    name: secretName,
+    text: secretValue,
+    type: 'secret_text',
+  });
+  console.log(`✅ Set worker secret "${secretName}" on "${workerId}"!`);
+}
+
+function generateWranglerConfig(accountId, worker, database, domains) {
   const config = {
     "$schema": "node_modules/wrangler/config-schema.json",
     "name": worker.id,
@@ -79,7 +90,12 @@ function generateWranglerConfig(worker, database, domains) {
     })),
     "send_email": [
       { "name": "email" }
-    ]
+    ],
+    "vars": {
+      "domains": domains.join(","),
+      "defaultIncomingQuotaPerDay": 100,
+      "defaultOutgoingQuotaPerDay": 10,
+    }
   };
 
   const configPath = path.resolve('./wrangler.jsonc');
@@ -90,10 +106,13 @@ function generateWranglerConfig(worker, database, domains) {
 (async () => {
   try {
     const accountId = await getAccountId();
-    const db = await getOrCreateD1Database(accountId, "aliasflare");
-    const worker = await getOrCreateWorker(accountId, "aliasflare-ts");
+    const db = await getOrCreateD1Database(accountId, process.env.CLOUDFLARE_WORKER_NAME || "aliasflare");
+    const worker = await getOrCreateWorker(accountId, process.env.CLOUDFLARE_DB_NAME || "aliasflare");
+    await setWorkerSecret(accountId, worker.id, 'CLOUDFLARE_API_TOKEN', process.env.CLOUDFLARE_API_TOKEN);
+    await setWorkerSecret(accountId, worker.id, 'CLOUDFLARE_ACCOUNT_ID', accountId);
+    await setWorkerSecret(accountId, worker.id, 'mailgun', process.env.MAILGUN_API_KEY||"DISABLED");
     const domains = process.env.DOMAINS.split(',').filter(Boolean);
-    generateWranglerConfig(worker, db, domains);
+    generateWranglerConfig(accountId, worker, db, domains);
   } catch (err) {
     console.error('❌ Error:', err);
     process.exit(1);
