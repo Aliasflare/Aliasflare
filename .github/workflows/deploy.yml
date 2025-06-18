@@ -25,7 +25,7 @@ jobs:
           CLOUDFLARE_WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
           CLOUDFLARE_DATABASE_NAME: ${{ secrets.CLOUDFLARE_DATABASE_NAME }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_DOMAINS: ${{ secrets.DOMAINS }}
+          CLOUDFLARE_DOMAINS: ${{ secrets.CLOUDFLARE_DOMAINS }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
           FOR_DEPLOY: true
     
