@@ -31,7 +31,7 @@ coverage
 
 # wrangler files
 .wrangler
-.dev.vars.private
+.dev.vars*
 
 # Others
 /migrations/
