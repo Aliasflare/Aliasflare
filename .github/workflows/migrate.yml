@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare
+name: Migrate Cloudflare D1 Database
 
 on:
   workflow_dispatch:
@@ -25,10 +25,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           DOMAINS: ${{ secrets.DOMAINS }}
     
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy
-        run: npm run deploy
+      - name: Migrate Database
+        run: npm run database:migrateRemote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
