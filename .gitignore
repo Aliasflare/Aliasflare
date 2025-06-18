@@ -43,3 +43,4 @@ coverage
 .generated
 9999_CreateAdminUser.js
 worker-configuration.d.ts
+wrangler.jsonc
