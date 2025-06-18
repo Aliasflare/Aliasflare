@@ -52,6 +52,7 @@ async function getOrCreateWorker(accountId, workerName) {
 }
 
 async function setWorkerSecret(accountId, workerId, secretName, secretValue) {
+  if(!process.env.FOR_DEPLOY) return console.log(`⚠️ Skipped worker secret "${secretName}" on "${workerId}" because this config is not for deployment!`);
   console.log(`⏳ Setting worker secret "${secretName}" on "${workerId}"...`);
   await cf.workers.scripts.secrets.update(workerId, {
     account_id: accountId,

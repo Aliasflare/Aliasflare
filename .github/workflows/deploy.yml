@@ -27,6 +27,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_DOMAINS: ${{ secrets.DOMAINS }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          FOR_DEPLOY: true
     
       - name: Build project
         run: npm run build
