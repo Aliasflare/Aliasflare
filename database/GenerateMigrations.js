@@ -12,7 +12,7 @@ const SQL_MIGRATIONS_DIR = "./.generated/migrations/";
         console.log("[✓] Migrations folder cleared!");
     } else {
         console.log("[+] Creating migrations folder...");
-        await fsProm.mkdir(path.resolve(import.meta.dirname, SQL_MIGRATIONS_DIR));
+        await fsProm.mkdir(path.resolve(import.meta.dirname, SQL_MIGRATIONS_DIR), { recursive: true });
         console.log("[✓] Migrations folder created!");
     }
 
