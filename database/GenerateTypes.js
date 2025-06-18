@@ -30,9 +30,15 @@ async function createTempDbFromMigrations() {
 async function runKyselyCodegen() {
   console.log('[+] Running kysely-codegen...');
   return new Promise((resolve, reject) => {
-    const proc = spawn('npx kysely-codegen', [
+    const kyselyPath = path.resolve(import.meta.dirname, '../node_modules/.bin/kysely-codegen');
+    const proc = spawn(kyselyPath, [
       '--out-file', path.resolve(import.meta.dirname, "./.generated/db.d.ts")
-    ], { stdio: 'inherit', cwd: path.resolve(import.meta.dirname, "../"), env: { DATABASE_URL: TEMP_DB_PATH }, shell: true, stdio: 'inherit' });
+    ], {
+      stdio: 'inherit',
+      cwd: path.resolve(import.meta.dirname, "../"),
+      env: { ...process.env, DATABASE_URL: TEMP_DB_PATH },
+      shell: true
+    });
 
     proc.on('exit', code => {
       if (code === 0) {
