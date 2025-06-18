@@ -13,11 +13,11 @@
 		"database:migrateLocal": "npm run database:generateMigrations && npx wrangler d1 migrations apply D1",
 		"database:migrateRemote": "npm run database:generateMigrations && npx wrangler d1 migrations apply D1 --remote",
 		"database:migrateLocalClean": "rimraf .wrangler/state/v3/d1 && npm run database:migrateLocal",
-		"secrets:push": "npx wrangler secret bulk .dev.vars",
+		"secrets:push": "npx wrangler secret bulk .dev.vars.private",
 		"build-only": "vite build",
 		"type-check": "vue-tsc --build",
 		"deploy": "npm run build && wrangler deploy",
-		"cf-typegen": "wrangler types",
+		"cf-typegen": "wrangler types --env template",
 		"tail": "wrangler tail"
 	},
 	"dependencies": {
