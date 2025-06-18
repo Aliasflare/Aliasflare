@@ -24,10 +24,10 @@ jobs:
       - name: Generate Wrangler Configuration
         run: npm run cf-configgen
         env:
-          CLOUDFLARE_WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
-          CLOUDFLARE_DATABASE_NAME: ${{ secrets.CLOUDFLARE_DATABASE_NAME }}
+          CLOUDFLARE_WORKER_NAME: ${{ vars.CLOUDFLARE_WORKER_NAME }}
+          CLOUDFLARE_DATABASE_NAME: ${{ vars.CLOUDFLARE_DATABASE_NAME }}
+          CLOUDFLARE_DOMAINS: ${{ vars.CLOUDFLARE_DOMAINS }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_DOMAINS: ${{ secrets.CLOUDFLARE_DOMAINS }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
 
       - name: Build project

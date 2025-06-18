@@ -1,20 +1,17 @@
 import fs from 'fs';
 import path from 'path';
-import 'dotenv/config';
-import { Cloudflare } from 'cloudflare';
-
-if (!process.env.CLOUDFLARE_DOMAINS) throw new Error('Missing CLOUDFLARE_DOMAINS in environment');
-if (!process.env.CLOUDFLARE_API_TOKEN) throw new Error('Missing CLOUDFLARE_API_TOKEN in environment');
-const cf = new Cloudflare({ apiToken: process.env.CLOUDFLARE_API_TOKEN });
-
 import Listr from 'listr';
-import { Observable } from 'rxjs';
+import { Cloudflare } from 'cloudflare';
+import 'dotenv/config';
+
+const cf = new Cloudflare({ apiToken: process.env.CLOUDFLARE_API_TOKEN });
 
 const tasks = new Listr([
   {
     title: 'Check environment variables',
     task: () => new Listr([
-      { title: 'Check CLOUDFLARE_DOMAINS', task: (ctx, task) => { if (!process.env.CLOUDFLARE_DOMAINS) throw new Error('Missing CLOUDFLARE_DOMAINS in environment'); ctx.DOMAINS = process.env.CLOUDFLARE_DOMAINS.split(',').filter(Boolean); } },
+      { title: 'CLOUDFLARE_API_TOKEN', task: (ctx, task) => { if (!process.env.CLOUDFLARE_API_TOKEN) throw new Error('Missing CLOUDFLARE_API_TOKEN in environment'); } },
+      { title: 'CLOUDFLARE_DOMAINS', task: (ctx, task) => { if (!process.env.CLOUDFLARE_DOMAINS) throw new Error('Missing CLOUDFLARE_DOMAINS in environment'); ctx.DOMAINS = process.env.CLOUDFLARE_DOMAINS.split(',').filter(Boolean); } },
     ])
   },
   {
