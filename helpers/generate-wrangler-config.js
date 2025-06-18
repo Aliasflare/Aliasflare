@@ -3,7 +3,7 @@ import path from 'path';
 import 'dotenv/config';
 import { Cloudflare } from 'cloudflare';
 
-if (!process.env.DOMAINS) throw new Error('Missing DOMAINS in environment');
+if (!process.env.CLOUDFLARE_DOMAINS) throw new Error('Missing CLOUDFLARE_DOMAINS in environment');
 if (!process.env.CLOUDFLARE_API_TOKEN) throw new Error('Missing CLOUDFLARE_API_TOKEN in environment');
 const cf = new Cloudflare({ apiToken: process.env.CLOUDFLARE_API_TOKEN });
 
@@ -107,11 +107,11 @@ function generateWranglerConfig(accountId, worker, database, domains) {
   try {
     const accountId = await getAccountId();
     const db = await getOrCreateD1Database(accountId, process.env.CLOUDFLARE_WORKER_NAME || "aliasflare");
-    const worker = await getOrCreateWorker(accountId, process.env.CLOUDFLARE_DB_NAME || "aliasflare");
+    const worker = await getOrCreateWorker(accountId, process.env.CLOUDFLARE_DATABASE_NAME || "aliasflare");
     await setWorkerSecret(accountId, worker.id, 'CLOUDFLARE_API_TOKEN', process.env.CLOUDFLARE_API_TOKEN);
     await setWorkerSecret(accountId, worker.id, 'CLOUDFLARE_ACCOUNT_ID', accountId);
     await setWorkerSecret(accountId, worker.id, 'mailgun', process.env.MAILGUN_API_KEY||"DISABLED");
-    const domains = process.env.DOMAINS.split(',').filter(Boolean);
+    const domains = process.env.CLOUDFLARE_DOMAINS.split(',').filter(Boolean);
     generateWranglerConfig(accountId, worker, db, domains);
   } catch (err) {
     console.error('❌ Error:', err);
