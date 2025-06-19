@@ -1,4 +1,4 @@
-name: Deploy Cloudflare Worker
+name: Deploy
 
 on:
   workflow_dispatch:
@@ -9,6 +9,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Get current commit SHA
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -27,12 +31,18 @@ jobs:
           CLOUDFLARE_DOMAINS: ${{ vars.CLOUDFLARE_DOMAINS }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+          COMMIT_SHA: ${{ steps.commit.outputs.sha }}
           FOR_DEPLOY: true
-    
+
       - name: Build project
         run: npm run build
 
-      - name: Deploy
+      - name: Migrate Database
+        run: npm run database:migrateRemote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Deploy Worker
         run: npm run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

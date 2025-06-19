@@ -61,9 +61,7 @@ For initial deployment or after an update you have to redeploy your app and upgr
 
 ### Deploying
 1. Goto `Actions`
-2. Select `Migrate Cloudflare D1 Database` at the left  
-  2.1 Click on `Run workflow` and `Run workflow` again
-3. Select `Deploy Cloudflare Worker` at the left  
+3. Select `Deploy` at the left  
   3.1 Click on `Run workflow` and `Run workflow` again
 
 ### Updating

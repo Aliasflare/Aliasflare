@@ -96,6 +96,7 @@ const tasks = new Listr([
           domains: ctx.DOMAINS.join(","),
           defaultIncomingQuotaPerDay: 100,
           defaultOutgoingQuotaPerDay: 10,
+          commitSha: process.env.COMMIT_SHA || "unknown",
         }
       };
 
