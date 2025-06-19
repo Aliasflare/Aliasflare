@@ -22,7 +22,7 @@ export async function down(db) {
   const sqls = [];
   sqls.push(
     {
-      sql: `DELETE FROM "user" where "username" == 'MaxMustermann';`
+      sql: `DELETE FROM "user" where "username" == 'admin';`
     }
   );
   return sqls
