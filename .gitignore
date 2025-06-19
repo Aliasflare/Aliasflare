@@ -43,3 +43,4 @@ coverage
 .generated
 worker-configuration.d.ts
 wrangler.jsonc
+.env

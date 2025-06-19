@@ -27,13 +27,14 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 3. Create an API Token `(Account->API Token->Create Token)`  
   3.1 Select `Edit Cloudflare Workers` template from `API token templates`  
   3.2 Change `Token name` to `Aliasflare`  
-  3.3 Add permission `(Zone, Email Routing Rules, Edit)` (needed for automatically creating the worker)  
-  3.4 Add permission `(Account, D1, Edit)` (needed for automatically creating the database)  
-  3.5 Add permission `(Account, Email Routing Addresses, Edit)` (needed for incoming mail delivery)  
-  3.6 Select your account under `Account Resources` `(Include, YOUR ACCOUNT)`  
-  3.7 Select your domain under `Zone Resources` `(Include, Specific zone, YOUR DOMAIN)`  
-  3.8 Click on `Continue to summary` and then on `Create Token`  
-  3.9 NOTE DOWN YOU TOKEN SECURELY! YOU WILL NEED IT LATER AND CANNOT VIEW IT IF THE TAB IS CLOSED!
+  3.3 Add permission `(Zone, Email Routing Rules, Edit)` (needed for binding the worker to incoming mails)   
+  3.4 Add permission `(Zone, Zone Settings, Edit)` (needed for enabling email routing)  
+  3.5 Add permission `(Account, D1, Edit)` (needed for creating the database)  
+  3.6 Add permission `(Account, Email Routing Addresses, Edit)` (needed for destinations)  
+  3.7 Select your account under `Account Resources` `(Include, YOUR ACCOUNT)`  
+  3.8 Select your domain under `Zone Resources` `(Include, Specific zone, YOUR DOMAIN)`  
+  3.9 Click on `Continue to summary` and then on `Create Token`  
+  3.10 NOTE DOWN YOU TOKEN SECURELY! YOU WILL NEED IT LATER AND CANNOT VIEW IT IF THE TAB IS CLOSED!
 
 ### 2. Setup GitHub Repository
 1. Fork this repository into your GitHub Account (perferably as private)
