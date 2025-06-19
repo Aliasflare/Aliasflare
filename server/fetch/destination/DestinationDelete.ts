@@ -30,7 +30,7 @@ export async function DestinationDelete(request: ExtendedRequest, env: any) {
             .executeTakeFirst();
 
         //Remove destination mail adress from cloudflare
-        await sendRawMailViaCloudflare(BuildDestinationRemovedMail(deleteBody.data.destination, env.domains.split(",")[0]), env);
+        await sendRawMailViaCloudflare(BuildDestinationRemovedMail(deleteBody.data.destination, env.CLOUDFLARE_DOMAINS.split(",")[0]), env);
         await cloudflareClient.emailRouting.addresses.delete(
             deleteBody.data.destination.cloudflareDestinationID,
             { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },

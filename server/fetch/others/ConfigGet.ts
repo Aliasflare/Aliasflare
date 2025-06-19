@@ -23,7 +23,7 @@ export async function ConfigGet(request: ExtendedRequest, env: Env) {
         
         console.log("[ConfigGetBody]", `Get Config`);
         return Response.json({ error: false, config: { 
-            domains: env.domains.split(","),
+            domains: env.CLOUDFLARE_DOMAINS.split(","),
             commitSha: env.commitSha
         } });
     }

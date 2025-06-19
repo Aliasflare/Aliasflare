@@ -45,7 +45,7 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
         let newAddr;
         if(mailChanged) {
             //Delete old destination from cloudflare if the mail has been changed
-            await sendRawMailViaCloudflare(BuildDestinationRemovedMail(updateBody.data.destination, env.domains.split(",")[0]), env);
+            await sendRawMailViaCloudflare(BuildDestinationRemovedMail(updateBody.data.destination, env.CLOUDFLARE_DOMAINS.split(",")[0]), env);
             await cloudflareClient.emailRouting.addresses.delete(
                 updateBody.data.destination.cloudflareDestinationID,
                 { account_id: env["CLOUDFLARE_ACCOUNT_ID"] },
