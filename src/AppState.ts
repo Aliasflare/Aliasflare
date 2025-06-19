@@ -7,7 +7,8 @@ export const AppState = reactive<{
     viewAsUserId: any|null,
 
     config: null|any
-    prepared: boolean
+    prepared: boolean,
+    hasUpdate: boolean,
 }>({
     authChecked: false,
     authUserId: null,
@@ -15,4 +16,5 @@ export const AppState = reactive<{
     config: null,
     prepared: false,
     viewAsUserId: null,
+    hasUpdate: false,
 });

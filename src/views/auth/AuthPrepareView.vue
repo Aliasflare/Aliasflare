@@ -39,6 +39,7 @@ async function checkLogin() {
 
         if(AppState.config.commitSha == sha) return console.log("[UpdateCheck]", "Current commit is up to date:", sha);
         console.log("[UpdateCheck]", "New commit found:", sha);
+        AppState.hasUpdate = true;
     })();
 
     setTimeout(() => router.push({ path: (router.currentRoute.value.query.originalPath as any)||'/' }), 500);

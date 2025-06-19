@@ -15,12 +15,12 @@ const tabItems = ref([
 
 watch(() => AppState.viewAsUserId, () => {
     Stores.withPerspective(AppState.viewAsUserId).userStore.get(AppState.viewAsUserId);
-    
 }, { immediate: true });
 </script>
 
 <template>
     <div class="UserWrapper h-full w-full flex flex-col bg-base-300">
+        <Message closable severity="warn" icon="pi pi-exclamation-triangle" v-if="AppState.hasUpdate"><b>Update(s) available!</b> Checkout <b><a href="https://github.com/Aliasflare/Aliasflare?tab=readme-ov-file#updating">https://github.com/Aliasflare/Aliasflare</a></b> for update instructions!</Message>
         <Menubar>
             <template #start>
                 <Logo class="w-32" />
