@@ -41,6 +41,5 @@ coverage
 
 #Generated-SQL-Migrations
 .generated
-9999_CreateAdminUser.js
 worker-configuration.d.ts
 wrangler.jsonc
