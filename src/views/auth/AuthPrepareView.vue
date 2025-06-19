@@ -26,6 +26,12 @@ async function checkLogin() {
 
     //Check for updates if admin, but do not care about failures (no await!)
     (async() => {
+        if(Date.now() - new Date(localStorage.getItem("lastUpdateCheck")||0).getTime() < 1000*60*60) {
+            console.log("[UpdateCheck]", "Skipping update check!");
+            return;
+        }
+        localStorage.setItem("lastUpdateCheck", new Date().toISOString());
+
         console.log("[UpdateCheck]", "Checking for updates...");
         if(!AppState.authUser.admin) return console.log("[UpdateCheck]", "User is not admin, skipping update check!");
         const gRes = await fetch(`https://api.github.com/repos/Aliasflare/Aliasflare/commits/master`, {
@@ -33,8 +39,8 @@ async function checkLogin() {
                 Accept: "application/vnd.github.v3+json",
             }
         });
-        if (!gRes.ok) return console.log("[UpdateCheck]", "Failed to fetch from GitHub:", gRes.status, gRes.statusText, await gRes.text());
-        const data = await res.json();
+        if (!gRes.ok) return console.log("[UpdateCheck]", "Failed to fetch from GitHub:", gRes.status, gRes.statusText, gRes.text());
+        const data = await gRes.json();
         const sha = data.sha;
 
         if(AppState.config.commitSha == sha) return console.log("[UpdateCheck]", "Current commit is up to date:", sha);
