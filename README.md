@@ -38,18 +38,19 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 
 ### 2. Setup GitHub Repository
 1. Fork this repository into your GitHub Account
-2. Goto `Settings->Secrets and variables`
-3. Select `Secrets` and add the following secrets  
-  3.1 Add `CLOUDFLARE_API_TOKEN` with your before generated API Token 
-  3.2 Add `CLOUDFLARE_DOMAINS` containing your domains in a comma-seperated list   
-  3.3 (OPTIONAL) Add `CLOUDFLARE_WORKER_NAME` if you want to use another Cloudflare Worker  
-  3.4 (OPTIONAL) Add `CLOUDFLARE_DATABASE_NAME` if you want to use another Cloudflare D1 Database
-  3.5 (OPTIONAL) Add `MAILGUN_API_KEY` if you setup your domain at mailgun for outgoing mails
+2. Goto your GitHub Repository
+3. Goto `Settings->Secrets and variables`
+4. Select `Secrets` and add the following secrets  
+  4.1 Add `CLOUDFLARE_API_TOKEN` with your before generated API Token 
+  4.2 Add `CLOUDFLARE_DOMAINS` containing your domains in a comma-seperated list   
+  4.3 (OPTIONAL) Add `CLOUDFLARE_WORKER_NAME` if you want to use another Cloudflare Worker  
+  4.4 (OPTIONAL) Add `CLOUDFLARE_DATABASE_NAME` if you want to use another Cloudflare D1 Database
+  4.5 (OPTIONAL) Add `MAILGUN_API_KEY` if you setup your domain at mailgun for outgoing mails
 
 ### 3. Deploy (look at "Deployment & Upgrades")
 
 ### 4. Create your first user account
-1. Navigate to one of your desired domains
+1. Navigate to one of your configured domains
 2. Login using `admin` and `AliasflareAdmin1234`
 3. Goto `Settings` and change your password
 4. Select `Admin Mode` and goto `Users`
@@ -60,11 +61,12 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 For initial deployment or after an update you have to redeploy your app and upgrade the database!
 
 ### Deploying
-1. Goto `Actions`
-2. Select `Deploy` at the left  
-  2.1 Click on `Run workflow` and `Run workflow` again
+1. Goto your GitHub Repository
+2. Goto `Actions` tab
+3. Select `Deploy` at the left  
+4. Click on `Run workflow` and `Run workflow` again
 
 ### Updating
-1. Goto `Actions`
-2. Select `Update` at the left  
-  2.1 Click on `Run workflow` and `Run workflow` again
+1. Goto your GitHub Repository
+2. Goto `Code` tab
+3. Click on `Sync fork` and then `Update branch` 
