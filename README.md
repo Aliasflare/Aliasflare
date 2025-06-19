@@ -14,7 +14,7 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 
 > [!IMPORTANT]  
 > Currently there is no proper error display for dialogs!   
-> To figure out what is wrong please open the <b>Dev Tools (Strg+F12)</b> before confirming a dialog and look the the request/response there!   
+> To figure out what is wrong please open the <b>Dev Tools (Strg+F12)</b> before confirming a dialog and look at the request/response there!   
 > Fixing this is a high priority and proper error handling will come soon!
 
 
@@ -51,7 +51,7 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
   3.7 Select your account under `Account Resources` `(Include, YOUR ACCOUNT)`  
   3.8 Select your domain under `Zone Resources` `(Include, Specific zone, YOUR DOMAIN)`  
   3.9 Click on `Continue to summary` and then on `Create Token`  
-  3.10 NOTE DOWN YOU TOKEN SECURELY! YOU WILL NEED IT LATER AND CANNOT VIEW IT IF THE TAB IS CLOSED!
+  3.10 NOTE DOWN YOUR TOKEN SECURELY! YOU WILL NEED IT LATER AND CANNOT VIEW IT IF THE TAB IS CLOSED!
 
 ### 2. Setup GitHub Repository
 1. Fork this repository into your GitHub Account
