@@ -52,10 +52,10 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 2. Goto your GitHub Repository
 3. Goto `Settings->Secrets and variables`
 4. Select `Secrets` and add the following secrets  
-  4.1 Add `CLOUDFLARE_API_TOKEN` with your before generated API Token 
+  4.1 Add `CLOUDFLARE_API_TOKEN` with your before generated API Token  
   4.2 Add `CLOUDFLARE_DOMAINS` containing your domains in a comma-seperated list   
   4.3 (OPTIONAL) Add `CLOUDFLARE_WORKER_NAME` if you want to use another Cloudflare Worker  
-  4.4 (OPTIONAL) Add `CLOUDFLARE_DATABASE_NAME` if you want to use another Cloudflare D1 Database
+  4.4 (OPTIONAL) Add `CLOUDFLARE_DATABASE_NAME` if you want to use another Cloudflare D1 Database  
   4.5 (OPTIONAL) Add `MAILGUN_API_KEY` if you setup your domain at mailgun for outgoing mails
 
 ### 3. Deploy (look at "Deployment & Upgrades")
