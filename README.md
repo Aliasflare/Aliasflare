@@ -37,7 +37,7 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
   3.10 NOTE DOWN YOU TOKEN SECURELY! YOU WILL NEED IT LATER AND CANNOT VIEW IT IF THE TAB IS CLOSED!
 
 ### 2. Setup GitHub Repository
-1. Fork this repository into your GitHub Account (perferably as private)
+1. Fork this repository into your GitHub Account
 2. Goto `Settings->Secrets and variables`
 3. Select `Secrets` and add the following secrets  
   3.1 Add `CLOUDFLARE_API_TOKEN` with your before generated API Token  
@@ -62,10 +62,10 @@ For initial deployment or after an update you have to redeploy your app and upgr
 
 ### Deploying
 1. Goto `Actions`
-3. Select `Deploy` at the left  
-  3.1 Click on `Run workflow` and `Run workflow` again
+2. Select `Deploy` at the left  
+  2.1 Click on `Run workflow` and `Run workflow` again
 
 ### Updating
-1. Goto `Code`
-2. Click on `Sync fork` and then `Update branch`
-3. Redeploy as explained above
+1. Goto `Actions`
+2. Select `Update` at the left  
+  2.1 Click on `Run workflow` and `Run workflow` again
