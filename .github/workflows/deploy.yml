@@ -46,9 +46,6 @@ jobs:
       - name: Build Vite
         run: npm run build:vite
 
-      - name: Build project
-        run: npm run build
-
       - name: Deploy Database
         run: npm run deploy:database
         env:
@@ -60,6 +57,6 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }},
 
       - name: Deploy Worker
-        run: npm run deploy:files
+        run: npm run deploy:worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }},
