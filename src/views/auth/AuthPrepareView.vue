@@ -23,6 +23,24 @@ async function checkLogin() {
         AppState.prepared = false;
         console.log("[AuthPrepareView]", "Failed to fetch config!");
     }
+
+    //Check for updates if admin, but do not care about failures (no await!)
+    (async() => {
+        console.log("[UpdateCheck]", "Checking for updates...");
+        if(!AppState.authUser.admin) return console.log("[UpdateCheck]", "User is not admin, skipping update check!");
+        const gRes = await fetch(`https://api.github.com/repos/Aliasflare/Aliasflare/commits/master`, {
+            headers: {
+                Accept: "application/vnd.github.v3+json",
+            }
+        });
+        if (!gRes.ok) return console.log("[UpdateCheck]", "Failed to fetch from GitHub:", gRes.status, gRes.statusText, await gRes.text());
+        const data = await res.json();
+        const sha = data.sha;
+
+        if(AppState.config.commitSha == sha) return console.log("[UpdateCheck]", "Current commit is up to date:", sha);
+        console.log("[UpdateCheck]", "New commit found:", sha);
+    })();
+
     setTimeout(() => router.push({ path: (router.currentRoute.value.query.originalPath as any)||'/' }), 500);
     return;
 }
