@@ -2,7 +2,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./public/logo_dark.png">
   <source media="(prefers-color-scheme: light)" srcset="./public/logo.png">
-  <img alt="Fallback image description" src="./public/logo_dark.png" width=400>
+  <img alt="Logo" src="./public/logo_dark.png" width=400>
 </picture>
 </p>
 
@@ -11,6 +11,17 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 > [!WARNING]  
 > This project is currently in it's early stages, there might be breaking changes for Database Structure!  
 > Always check the commits for possible breaking changes with regards to Database Structure!
+
+<details>
+  <summary>Screenshots</summary>
+  <img alt="Screenshot" src="./resources/PREVIEW_ALIASES.png" width="24.8%"> 
+  <img alt="Screenshot" src="./resources/PREVIEW_CATEGORIES.png" width="24.8%"> 
+  <img alt="Screenshot" src="./resources/PREVIEW_DESTINATIONS.png" width="24.8%"> 
+  <img alt="Screenshot" src="./resources/PREVIEW_LOGIN.png" width="24.8%">   
+  <img alt="Screenshot" src="./resources/PREVIEW_CREATECATEGORY.png" width="24.8%"> 
+  <img alt="Screenshot" src="./resources/PREVIEW_CREATEDESTINATION.png" width="24.8%"> 
+  <img alt="Screenshot" src="./resources/PREVIEW_CREATEALIAS.png" width="24.8%"> 
+</details>
 
 ## ✨ Features
 - Unlimited Aliases: Create as many email aliases as you need without any restrictions.
