@@ -12,6 +12,12 @@ AliasFlare is a lightweight, Cloudflare-based email aliasing service that lets y
 > This project is currently in it's early stages, there might be breaking changes for Database Structure!  
 > Always check the commits for possible breaking changes with regards to Database Structure!
 
+> [!IMPORTANT]  
+> Currently there is no proper error display for dialogs!   
+> To figure out what is wrong please open the <b>Dev Tools (Strg+F12)</b> before confirming a dialog and look the the request/response there!   
+> Fixing this is a high priority and proper error handling will come soon!
+
+
 <details>
   <summary>Screenshots</summary>
   <img alt="Screenshot" src="./resources/PREVIEW_ALIASES.png" width="24.8%"> 
