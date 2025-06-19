@@ -17,7 +17,7 @@ const props = defineProps<{
 const expandedRows = ref([]);
 const deleteDialog = useTemplateRef('deleteDialog');
 const modifyDialog = useTemplateRef('modifyDialog');
-onMounted(props.load);
+onMounted(() => { loading.value = true; props.load().then(_ => loading.value = false) });
 
 const loading = ref(false);
 </script>

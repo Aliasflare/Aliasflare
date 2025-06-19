@@ -15,7 +15,6 @@
 		"deploy:database": "wrangler d1 migrations apply D1 --remote",
 		"deploy:all": "npm run deploy:database && npm run deploy:secrets && npm run deploy:worker",
 
-
 		"types:config": "node helpers/generate-wrangler-config.js",
 		"types:wrangler": "wrangler types",
 		"types:database": "node database/GenerateTypes.js",
@@ -24,7 +23,7 @@
 		"build:database": "node database/GenerateMigrations.js",
 		"build:vite": "vite build",
 		"build:all": "npm run build:database && npm run build:vite",
-		"build:allWithTypes": "npm run build types:all && npm run build:all"
+		"build:allWithTypes": "npm run types:all && npm run build:all"
 	},
 	"dependencies": {
 		"@primeuix/themes": "^1.1.1",
