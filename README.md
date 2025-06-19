@@ -68,5 +68,5 @@ For initial deployment or after an update you have to redeploy your app and upgr
 
 ### Updating
 1. Goto `Code`
-2. Click on `Sync fork`
+2. Click on `Sync fork` and then `Update branch`
 3. Redeploy as explained above
