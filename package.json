@@ -4,22 +4,27 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "npm run cf-typegen && npm run database:generateTypes && vite",
-		"build": "npm run cf-typegen && npm run database:generateTypes && run-p type-check \"build-only {@}\" --",
-		"preview": "npm run build && wrangler dev",
-		"database:generateTypes": "node database/GenerateTypes.js",
-		"database:generateMigrations": "node database/GenerateMigrations.js",
-		"database:generate": "npm run database:generateMigrations && npm run database:generateTypes",
-		"database:migrateLocal": "npm run database:generateMigrations && npx wrangler d1 migrations apply D1",
-		"database:migrateRemote": "npm run database:generateMigrations && npx wrangler d1 migrations apply D1 --remote",
-		"database:migrateLocalClean": "rimraf .wrangler/state/v3/d1 && npm run database:migrateLocal",
-		"secrets:push": "npx wrangler secret bulk .dev.vars.private",
-		"build-only": "vite build",
-		"type-check": "vue-tsc --build",
-		"deploy": "npm run build && wrangler deploy",
-		"cf-typegen": "wrangler types",
-		"tail": "wrangler tail",
-		"cf-configgen": "node helpers/generate-wrangler-config.js"
+		"dev:database": "wrangler d1 migrations apply D1",
+		"dev:databaseClean": "rimraf .wrangler/state/v3/d1 && npm run local:database",
+		"dev:run": "npm run build:allWithTypes && vite",
+		"dev:tail": "wrangler tail",
+
+
+		"deploy:worker": "wrangler deploy",
+		"deploy:secrets": "wrangler secret bulk .dev.vars",
+		"deploy:database": "wrangler d1 migrations apply D1 --remote",
+		"deploy:all": "npm run deploy:secrets && npm run deploy:worker",
+
+
+		"types:config": "node helpers/generate-wrangler-config.js",
+		"types:wrangler": "wrangler types",
+		"types:database": "node database/GenerateTypes.js",
+		"types:all": "npm run types:config && npm run types:wrangler && npm run types:database",
+
+		"build:database": "node database/GenerateMigrations.js",
+		"build:vite": "vite build",
+		"build:all": "npm run build:database && npm run build:vite",
+		"build:allWithTypes": "npm run build types:all && npm run build:all"
 	},
 	"dependencies": {
 		"@primeuix/themes": "^1.1.1",

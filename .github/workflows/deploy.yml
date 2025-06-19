@@ -24,7 +24,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Generate Wrangler Configuration
-        run: npm run cf-configgen
+        run: npm run types:config
         env:
           CLOUDFLARE_WORKER_NAME: ${{ secrets.CLOUDFLARE_WORKER_NAME }}
           CLOUDFLARE_DATABASE_NAME: ${{ secrets.CLOUDFLARE_DATABASE_NAME }}
@@ -34,15 +34,32 @@ jobs:
           COMMIT_SHA: ${{ steps.commit.outputs.sha }}
           FOR_DEPLOY: true
 
+      - name: Generate Wrangler Types
+        run: npm run types:wrangler
+
+      - name: Generate Database Types
+        run: npm run types:database
+
+      - name: Build Database
+        run: npm run build:database
+
+      - name: Build Vite
+        run: npm run build:vite
+
       - name: Build project
         run: npm run build
 
-      - name: Migrate Database
-        run: npm run database:migrateRemote
+      - name: Deploy Database
+        run: npm run deploy:database
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
+      - name: Deploy Secrets
+        run: npm run deploy:secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }},
+
       - name: Deploy Worker
-        run: npm run deploy
+        run: npm run deploy:files
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }},

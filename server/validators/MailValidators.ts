@@ -17,4 +17,4 @@ export const ZodMailBox = ZodString
 export const ZodDomain = ZodString
   .regex(/^(?=.{1,253}$)(?!\-)([a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,}$/, "Must be a valid mail domain");
 
-export const ZodMailValidDomain = (env: any) => ZodOneOfWithoutCasing(env.domains.split(","));
+export const ZodMailValidDomain = (env: any) => ZodOneOfWithoutCasing(env.CLOUDFLARE_DOMAINS.split(","));
