@@ -43,3 +43,4 @@ coverage
 worker-configuration.d.ts
 wrangler.jsonc
 .env
+.dev.vars

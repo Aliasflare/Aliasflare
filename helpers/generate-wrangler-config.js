@@ -3,6 +3,7 @@ import path from 'path';
 import Listr from 'listr';
 import { Cloudflare } from 'cloudflare';
 import 'dotenv/config';
+import fsProm from 'fs/promises';
 
 const cf = new Cloudflare({ apiToken: process.env.CLOUDFLARE_API_TOKEN });
 
@@ -35,19 +36,6 @@ const tasks = new Listr([
     task: () => new Listr([
       { title: 'Check for existing Worker', task: async(ctx, task) => { ctx.WORKER = (await cf.workers.scripts.list({ account_id: ctx.ACCOUNT.id })).result.find(a => a.id == (process.env.CLOUDFLARE_WORKER_NAME || "aliasflare")); } },
       { title: 'Create Worker', skip: async(ctx, task) => ctx.WORKER, task: async(ctx, task) => { throw new Error('Worker creation is not implemented in this script. Please create worker manually using the Cloudflare dashboard.'); } },
-      {
-        title: 'Set Worker Secrets',
-        skip: _ => !process.env.FOR_DEPLOY,
-        task: () => new Listr([
-          { title: 'CLOUDFLARE_ACCOUNT_ID', task: async(ctx, task) => {await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_ACCOUNT_ID', text: ctx.ACCOUNT.id, type: 'secret_text' }); } },
-          { title: 'CLOUDFLARE_API_TOKEN', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_API_TOKEN', text: process.env.CLOUDFLARE_API_TOKEN, type: 'secret_text' }); } },
-          { title: 'CLOUDFLARE_DOMAINS', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_DOMAINS', text: ctx.DOMAINS.join(","), type: 'secret_text' }); } },
-          { title: 'MAILGUN_API_KEY', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'MAILGUN_API_KEY', text: process.env.MAILGUN_API_KEY || "DISABLED", type: 'secret_text' }); } },
-          //{ title: 'defaultIncomingQuotaPerDay', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'defaultIncomingQuotaPerDay', text: "100", type: 'secret_text' }); } },
-          //{ title: 'defaultOutgoingQuotaPerDay', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'defaultOutgoingQuotaPerDay', text: "10", type: 'secret_text' }); } },
-          { title: 'commitSha', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'commitSha', text: process.env.COMMIT_SHA || "unknown", type: 'secret_text' }); } },
-        ])
-      },
     ])
   },
   {
@@ -58,14 +46,26 @@ const tasks = new Listr([
         task: () => new Listr([
           { title: "Get Domain", task: async(ctx, task) => { ctx.DOMAIN = (await cf.zones.list({ account_id: ctx.ACCOUNT.id })).result.find(a => a.name == domain); if(!ctx.DOMAIN) throw new Error("Domain not found"); } },
           { title: "Enable email routing", task: async(ctx, task) => { await cf.emailRouting.enable({ zone_id: ctx.DOMAIN.id }); } },
-          { title: "Add dns records", task: async(ctx, task) => { await cf.emailRouting.dns.create({ zone_id: ctx.DOMAIN.id, name: "mail." + ctx.DOMAIN.name }); } },
+          { title: "Add DNS records", task: async(ctx, task) => { await cf.emailRouting.dns.create({ zone_id: ctx.DOMAIN.id, name: "mail." + ctx.DOMAIN.name }); } },
           //TODO: { title: "Add routing rule", task: async(ctx, task) => { await cf.emailRouting.rules.create({ zone_id: ctx.DOMAIN.id, actions: [{ type: "worker", value: [ctx.WORKER.id] }], matchers: [{ type: 'all' }], name: "Aliasflare" }) } }
         ])
       }))
     )
   },
   {
-    title: 'Generate Wrangler Config',
+    title: 'Generate .dev.vars',
+    skip: _ => !process.env.FOR_DEPLOY,
+    task: () => new Listr([
+      { title: "Clean file", task: async(ctx, task) => { if(fs.existsSync("./.dev.vars")) await fsProm.rm("./.dev.vars"); } },
+      { title: 'Add CLOUDFLARE_ACCOUNT_ID', task: async(ctx, task) => { await fsProm.writeFile("./.dev.vars", `CLOUDFLARE_ACCOUNT_ID=${ctx.ACCOUNT.id}` + "\n", { flag: 'a+'}); } },
+      { title: 'Add CLOUDFLARE_API_TOKEN', task: async(ctx, task) => { await fsProm.writeFile("./.dev.vars", `CLOUDFLARE_API_TOKEN=${process.env.CLOUDFLARE_API_TOKEN}` + "\n", { flag: 'a+'}); } },
+      { title: 'Add CLOUDFLARE_DOMAINS', task: async(ctx, task) => { await fsProm.writeFile("./.dev.vars", `CLOUDFLARE_DOMAINS=${ctx.DOMAINS.join(",")}` + "\n", { flag: 'a+'}); } },
+      { title: 'Add MAILGUN_API_KEY', task: async(ctx, task) => { await fsProm.writeFile("./.dev.vars", `MAILGUN_API_KEY=${process.env.MAILGUN_API_KEY || "DISABLED"}` + "\n", { flag: 'a+'}); } },
+      { title: 'Add commitSha', task: async(ctx, task) => { await fsProm.writeFile("./.dev.vars", `commitSha=${process.env.COMMIT_SHA || "unknown"}` + "\n", { flag: 'a+'}); } },
+    ])
+  },
+  {
+    title: 'Generate wrangler.toml',
     task: async(ctx, task) => { 
       const config = {
         $schema: "node_modules/wrangler/config-schema.json",
