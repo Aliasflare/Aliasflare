@@ -50,7 +50,7 @@ const tasks = new Listr([
     title: 'Setup Domains',
     task: (pCtx) => new Listr(
       pCtx.DOMAINS.map(domain => ({
-        title: domain,
+        title: domain.slice(0, domain.length/2) + "...",
         task: () => new Listr([
           { title: "Get Domain", task: async(ctx, task) => { ctx.DOMAIN = (await cf.zones.list({ account_id: ctx.ACCOUNT.id })).result.find(a => a.name == domain); if(!ctx.DOMAIN) throw new Error("Domain not found"); } },
           { title: "Enable email routing", task: async(ctx, task) => { await cf.emailRouting.enable({ zone_id: ctx.DOMAIN.id }); } },
@@ -105,4 +105,4 @@ const tasks = new Listr([
     }
   }
 ]);
-tasks.run();
+tasks.run().catch(err => {});
