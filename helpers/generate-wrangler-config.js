@@ -41,7 +41,11 @@ const tasks = new Listr([
         task: () => new Listr([
           { title: 'CLOUDFLARE_API_TOKEN', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_API_TOKEN', text: process.env.CLOUDFLARE_API_TOKEN, type: 'secret_text' }); } },
           { title: 'CLOUDFLARE_ACCOUNT_ID', task: async(ctx, task) => {await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_ACCOUNT_ID', text: ctx.ACCOUNT.id, type: 'secret_text' }); } },
+          { title: 'CLOUDFLARE_DOMAINS', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'CLOUDFLARE_DOMAINS', text: ctx.DOMAINS.join(","), type: 'secret_text' }); } },
           { title: 'MAILGUN_API_KEY', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'MAILGUN_API_KEY', text: process.env.MAILGUN_API_KEY || "DISABLED", type: 'secret_text' }); } },
+          //{ title: 'defaultIncomingQuotaPerDay', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'defaultIncomingQuotaPerDay', text: "100", type: 'secret_text' }); } },
+          //{ title: 'defaultOutgoingQuotaPerDay', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'defaultOutgoingQuotaPerDay', text: "10", type: 'secret_text' }); } },
+          { title: 'commitSha', task: async(ctx, task) => { await cf.workers.scripts.secrets.update(ctx.WORKER.id, { account_id: ctx.ACCOUNT.id, name: 'commitSha', text: process.env.COMMIT_SHA || "unknown", type: 'secret_text' }); } },
         ])
       },
     ])
@@ -91,13 +95,8 @@ const tasks = new Listr([
         send_email: [
           {
             name: "email"
-          }],
-        vars: {
-          domains: ctx.DOMAINS.join(","),
-          defaultIncomingQuotaPerDay: 100,
-          defaultOutgoingQuotaPerDay: 10,
-          commitSha: process.env.COMMIT_SHA || "unknown",
-        }
+          }
+        ],
       };
 
       const configPath = path.resolve('./wrangler.jsonc');

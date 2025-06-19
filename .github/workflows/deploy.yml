@@ -36,17 +36,13 @@ jobs:
 
       - name: Build project
         run: npm run build
-        env:
-          WRANGLER_LOG: 'info'
 
       - name: Migrate Database
         run: npm run database:migrateRemote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          WRANGLER_LOG: 'info'
 
       - name: Deploy Worker
         run: npm run deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }},
-          WRANGLER_LOG: 'info'
