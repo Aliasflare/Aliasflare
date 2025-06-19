@@ -17,7 +17,7 @@
 		"build-only": "vite build",
 		"type-check": "vue-tsc --build",
 		"deploy": "npm run build && wrangler deploy",
-		"cf-typegen": "wrangler types --env template",
+		"cf-typegen": "wrangler types",
 		"tail": "wrangler tail",
 		"cf-configgen": "node helpers/generate-wrangler-config.js"
 	},
