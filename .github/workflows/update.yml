@@ -4,15 +4,41 @@ on:
   workflow_dispatch:
 
 jobs:
-  repo-sync:
+  update:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
-    - name: repo-sync
-      uses: repo-sync/github-sync@v2
-      with:
-        source_repo: "https://github.com/Aliasflare/Aliasflare"
-        source_branch: "master"
-        destination_branch: "master"
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add template remote
+        run: git remote add template https://github.com/Aliasflare/Aliasflare.git
+
+      - name: Fetch template
+        run: git fetch template
+
+      - name: Save current workflows
+        run: |
+          mkdir -p ../my_workflows_backup
+          cp -r .github/workflows ../my_workflows_backup/
+
+      - name: Hard reset to template
+        run: git reset --hard template/master
+
+      - name: Restore own workflows to avoid overwriting
+        run: |
+          rm -rf .github/workflows
+          cp -r ../my_workflows_backup/workflows .github/
+
+      - name: Commit changes
+        run: |
+          git add -A
+          git commit -m "Sync with template (excluding workflows)" || echo "No changes to commit"
+
+      - name: Push changes
+        run: git push --force origin HEAD:master
