@@ -84,6 +84,10 @@ For initial deployment or after an update you have to redeploy your app and upgr
 4. Click on `Run workflow` and `Run workflow` again
 
 ### Updating
+> [!WARNING]  
+> Only update to the latest version when a new GitHub release is created  
+> Updating to commits during development is not recommended!
+
 1. Goto your GitHub Repository
 2. Goto `Code` tab
 3. Click on `Sync fork` and then `Update branch` 
