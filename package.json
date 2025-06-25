@@ -8,18 +8,14 @@
 		"dev:databaseClean": "rimraf .wrangler/state/v3/d1 && npm run local:database",
 		"dev:run": "npm run build:allWithTypes && vite",
 		"dev:tail": "wrangler tail",
-
-
 		"deploy:worker": "wrangler deploy",
 		"deploy:secrets": "wrangler secret bulk .dev.vars",
 		"deploy:database": "wrangler d1 migrations apply D1 --remote",
 		"deploy:all": "npm run deploy:database && npm run deploy:secrets && npm run deploy:worker",
-
 		"types:config": "node helpers/generate-wrangler-config.js",
 		"types:wrangler": "wrangler types",
 		"types:database": "node database/GenerateTypes.js",
 		"types:all": "npm run types:config && npm run types:wrangler && npm run types:database",
-
 		"build:database": "node database/GenerateMigrations.js",
 		"build:vite": "vite build",
 		"build:all": "npm run build:database && npm run build:vite",
@@ -30,7 +26,7 @@
 		"@tailwindcss/vite": "^4.1.8",
 		"better-sqlite3": "^11.10.0",
 		"chart.js": "^4.4.9",
-		"cloudflare": "^4.3.0",
+		"cloudflare": "^4.4.1",
 		"cookie": "^1.0.2",
 		"daisyui": "^5.0.43",
 		"kysely": "^0.28.2",
@@ -60,6 +56,6 @@
 		"vite": "^6.3.5",
 		"vite-plugin-vue-devtools": "^7.7.6",
 		"vue-tsc": "^2.2.10",
-		"wrangler": "^4.20.3"
+		"wrangler": "^4.21.2"
 	}
 }

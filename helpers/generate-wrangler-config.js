@@ -35,7 +35,35 @@ const tasks = new Listr([
     title: 'Setup Worker',
     task: () => new Listr([
       { title: 'Check for existing Worker', task: async(ctx, task) => { ctx.WORKER = (await cf.workers.scripts.list({ account_id: ctx.ACCOUNT.id })).result.find(a => a.id == (process.env.CLOUDFLARE_WORKER_NAME || "aliasflare")); } },
-      { title: 'Create Worker', skip: async(ctx, task) => ctx.WORKER, task: async(ctx, task) => { throw new Error('Worker creation is not implemented in this script. Please create worker manually using the Cloudflare dashboard.'); } },
+      { title: 'Create Worker', skip: async(ctx, task) => ctx.WORKER, task: async(ctx, task) => {
+        ctx.WORKER = await cf.workers.scripts.update(process.env.CLOUDFLARE_WORKER_NAME || "aliasflare", {
+          "index.js": new File(
+            [
+              `export default {
+                  async fetch() {
+                      return new Response("Hello!");
+                  }
+              }`,
+            ], "index.js",
+            {
+              type: "application/javascript+module",
+            }
+          ),
+          metadata: new File(
+            [
+              JSON.stringify({
+                bindings: [],
+                main_module: "index.js",
+              }),
+            ],
+            "metadata.json",
+            {
+              type: "application/json",
+            }
+          ),
+          account_id: ctx.ACCOUNT.id,
+        });
+      } },
     ])
   },
   {
@@ -45,9 +73,9 @@ const tasks = new Listr([
         title: domain.slice(0, domain.length/2) + "...",
         task: () => new Listr([
           { title: "Get Domain", task: async(ctx, task) => { ctx.DOMAIN = (await cf.zones.list({ account_id: ctx.ACCOUNT.id })).result.find(a => a.name == domain); if(!ctx.DOMAIN) throw new Error("Domain not found"); } },
-          { title: "Enable email routing", task: async(ctx, task) => { await cf.emailRouting.enable({ zone_id: ctx.DOMAIN.id }); } },
           { title: "Add DNS records", task: async(ctx, task) => { await cf.emailRouting.dns.create({ zone_id: ctx.DOMAIN.id, name: "mail." + ctx.DOMAIN.name }); } },
-          //TODO: { title: "Add routing rule", task: async(ctx, task) => { await cf.emailRouting.rules.create({ zone_id: ctx.DOMAIN.id, actions: [{ type: "worker", value: [ctx.WORKER.id] }], matchers: [{ type: 'all' }], name: "Aliasflare" }) } }
+          { title: "Enable email routing", task: async(ctx, task) => { await cf.emailRouting.enable({ zone_id: ctx.DOMAIN.id }); } },
+          { title: "Add email routing catch-all rule", task: async(ctx, task) => { await cf.emailRouting.rules.catchAlls.update({ zone_id: ctx.DOMAIN.id, actions: [{ type: "worker", value: [ctx.WORKER.id] }], matchers: [{ type: 'all' }], name: "Alisflare", enabled: true }) } }
         ])
       }))
     )
