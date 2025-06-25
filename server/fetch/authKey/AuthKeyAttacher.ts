@@ -21,7 +21,7 @@ export async function AuthKeyAttacher(request: ExtendedRequest, env: Env) {
     if(!authKey.includes("-")) return new Response(JSON.stringify({ error: true, type: "AUTHORIZATION_ERROR", message: "Authentication key malformed", details: "Missing dash" }), { status: 400 });
     const authKeyID = authKey.split("-")[0];
     const authKeyToken = authKey.split("-")[1];
-    if(!authorizationHeader) return console.log("[AuthKeyAttacher]", `Authorization is AuthKey!`);;
+    console.log("[AuthKeyAttacher]", `Authorization is AuthKey!`);;
 
     //Validate AuthKey
     const authKeyFromDB = await db
@@ -34,7 +34,7 @@ export async function AuthKeyAttacher(request: ExtendedRequest, env: Env) {
     if(!await verifyPassword(authKeyToken, authKeyFromDB.tokenHash, authKeyFromDB.tokenSalt)) return new Response(JSON.stringify({ error: true, type: "AUTHORIZATION_ERROR", message: "Authentication key malformed", details: "Invalid authKey (token)" }), { status: 400 });
     if(new Date(authKeyFromDB.expiresAt) < new Date()) return new Response(JSON.stringify({ error: true, type: "AUTHORIZATION_ERROR", message: "Authentication key expired", details: "authKey expired" }), { status: 400 });
     if(authKeyFromDB.invalidatedReason) return new Response(JSON.stringify({ error: true, type: "AUTHORIZATION_ERROR", message: "Authentication key invalidated", details: authKeyFromDB.invalidatedReason }), { status: 400 });
-    if(!authorizationHeader) return console.log("[AuthKeyAttacher]", `Authorization is valid AuthKey!`);;
+    console.log("[AuthKeyAttacher]", `Authorization is valid AuthKey!`);;
 
     //Also fetch user
     const authKeyUserFromDB = await db
@@ -44,7 +44,7 @@ export async function AuthKeyAttacher(request: ExtendedRequest, env: Env) {
         .limit(1)
         .executeTakeFirst();
     if(!authKeyUserFromDB) return new Response(JSON.stringify({ error: true, type: "AUTHORIZATION_ERROR", message: "User account deleted" }), { status: 400 });
-    if(!authorizationHeader) return console.log("[AuthKeyAttacher]", `Authorization AuthKey has User!`);;
+    console.log("[AuthKeyAttacher]", `Authorization AuthKey has User!`);;
 
     request.authKey = authKeyFromDB;
     request.authKeyUser = authKeyUserFromDB;
