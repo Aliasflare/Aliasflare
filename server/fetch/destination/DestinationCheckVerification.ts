@@ -8,7 +8,7 @@ import { TransformDestination } from "./DestinationTransformer";
 import { cloudflareClient } from "../../CloudflareClient";
 
 const DestinationCheckVerificationBody = (request: ExtendedRequest, env: Env) => z.object({
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin)
+    destination: ZodAccessibleObjectFromTable("destination", "id")(request)
 });
 
 export async function DestinationCheckVerification(request: ExtendedRequest, env: any) {

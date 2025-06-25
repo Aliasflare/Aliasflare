@@ -13,8 +13,8 @@ import { sendRawMailViaCloudflare } from "../../utils/MailSend";
 import { BuildDestinationRemovedMail } from "../../utils/TemplateMails";
 
 const DestinationUpdateBody = (request: ExtendedRequest, env: any) => z.object({
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin),
-    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    destination: ZodAccessibleObjectFromTable("destination", "id")(request),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
@@ -31,7 +31,7 @@ export async function DestinationUpdate(request: ExtendedRequest, env: any) {
     if (url.pathname.startsWith("/api/destination/update")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.user) return NotAllowedError("Need to be logged in");
+        if(!request.authKey) return NotAllowedError("Need to be logged in");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);

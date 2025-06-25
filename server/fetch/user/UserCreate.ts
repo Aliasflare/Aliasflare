@@ -11,12 +11,12 @@ const UserCreateBody = (request: ExtendedRequest, env: Env) => z.object({
     username: ZodUserUntakenUsername,
     password: ZodHashedPassword,
     mail: ZodUserUntakenMail,
-    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to make admin").optional(),
-    maxIncomingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxOutgoingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxAliasCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxDestinationCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxCategoryCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    admin: ZodBoolean.refine(a => request.authKeyUser?.admin, "Must be admin to make admin").optional(),
+    maxIncomingPerDay: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxOutgoingPerDay: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxAliasCount: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxDestinationCount: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxCategoryCount: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
 });
 
 export async function UserCreate(request: ExtendedRequest, env: Env) {
@@ -24,7 +24,7 @@ export async function UserCreate(request: ExtendedRequest, env: Env) {
 	if (url.pathname.startsWith("/api/user/create")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.isAdmin) return NotAllowedError("Need to be Admin");
+        if(!request.authKeyUser?.admin) return NotAllowedError("Need to be Admin");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);

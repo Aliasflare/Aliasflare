@@ -2,12 +2,11 @@ import { z } from "zod";
 import { db } from "../../Database";
 import { InvalidBodyError, InvalidMethodError } from "../Errors";
 import { ExtendedRequest } from "../ExtendedRequest";
-import { AuthLogout } from "../auth/AuthLogout";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 import { ZodRequestBody } from "../../validators/RequestValidators";
 
 const UserDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin)
+    user: ZodAccessibleObjectFromTable("user", "id")(request)
 });
 
 export async function UserDelete(request: ExtendedRequest, env: Env) {
@@ -22,14 +21,13 @@ export async function UserDelete(request: ExtendedRequest, env: Env) {
         const deletBody = await UserDeleteBody(request, env).safeParseAsync(body.data);
         if(deletBody.error) return InvalidBodyError(deletBody.error.issues);
 
-        //TODO: Keep anonymized audit logs for deletions (e.g. to comply with law enforcements request)
-       
         await db
             .deleteFrom("user")
             .where("id", "==", deletBody.data.user.id as any)
             .executeTakeFirst();
 
-        await AuthLogout(request, env);
+        //Delete authKeyUser if we delete the beloging user
+        if(request.authKeyUser?.id == deletBody.data.user.id) delete request.authKeyUser;
 
         console.log("[UserDelete]", `Deleted User(${deletBody.data.user.id})`);
         return Response.json({ error: false });

@@ -11,8 +11,8 @@ import { TransformDestination } from "./DestinationTransformer";
 import { cloudflareClient } from "../../CloudflareClient";
 
 const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
-    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    user: ZodAccessibleObjectFromTable("user", "id")(request),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
@@ -22,7 +22,7 @@ const DestinationCreateBody = (request: ExtendedRequest, env: any) => z.object({
     mailBox: ZodMailBox,
     mailDomain: ZodDomain,
     enabled: ZodBoolean.optional(),
-    verified: ZodBoolean.refine(a => request.isAdmin, "Must be admin to set verfied").default(env.disableDomainVerfication).optional(),
+    verified: ZodBoolean.refine(a => request.authKeyUser?.admin, "Must be admin to set verfied").default(env.disableDomainVerfication).optional(),
 }).readonly();
 
 export async function DestinationCreate(request: ExtendedRequest, env: any) {
@@ -30,7 +30,7 @@ export async function DestinationCreate(request: ExtendedRequest, env: any) {
     if (url.pathname.startsWith("/api/destination/create")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.user) return NotAllowedError("Need to be logged in");
+        if(!request.authKey) return NotAllowedError("Need to be logged in");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);

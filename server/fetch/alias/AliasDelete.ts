@@ -6,7 +6,7 @@ import { ZodRequestBody } from "../../validators/RequestValidators";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 
 const AliasDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
-    alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin)
+    alias: ZodAccessibleObjectFromTable("alias", "id")(request)
 });
 
 export async function AliasDelete(request: ExtendedRequest, env: Env) {

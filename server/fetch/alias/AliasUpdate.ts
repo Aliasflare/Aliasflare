@@ -9,9 +9,9 @@ import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDi
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasUpdateBody = (request: ExtendedRequest, env: any) => z.object({
-    alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin),
-    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
-    destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    alias: ZodAccessibleObjectFromTable("alias", "id")(request),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request), ZodEmptyString]).optional(),
+    destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request), ZodEmptyString]).optional(),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
     displayName: ZodDisplayName,

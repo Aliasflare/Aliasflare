@@ -9,7 +9,7 @@ import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDi
 import { TransformCategory } from "./CategoryTransformer";
 
 const CategoryCreateBody = (request: ExtendedRequest, env: any) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
+    user: ZodAccessibleObjectFromTable("user", "id")(request),
     displayColor: ZodDisplayColor.optional(),
     displayIcon: ZodDisplayIcon.optional(),
     displayName: ZodDisplayName.optional(),
@@ -23,7 +23,7 @@ export async function CategoryCreate(request: ExtendedRequest, env: any) {
     if (url.pathname.startsWith("/api/category/create")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.user) return NotAllowedError("Need to be logged in");
+        if(!request.authKey) return NotAllowedError("Need to be logged in");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);

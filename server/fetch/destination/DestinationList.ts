@@ -7,7 +7,7 @@ import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from ".
 import { TransformDestination } from "./DestinationTransformer";
 
 const DestinationListBody = (request: ExtendedRequest, env: Env) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
+    user: ZodAccessibleObjectFromTable("user", "id")(request),
     page: ZodListPaginationPage,
     limit: ZodListPaginationLimit
 });

@@ -1,4 +1,5 @@
 import { db, DBTable, DBTableColumn, DBTableFullObject } from "../Database";
+import { ExtendedRequest } from "../fetch/ExtendedRequest";
 import { ZodString } from "./BasicValidators";
 
 export const ExistsInTableFilter = <T extends DBTable>(table: T, column: DBTableColumn<T>) => async(a: any) => {
@@ -30,9 +31,9 @@ export const ZodObjectFromTable = <T extends DBTable>(table: T, column: DBTableC
     .transform(a => a as DBTableFullObject<T>);
 
 export const ZodAccessibleObjectFromTable = <T extends DBTable>(table: T, column: DBTableColumn<T>) =>
-    (userId: string|null|undefined, isAdmin:boolean) => ZodObjectFromTable(table, column)
-        .refine(a => a==undefined || isAdmin || userId != null, "Must be logged or admin to access data")
-        .refine(a => a==undefined || isAdmin || (a as any).userID == userId || (table == "user" && (a as any).id == userId), "Must be admin to access other users data");
+    (request: ExtendedRequest) => ZodObjectFromTable(table, column)
+        .refine(a => a==undefined || request.authKeyUser != null, "Must be logged or admin to access data")
+        .refine(a => a==undefined || request.authKeyUser?.admin || request.authKeyUser?.id == (a as any).userID || (table == "user" && (a as any).id == request.authKeyUser?.id), "Must be admin to access other users data");
 
         /*
 export const ZodUserTarget = (request: ExtendedRequest, env: Env) => z

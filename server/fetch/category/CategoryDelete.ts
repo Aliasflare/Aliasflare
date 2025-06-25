@@ -6,7 +6,7 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { ZodRequestBody } from "../../validators/RequestValidators";
 
 const CategoryDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
-    category: ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin)
+    category: ZodAccessibleObjectFromTable("category", "id")(request)
 });
 
 export async function CategoryDelete(request: ExtendedRequest, env: Env) {

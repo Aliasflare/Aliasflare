@@ -8,9 +8,9 @@ export async function UserSelf(request: ExtendedRequest, env: Env) {
     if (url.pathname.startsWith("/api/user/self")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.user) return NotAllowedError("Need to be logged in");
+        if(!request.authKeyUser) return NotAllowedError("Need to be logged in");
 
-        console.log("[UserGet]", `Get User(${request.user.id})`);
-		return Response.json({ error: false, user: TransformUser(request.user) });
+        console.log("[UserGet]", `Get User(${request.authKeyUser.id})`);
+		return Response.json({ error: false, user: TransformUser(request.authKeyUser) });
     }
 }

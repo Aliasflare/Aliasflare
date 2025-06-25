@@ -7,7 +7,7 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasGetBody = (request: ExtendedRequest, env: Env) => z.object({
-    alias: ZodAccessibleObjectFromTable("alias", "id")(request.user?.id, request.isAdmin)
+    alias: ZodAccessibleObjectFromTable("alias", "id")(request)
 });
 
 export async function AliasGet(request: ExtendedRequest, env: Env) {

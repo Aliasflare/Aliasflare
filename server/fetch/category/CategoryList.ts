@@ -7,7 +7,7 @@ import { ZodListPaginationLimit, ZodListPaginationPage, ZodRequestBody } from ".
 import { TransformCategory } from "./CategoryTransformer";
 
 const CategoryListBody = (request: ExtendedRequest, env: Env) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
+    user: ZodAccessibleObjectFromTable("user", "id")(request),
     page: ZodListPaginationPage,
     limit: ZodListPaginationLimit
 });

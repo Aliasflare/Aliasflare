@@ -9,7 +9,7 @@ import { sendRawMailViaCloudflare } from "../../utils/MailSend";
 import { BuildDestinationRemovedMail } from "../../utils/TemplateMails";
 
 const DestinationDeleteBody = (request: ExtendedRequest, env: Env) => z.object({
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin)
+    destination: ZodAccessibleObjectFromTable("destination", "id")(request)
 });
 
 export async function DestinationDelete(request: ExtendedRequest, env: any) {

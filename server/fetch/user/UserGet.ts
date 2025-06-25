@@ -7,7 +7,7 @@ import { ZodRequestBody } from "../../validators/RequestValidators";
 import { TransformUser } from "./UserTransformer";
 
 const UserGetBody = (request: ExtendedRequest, env: Env) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin)
+    user: ZodAccessibleObjectFromTable("user", "id")(request)
 });
 
 export async function UserGet(request: ExtendedRequest, env: Env) {

@@ -7,7 +7,7 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { TransformCategory } from "./CategoryTransformer";
 
 const CategoryGetBody = (request: ExtendedRequest, env: Env) => z.object({
-    category: ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin)
+    category: ZodAccessibleObjectFromTable("category", "id")(request)
 });
 
 export async function CategoryGet(request: ExtendedRequest, env: Env) {

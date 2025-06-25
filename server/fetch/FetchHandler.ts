@@ -3,11 +3,9 @@ import { ExtendedRequest } from './ExtendedRequest'
 //Handlers
 import { initDBFetchHandler } from "../Database";
 import { initCloudflareClientFetchHandler } from '../CloudflareClient';
-import { AttachSession } from "./auth/AttachSession";
-import { AttachUser } from "./auth/AttachUser";
-import { AttachAdmin } from "./auth/AttachAdmin";
-import { AuthLogin } from "./auth/AuthLogin";
-import { AuthLogout } from "./auth/AuthLogout";
+import { AuthKeyAttacher } from './authKey/AuthKeyAttacher';
+import { AuthKeyLogin } from './authKey/AuthKeyLogin';
+import { AuthKeyLogout } from './authKey/AuthKeyLogout';
 import { UserCreate } from "./user/UserCreate";
 import { UserGet } from "./user/UserGet";
 import { UserList } from "./user/UserList";
@@ -36,8 +34,8 @@ import { GenericApi } from "./GenericApi";
 import { ConfigGet } from './others/ConfigGet';
 
 const fetchHandlers = [
-    ...[initDBFetchHandler, initCloudflareClientFetchHandler, AttachSession, AttachUser, AttachAdmin],
-    ...[AuthLogin, AuthLogout],
+    ...[initDBFetchHandler, initCloudflareClientFetchHandler],
+    ...[AuthKeyAttacher, AuthKeyLogin, AuthKeyLogout],
     ...[UserCreate, UserDelete, UserGet, UserList, UserSelf, UserUpdate],
     ...[DestinationCheckVerification, DestinationCreate, DestinationDelete, DestinationGet, DestinationList, DestinationListAll, DestinationUpdate],
     ...[AliasCreate, AliasDelete, AliasGet, AliasList, AliasListAll, AliasUpdate],

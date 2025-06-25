@@ -9,16 +9,16 @@ import { ZodHashedPassword, ZodUserUntakenMail, ZodUserUntakenUsername } from ".
 import { TransformUser } from "./UserTransformer";
 
 const UserUpdateBody = (request: ExtendedRequest, env: Env) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
+    user: ZodAccessibleObjectFromTable("user", "id")(request),
     username: ZodUserUntakenUsername.optional(),
     password: ZodHashedPassword.optional(),
     mail: ZodUserUntakenMail.optional(),
-    admin: ZodBoolean.refine(a => request.isAdmin, "Must be admin to make admin").optional(),
-    maxIncomingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxOutgoingPerDay: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxAliasCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxDestinationCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
-    maxCategoryCount: ZodNumber.positive().refine(a => request.isAdmin, "Must be admin to set quota").optional(),
+    admin: ZodBoolean.refine(a => request.authKeyUser?.admin, "Must be admin to make admin").optional(),
+    maxIncomingPerDay: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxOutgoingPerDay: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxAliasCount: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxDestinationCount: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
+    maxCategoryCount: ZodNumber.positive().refine(a => request.authKeyUser?.admin, "Must be admin to set quota").optional(),
 });
 
 export async function UserUpdate(request: ExtendedRequest, env: Env) {

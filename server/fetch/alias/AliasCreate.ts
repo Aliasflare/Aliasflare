@@ -10,8 +10,8 @@ import { ZodDisplayColor, ZodDisplayIcon, ZodDisplayImage, ZodDisplayName, ZodDi
 import { TransformAlias } from "./AliasTransformer";
 
 const AliasCreateBody = (request: ExtendedRequest, env: any) => z.object({
-    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
-    destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin), ZodEmptyString]).optional(),
+    categoryID: z.union([ZodAccessibleObjectFromTable("category", "id")(request), ZodEmptyString]).optional(),
+    destinationID: z.union([ZodAccessibleObjectFromTable("destination", "id")(request), ZodEmptyString]).optional(),
     domain: ZodMailValidDomain(env),
     displayColor: ZodDisplayColor,
     displayIcon: ZodDisplayIcon,
@@ -29,7 +29,7 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
     if (url.pathname.startsWith("/api/alias/create")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.user) return NotAllowedError("Need to be logged in");
+        if(!request.authKeyUser) return NotAllowedError("Need to have authorization");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);
@@ -41,7 +41,7 @@ export async function AliasCreate(request: ExtendedRequest, env: any) {
             .insertInto("alias")
             .values({
                 ...createBody.data,
-                userID: request.user.id,
+                userID: request.authKeyUser.id,
                 ...createBody.data.categoryID !== undefined ? { categoryID: createBody.data.categoryID?.id||null } : {},
                 ...createBody.data.destinationID !== undefined ? { destinationID: createBody.data.destinationID?.id||null } : {},
                 //@ts-expect-error

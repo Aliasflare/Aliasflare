@@ -15,7 +15,7 @@ export async function AliasListAll(request: ExtendedRequest, env: Env) {
     if (url.pathname.startsWith("/api/alias/listAll")) {
         if(!db) throw new Error("Database error");
         if(request.method != "POST") return InvalidMethodError("POST")
-        if(!request.isAdmin) return NotAllowedError("Need to be Admin");
+        if(!request.authKeyUser?.admin) return NotAllowedError("Need to be Admin");
 
         const body = await ZodRequestBody.safeParseAsync(request);
         if(body.error) return InvalidBodyError(body.error.issues);

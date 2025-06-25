@@ -6,7 +6,7 @@ import { ExtendedRequest } from "../ExtendedRequest";
 import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidators";
 
 const ConfigGetBody = (request: ExtendedRequest, env: Env) => z.object({
-    user: ZodAccessibleObjectFromTable("user", "id")(request.user?.id, request.isAdmin),
+    user: ZodAccessibleObjectFromTable("user", "id")(request),
 });
 
 export async function ConfigGet(request: ExtendedRequest, env: Env) {

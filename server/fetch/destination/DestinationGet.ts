@@ -7,7 +7,7 @@ import { ZodAccessibleObjectFromTable } from "../../validators/DatabaseValidator
 import { TransformDestination } from "./DestinationTransformer";
 
 const DestinationGetBody = (request: ExtendedRequest, env: Env) => z.object({
-    destination: ZodAccessibleObjectFromTable("destination", "id")(request.user?.id, request.isAdmin)
+    destination: ZodAccessibleObjectFromTable("destination", "id")(request)
 });
 
 export async function DestinationGet(request: ExtendedRequest, env: Env) {
