@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev:database": "wrangler d1 migrations apply D1",
-		"dev:databaseClean": "rimraf .wrangler/state/v3/d1 && npm run local:database",
+		"dev:databaseClean": "rimraf .wrangler/state/v3/d1 && npm run dev:database",
 		"dev:run": "npm run build:allWithTypes && vite",
 		"dev:tail": "wrangler tail",
 		"deploy:worker": "wrangler deploy",
