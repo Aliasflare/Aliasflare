@@ -5,14 +5,14 @@ import AliasDeleteDialog from './AliasDeleteDialog.vue';
 import AliasModifyDialog from '@/componentsV2/AliasModifyDialog.vue';
 import Display from './Display.vue';
 import { useToast } from 'primevue/usetoast';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 
 const props = defineProps<{
     load: () => Promise<void>,
     value: any,
     class?: any,
     admin?: boolean,
-    stores: Stores
+    client: APIClientPerspective
 }>();
 
 const expandedRows = ref([]);
@@ -31,8 +31,8 @@ function handleAliasCopy(slotProps: any) {
 
 <template>
     <Toast />
-    <AliasDeleteDialog ref="deleteDialog" :stores="stores" />
-    <AliasModifyDialog ref="modifyDialog" :stores="stores" />
+    <AliasDeleteDialog ref="deleteDialog" :client="client" />
+    <AliasModifyDialog ref="modifyDialog" :client="client" />
     <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
@@ -51,7 +51,7 @@ function handleAliasCopy(slotProps: any) {
         </Column>
         <Column header="Category" v-if="!props.admin">
             <template #body="slotProps">
-                <Display :object="stores.categoryStore.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
+                <Display :object="client.category.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
             </template>
         </Column>
         <Column header="Address">
@@ -64,7 +64,7 @@ function handleAliasCopy(slotProps: any) {
         </Column>
         <Column header="Destination" v-if="!props.admin">
             <template #body="slotProps">
-                <Display class="hover:cursor-alias hover:underline" :object="stores.destinationStore.getKeyedObject(slotProps.data.destinationID)" @click="router.push('/user/destinations#' + slotProps.data.destinationID)"></Display>
+                <Display class="hover:cursor-alias hover:underline" :object="client.destination.getKeyedObject(slotProps.data.destinationID)" @click="router.push('/user/destinations#' + slotProps.data.destinationID)"></Display>
             </template>
         </Column>
         <Column header="UserID" v-if="props.admin">
@@ -74,7 +74,7 @@ function handleAliasCopy(slotProps: any) {
         </Column>
         <Column header="Enabled">
             <template #body="slotProps">
-                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => stores.aliasStore.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
+                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => client.alias.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
             </template>
         </Column>
         <Column expander style="width: 5rem" />

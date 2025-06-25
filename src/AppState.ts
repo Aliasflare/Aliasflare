@@ -1,20 +1,18 @@
 import { reactive } from "vue";
+import { APIClient } from "./api/APIClient";
 
 export const AppState = reactive<{
-    authChecked: boolean,
-    authUserId: any|null,
-    authUser: any|null,
+    apiClient: APIClient;
     viewAsUserId: any|null,
 
     config: null|any
     prepared: boolean,
     hasUpdate: boolean,
 }>({
-    authChecked: false,
-    authUserId: null,
-    authUser: null,
+    apiClient: new APIClient(),
+    viewAsUserId: null,
+    
     config: null,
     prepared: false,
-    viewAsUserId: null,
     hasUpdate: false,
 });

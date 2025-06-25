@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
 import router from '@/Router';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import DestinationDeleteDialog from '@/componentsV2/DestinationDeleteDialog.vue';
 import DestinationModifyDialog from '@/componentsV2/DestinationModifyDialog.vue';
 import Display from './Display.vue';
@@ -11,7 +11,7 @@ const props = defineProps<{
     value: any,
     class?: any,
     admin?: boolean,
-    stores: Stores
+    client: APIClientPerspective
 }>();
 
 const expandedRows = ref([]);
@@ -23,8 +23,8 @@ const loading = ref(false);
 </script>
 
 <template>
-    <DestinationDeleteDialog ref="deleteDialog" :stores="stores" />
-    <DestinationModifyDialog ref="modifyDialog" :stores="stores" />
+    <DestinationDeleteDialog ref="deleteDialog" :client="client" />
+    <DestinationModifyDialog ref="modifyDialog" :client="client" />
     <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
@@ -43,7 +43,7 @@ const loading = ref(false);
         </Column>
         <Column header="Category" v-if="!props.admin">
             <template #body="slotProps">
-                <Display :object="stores.categoryStore.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
+                <Display :object="client.category.getKeyedObject(slotProps.data.categoryID)" :tag="true" />
             </template>
         </Column>
         <Column header="Address">
@@ -58,7 +58,7 @@ const loading = ref(false);
                     :value="slotProps.data.verified ? 'Verified' : 'Pending'"
                     :severity="slotProps.data.verified ? 'sucess' : 'warn'"
                 />
-                <Button icon="pi pi-refresh" rounded severity="warn" class="ml-2" size="small" v-if="!slotProps.data.verified" @click="stores.destinationStore.checkVerification(slotProps.data.id)" />
+                <Button icon="pi pi-refresh" rounded severity="warn" class="ml-2" size="small" v-if="!slotProps.data.verified" @click="client.destination.checkVerification(slotProps.data.id)" />
             </template>
         </Column>
         <Column header="UserID" v-if="props.admin">
@@ -68,7 +68,7 @@ const loading = ref(false);
         </Column>
         <Column header="Enabled">
             <template #body="slotProps">
-                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => stores.destinationStore.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
+                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => client.destination.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
             </template>
         </Column>
        <Column expander style="width: 5rem" />

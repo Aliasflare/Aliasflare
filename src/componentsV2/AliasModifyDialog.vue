@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { AppState } from '@/AppState';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import SelectIcon from './SelectIcon.vue';
 import SelectDestination from './SelectDestination.vue';
 import SelectDomain from './SelectDomain.vue';
 import SelectCategory from './SelectCategory.vue';
 
-const { stores } = defineProps<{ stores: Stores }>();
+const { client } = defineProps<{ client: APIClientPerspective }>();
 
 const showFields = ref<undefined|string[]>();
 function renderField(field: string) { return !showFields.value || showFields?.value?.includes('*') || showFields?.value?.includes(field); }
@@ -37,9 +36,9 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await stores.aliasStore.update(target.value, fields.value);
+        await client.alias.update(target.value, fields.value);
     else 
-        await stores.aliasStore.create(stores.perspective, fields.value);
+        await client.alias.create(fields.value);
     show.value = false;
 }
 </script>
@@ -58,7 +57,7 @@ async function createOrUpdate() {
                 </InputGroup>
                 <label>Category</label>
                 <InputGroup>
-                    <SelectCategory v-model="fields.categoryID" :stores="stores" />
+                    <SelectCategory v-model="fields.categoryID" :client="client" />
                 </InputGroup>
                 <label>Custom</label>
                 <InputGroup>
@@ -75,7 +74,7 @@ async function createOrUpdate() {
                     <InputGroupAddon>
                         <i class="pi pi-at"></i>
                     </InputGroupAddon>
-                    <SelectDomain v-model="fields.domain" :disabled="target != undefined" />
+                    <SelectDomain v-model="fields.domain" :disabled="target != undefined" :client="client" />
                 </InputGroup>
                 <Message size="small" severity="secondary" variant="simple">Controls on which domain and with which token you alias should be created</Message>
             </div>
@@ -84,7 +83,7 @@ async function createOrUpdate() {
             <div class="flex flex-col gap-2 mb-8" v-if="renderField('destination')">
                 <label>Destination</label>
                 <InputGroup>
-                    <SelectDestination v-model="fields.destinationID" :stores="stores"></SelectDestination>
+                    <SelectDestination v-model="fields.destinationID" :client="client"></SelectDestination>
                 </InputGroup>
                 <Message size="small" severity="secondary" variant="simple">Controls where mails to this alias are delivered to</Message>
             </div>

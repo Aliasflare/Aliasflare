@@ -1,12 +1,12 @@
 import { diff } from "@/Utils";
-import { KeyedStore } from "./KeyedStore";
+import { APIStore } from "./APIStore";
 
-export class AliasStore extends KeyedStore {
+export class AliasAPIClient extends APIStore {
     
     // ===== OBJECT METHODS =====
     async get(aliasId: string, fromCache: boolean = false) {
         if(fromCache && this.getKeyedObject(aliasId)) return this.getKeyedObject(aliasId);
-        const res = await fetch("/api/alias/get", {
+        const res = await this.clientPerspective.fetch("/api/alias/get", {
             method: "POST",
             body: JSON.stringify({
                 alias: aliasId,
@@ -16,12 +16,12 @@ export class AliasStore extends KeyedStore {
         return this.setKeyedObject((await res.json()).alias);
     }
 
-    async create(userId: string, newData: any) {
-        const res = await fetch("/api/alias/create", {
+    async create(newData: any) {
+        const res = await this.clientPerspective.fetch("/api/alias/create", {
             method: "POST",
             body: JSON.stringify({
                 ...newData,
-                user: userId
+                user: this.clientPerspective.userId
             }),
         });
         if(res.status != 200) throw new Error(await res.text());
@@ -29,7 +29,7 @@ export class AliasStore extends KeyedStore {
     }
 
     async update(aliasId: string, newData: any) {
-        const res = await fetch("/api/alias/update", {
+        const res = await this.clientPerspective.fetch("/api/alias/update", {
             method: "POST",
             body: JSON.stringify({
                 ...diff(this.getKeyedObject(aliasId), newData),
@@ -41,7 +41,7 @@ export class AliasStore extends KeyedStore {
     }
 
     async delete(aliasId: string) {
-        const res = await fetch("/api/alias/delete", {
+        const res = await this.clientPerspective.fetch("/api/alias/delete", {
             method: "POST",
             body: JSON.stringify({
                 alias: aliasId,
@@ -52,11 +52,11 @@ export class AliasStore extends KeyedStore {
     }
 
     // ===== STATIC METHODS =====
-    async list(userId: any, page: number = 0, limit: number = 50) {
-        const res = await fetch("/api/alias/list", {
+    async list(page: number = 0, limit: number = 50) {
+        const res = await this.clientPerspective.fetch("/api/alias/list", {
             method: "POST",
             body: JSON.stringify({
-                user: userId,
+                user: this.clientPerspective.userId,
                 page,
                 limit
             })
@@ -66,7 +66,7 @@ export class AliasStore extends KeyedStore {
     }
 
     async listAll(page: number = 0, limit: number = 50) {
-        const res = await fetch("/api/alias/listAll", {
+        const res = await this.clientPerspective.fetch("/api/alias/listAll", {
             method: "POST",
             body: JSON.stringify({
                 page,

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import Display from './Display.vue';
-const { stores } = defineProps<{ stores: Stores }>();
+const { client } = defineProps<{ client: APIClientPerspective }>();
 </script>
 
 <template>
-    <Select :options="[{ id: '' }, ...stores.destinationStore.getKeyedObjects()]" optionLabel="displayName" optionValue="id" placeholder="Destination" checkmark :highlightOnSelect="false" class="w-16">
+    <Select :options="[{ id: '' }, ...client.destination.getKeyedObjects()]" optionLabel="displayName" optionValue="id" placeholder="Destination" checkmark :highlightOnSelect="false" class="w-16">
         <template #value="slotProps">
-            <Display :object="stores.destinationStore.getKeyedObject(slotProps.value)" />
+            <Display :object="client.destination.getKeyedObject(slotProps.value)" />
         </template>
 
         <template #option="slotProps">

@@ -8,20 +8,15 @@ import AuthBox from './AuthBox.vue';
 onMounted(checkLogin);
 async function checkLogin() {
     console.log("[AuthPrepareView]", "Fetching config...");
-    const res = await fetch("/api/config", {
-        method: "POST",
-        body: JSON.stringify({
-            user: AppState.authUserId
-        })
-    });
-    if(res.status == 200) {
-        AppState.config = (await res.json()).config;
+    try {
+        const res = await AppState.apiClient.withPerspective().other.config();
+        AppState.config = res;
         AppState.prepared = true;
         console.log("[AuthPrepareView]", "Fetched config!");
-    } else {
+    } catch(err) {
         AppState.config = null;
         AppState.prepared = false;
-        console.log("[AuthPrepareView]", "Failed to fetch config!");
+        console.log("[AuthPrepareView]", "Failed to fetch config!", err);
     }
 
     //Check for updates if admin, but do not care about failures (no await!)
@@ -33,7 +28,7 @@ async function checkLogin() {
         localStorage.setItem("lastUpdateCheck", new Date().toISOString());
 
         console.log("[UpdateCheck]", "Checking for updates...");
-        if(!AppState.authUser.admin) return console.log("[UpdateCheck]", "User is not admin, skipping update check!");
+        if(!AppState.apiClient.authKeyUser?.admin) return console.log("[UpdateCheck]", "User is not admin, skipping update check!");
         const gRes = await fetch(`https://api.github.com/repos/Aliasflare/Aliasflare/commits/master`, {
             headers: {
                 Accept: "application/vnd.github.v3+json",

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Stores } from '@/api/Stores';
+import { AppState } from '@/AppState';
 import DestinationTable from '@/componentsV2/DestinationTable.vue';
 
 async function load() {
     try {
-        await Stores.withPerspective('ADMIN').destinationStore.listAll(0, 50);
+        await AppState.apiClient.withPerspective('ADMIN').destination.listAll(0, 50);
     } catch(err) {}
 }
 </script>
@@ -12,5 +12,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <DestinationTable :load="load" :value="Stores.withPerspective('ADMIN').destinationStore.getKeyedObjects()" :stores="Stores.withPerspective('ADMIN')" :admin="true" />
+    <DestinationTable :load="load" :value="AppState.apiClient.withPerspective('ADMIN').destination.getKeyedObjects()" :client="AppState.apiClient.withPerspective('ADMIN')" :admin="true" />
 </template>

@@ -3,13 +3,13 @@ import { onMounted, ref, useTemplateRef } from 'vue';
 import router from '@/Router';
 import UserDeleteDialog from './UserDeleteDialog.vue';
 import UserModifyDialog from './UserModifyDialog.vue';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 
 const props = defineProps<{
     load: () => Promise<void>,
     value: any,
     class?: any,
-    stores: Stores
+    client: APIClientPerspective
 }>();
 
 const expandedRows = ref([]);
@@ -21,8 +21,8 @@ const loading = ref(false);
 </script>
 
 <template>
-    <UserDeleteDialog ref="deleteDialog" :stores="stores" />
-    <UserModifyDialog ref="modifyDialog" :stores="stores" />
+    <UserDeleteDialog ref="deleteDialog" :client="client" />
+    <UserModifyDialog ref="modifyDialog" :client="client" />
     <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" dataKey="id" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">

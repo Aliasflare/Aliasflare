@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { AppState } from '@/AppState';
-const domains = AppState.config?.domains || [];
+import type { APIClientPerspective } from '@/api/APIClient';
+const { client } = defineProps<{ client: APIClientPerspective }>();
 </script>
 
 <template>
-    <Select :options="domains" placeholder="Domain" checkmark :highlightOnSelect="false" class="w-16">
+    <Select :options="client.userConfig?.domains||[]" placeholder="Domain" checkmark :highlightOnSelect="false" class="w-16">
         <template #value="slotProps">
             <div v-if="slotProps.value" class="flex items-center h-full w-full">
                 <div>{{ slotProps.value }}</div>

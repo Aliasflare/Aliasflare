@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import router from '@/Router';
 import Logo from '@/componentsV2/Logo.vue';
 import AuthBox from './AuthBox.vue';
 import { AppState } from '@/AppState';
+import router from '@/Router';
 
 const username = ref<string>("");
 const password = ref<string>("");
@@ -15,21 +15,15 @@ async function performLogin() {
     error.value = null;
     loading.value = true;
     success.value = false;
-    const res = await fetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({
-            username: username.value,
-            password: password.value
-        })
-    });
-    if(res.status == 200) {
-        loading.value = false;
+    try {
+        await AppState.apiClient.login(username.value, password.value);
+        error.value = null;
         success.value = true;
-        AppState.authChecked = false;
         setTimeout(() => router.push({ path: router.currentRoute.value.query.originalPath as any }), 1000);
-        return true;
+    } catch(err) {
+        error.value = err+"";
+        success.value = false;
     }
-    error.value = (await res.json()).type;
     loading.value = false;
 }
 

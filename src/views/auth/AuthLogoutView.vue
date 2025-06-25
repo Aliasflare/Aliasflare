@@ -14,16 +14,14 @@ async function performLogout() {
     error.value = null;
     loading.value = true;
     success.value = false;
-    const res = await fetch("/api/auth/logout", {
-        method: "POST",
-    });
-    if(res.status == 200) {
-        loading.value = false;
+    try {
+        await AppState.apiClient.logout();
+        error.value = null;
         success.value = true;
-        AppState.authChecked = false;
-        return true;
+    } catch(err) {
+        error.value = err+"";
+        success.value = false;
     }
-    error.value = (await res.json()).type;
     loading.value = false;
 }
 </script>

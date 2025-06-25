@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, useTemplateRef } from 'vue';
 import router from '@/Router';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import CategoryDeleteDialog from './CategoryDeleteDialog.vue';
 import CategoryModifyDialog from './CategoryModifyDialog.vue';
 import Display from './Display.vue';
@@ -11,7 +11,7 @@ const props = defineProps<{
     value: any,
     class?: any,
     admin?: boolean,
-    stores: Stores
+    client: APIClientPerspective
 }>();
 
 const expandedRows = ref([]);
@@ -23,8 +23,8 @@ const loading = ref(false);
 </script>
 
 <template>
-    <CategoryDeleteDialog ref="deleteDialog" :stores="stores" />
-    <CategoryModifyDialog ref="modifyDialog" :stores="stores" />
+    <CategoryDeleteDialog ref="deleteDialog" :client="client" />
+    <CategoryModifyDialog ref="modifyDialog" :client="client" />
     <DataTable v-model:expandedRows="expandedRows" :value="value" :class="props.class" dataKey="id" tableStyle="min-width: 50rem" :loading="loading">
         <template #header>
             <div class="flex flex-wrap items-center gap-2">
@@ -43,7 +43,7 @@ const loading = ref(false);
         </Column>
         <Column header="Enabled">
             <template #body="slotProps">
-                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => stores.categoryStore.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
+                <ToggleSwitch :defaultValue="slotProps.data.enabled" @value-change="newVal => client.category.update(slotProps.data.id, { ...slotProps.data, enabled: newVal })" />
             </template>
         </Column>
         <Column expander style="width: 5rem" />

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import { ref } from 'vue';
 
-const { stores } = defineProps<{ stores: Stores }>();
+const { client } = defineProps<{ client: APIClientPerspective }>();
 const deleteCount = ref(0);
 const show = ref(false);
 const target = ref<string>("");
@@ -22,7 +22,7 @@ async function performDelete() {
         deleteCount.value++;
         return;
     }
-    await stores.userStore.delete(target.value);
+    await client.user.delete(target.value);
     show.value = false;
 }
 </script>

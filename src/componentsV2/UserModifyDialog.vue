@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { AppState } from '@/AppState';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import { ref } from 'vue';
 
-const { stores } = defineProps<{ stores: Stores }>();
+const { client } = defineProps<{ client: APIClientPerspective }>();
 
 const showFields = ref<undefined|string[]>();
 function renderField(field: string) { return !showFields.value || showFields.value?.includes('*') || showFields.value?.includes(field); }
@@ -33,9 +32,9 @@ defineExpose({
 
 async function createOrUpdate() {
     if(target.value)
-        await stores.userStore.update(target.value, fields.value);
+        await client.user.update(target.value, fields.value);
     else 
-        await stores.userStore.create(stores.perspective, fields.value);
+        await client.user.create(fields.value);
     show.value = false;
 }
 </script>

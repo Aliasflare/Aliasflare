@@ -45,16 +45,16 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   if(to.meta.requireAuth) {
-    if(AppState.authChecked == false) return { path: "/auth/checking", query: { originalPath: to.fullPath } };
-    if(AppState.authUserId == null) return { path: "/auth/login", query: { originalPath: to.fullPath } };
+    if(AppState.apiClient.authKey && !AppState.apiClient.authKeyUser) return { path: "/auth/checking", query: { originalPath: to.fullPath } };
+    if(!AppState.apiClient.authKey) return { path: "/auth/login", query: { originalPath: to.fullPath } };
   }
 
   if(to.meta.requireAdmin) {
-    if(!AppState.authUser.admin) return { path: "/user/home", query: { originalPath: to.fullPath } };
+    if(!AppState.apiClient.authKeyUser?.admin) return { path: "/user/home", query: { originalPath: to.fullPath } };
   }
 
-  AppState.viewAsUserId = to.params.userId||AppState.authUserId;
-
+  AppState.viewAsUserId = to.params.userId;
+  
   if(to.meta.requirePrepared) {
       if(AppState.prepared == false) return { path: "/auth/prepare", query: { originalPath: to.fullPath } };
   }

@@ -1,9 +1,12 @@
 import { reactive, type Reactive } from "vue";
+import type { APIClientPerspective } from "./APIClient";
 
-export class KeyedStore {
+export class APIStore {
 
+    clientPerspective: APIClientPerspective;
     data: Reactive<Array<any>>;
-    constructor() {
+    constructor(clientPerspective: APIClientPerspective) {
+        this.clientPerspective = clientPerspective;
         this.data = reactive([]);
     }
 

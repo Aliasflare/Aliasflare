@@ -1,12 +1,12 @@
 import { diff } from "@/Utils";
-import { KeyedStore } from "./KeyedStore";
+import { APIStore } from "./APIStore";
 
-export class CategoryStore extends KeyedStore {
+export class CategoryAPIClient extends APIStore {
     
     // ===== OBJECT METHODS =====
     async get(categoryId: string, fromCache: boolean = false) {
         if(fromCache && this.getKeyedObject(categoryId)) return this.getKeyedObject(categoryId);
-        const res = await fetch("/api/category/get", {
+        const res = await this.clientPerspective.fetch("/api/category/get", {
             method: "POST",
             body: JSON.stringify({
                 category: categoryId,
@@ -16,12 +16,12 @@ export class CategoryStore extends KeyedStore {
         return this.setKeyedObject((await res.json()).category);
     }
 
-    async create(userId: string, newData: any) {
-        const res = await fetch("/api/category/create", {
+    async create(newData: any) {
+        const res = await this.clientPerspective.fetch("/api/category/create", {
             method: "POST",
             body: JSON.stringify({
                 ...newData,
-                user: userId
+                user: this.clientPerspective.userId
             }),
         });
         if(res.status != 200) throw new Error(await res.text());
@@ -29,7 +29,7 @@ export class CategoryStore extends KeyedStore {
     }
 
     async update(categoryId: string, newData: any) {
-        const res = await fetch("/api/category/update", {
+        const res = await this.clientPerspective.fetch("/api/category/update", {
             method: "POST",
             body: JSON.stringify({
                 ...diff(this.getKeyedObject(categoryId), newData),
@@ -41,7 +41,7 @@ export class CategoryStore extends KeyedStore {
     }
 
     async delete(categoryId: string) {
-        const res = await fetch("/api/category/delete", {
+        const res = await this.clientPerspective.fetch("/api/category/delete", {
             method: "POST",
             body: JSON.stringify({
                 category: categoryId,
@@ -52,11 +52,11 @@ export class CategoryStore extends KeyedStore {
     }
 
     // ===== STATIC METHODS =====
-    async list(userId: any, page: number = 0, limit: number = 50) {
-        const res = await fetch("/api/category/list", {
+    async list(page: number = 0, limit: number = 50) {
+        const res = await this.clientPerspective.fetch("/api/category/list", {
             method: "POST",
             body: JSON.stringify({
-                user: userId,
+                user: this.clientPerspective.userId,
                 page,
                 limit
             })
@@ -66,7 +66,7 @@ export class CategoryStore extends KeyedStore {
     }
 
     async listAll(page: number = 0, limit: number = 50) {
-        const res = await fetch("/api/category/listAll", {
+        const res = await this.clientPerspective.fetch("/api/category/listAll", {
             method: "POST",
             body: JSON.stringify({
                 page,

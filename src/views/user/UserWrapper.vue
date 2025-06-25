@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { AppState } from '@/AppState';
 import router from '@/Router';
 import Logo from '@/componentsV2/Logo.vue';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 
 const tabItems = ref([
     { route: '/user/:userId?/home', label: 'Home', icon: 'pi pi-home' },
@@ -13,8 +13,10 @@ const tabItems = ref([
     { route: '/user/:userId?/settings', label: 'Settings', icon: 'pi pi-cog' },
 ]);
 
+const client = ref<APIClientPerspective>(AppState.apiClient.withPerspective());
 watch(() => AppState.viewAsUserId, () => {
-    Stores.withPerspective(AppState.viewAsUserId).userStore.get(AppState.viewAsUserId);
+    client.value = AppState.apiClient.withPerspective(AppState.viewAsUserId);
+    client.value.prepare();
 }, { immediate: true });
 </script>
 
@@ -27,10 +29,10 @@ watch(() => AppState.viewAsUserId, () => {
             </template>
             <template #end>
                 <div class="flex flex-row justify-center gap-2">
-                    <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto" v-if="AppState.authUserId != AppState.viewAsUserId">VIEWING AS ANOTHER USER</div>
-                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="AppState.authUser?.admin" />
+                    <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto" v-if="AppState.apiClient.authKeyUser?.id != client.userId">VIEWING AS ANOTHER USER</div>
+                    <Button icon="pi pi-server" severity="secondary" aria-label="Admin" @click="router.push({ path: '/admin/' })" v-tooltip.bottom="'Admin Mode'" v-if="AppState.apiClient.authKeyUser?.admin" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
-                        <div>{{ AppState.authUser.username }}</div>
+                        <div>{{ AppState.apiClient.authKeyUser?.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
                     </Button>
                     <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" v-tooltip.bottom="'Logout'" />
@@ -47,9 +49,9 @@ watch(() => AppState.viewAsUserId, () => {
                 </Tab>
             </TabList>
         </Tabs>
-        <div class="UserContent flex flex-grow relative" v-if="Stores.withPerspective(AppState.viewAsUserId).userStore.getKeyedObject(AppState.viewAsUserId)">
+        <div class="UserContent flex flex-grow relative" v-if="client.userData">
             <div class="UserContentNoFlexOverflow absolute w-full h-full overflow-auto p-4">
-                <router-view :stores="Stores.withPerspective(AppState.viewAsUserId)" />
+                <router-view :client="client" />
             </div>
         </div>
         <div class="m-4" v-else>Loading user...</div>

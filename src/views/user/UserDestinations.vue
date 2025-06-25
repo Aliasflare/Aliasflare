@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { AppState } from '@/AppState';
-import { Stores } from '@/api/Stores';
+import { APIClientPerspective } from '@/api/APIClient';
 import DestinationTable from '@/componentsV2/DestinationTable.vue';
 
-const { stores } = defineProps<{ stores: Stores }>();
+const { client } = defineProps<{ client: APIClientPerspective }>();
 
 async function load() {
     try {
-        await stores.destinationStore.list(AppState.viewAsUserId, 0, 50);
-        await stores.categoryStore.list(AppState.viewAsUserId, 0, 50);
+        await client.destination.list(0, 50);
+        await client.category.list(0, 50);
     } catch(err) {}
 }
 </script>
@@ -16,5 +15,5 @@ async function load() {
 <template>
     <Toast />
     <ConfirmDialog />
-    <DestinationTable :load="load" :value="stores.destinationStore.getKeyedObjects()" :stores="stores" />
+    <DestinationTable :load="load" :value="client.destination.getKeyedObjects()" :client="client" />
 </template>

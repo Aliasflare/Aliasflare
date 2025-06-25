@@ -1,12 +1,12 @@
 import { diff } from "@/Utils";
-import { KeyedStore } from "./KeyedStore";
+import { APIStore } from "./APIStore";
 
-export class DestinationStore extends KeyedStore {
+export class DestinationAPIClient extends APIStore {
     
     // ===== OBJECT METHODS =====
     async get(destinationId: string, fromCache: boolean = false) {
         if(fromCache && this.getKeyedObject(destinationId)) return this.getKeyedObject(destinationId);
-        const res = await fetch("/api/destination/get", {
+        const res = await this.clientPerspective.fetch("/api/destination/get", {
             method: "POST",
             body: JSON.stringify({
                 destination: destinationId,
@@ -16,12 +16,12 @@ export class DestinationStore extends KeyedStore {
         return this.setKeyedObject((await res.json()).destination);
     }
 
-    async create(userId: string, newData: any) {
-        const res = await fetch("/api/destination/create", {
+    async create(newData: any) {
+        const res = await this.clientPerspective.fetch("/api/destination/create", {
             method: "POST",
             body: JSON.stringify({
                 ...newData,
-                user: userId
+                user: this.clientPerspective.userId
             }),
         });
         if(res.status != 200) throw new Error(await res.text());
@@ -29,7 +29,7 @@ export class DestinationStore extends KeyedStore {
     }
 
     async update(destinationId: string, newData: any) {
-        const res = await fetch("/api/destination/update", {
+        const res = await this.clientPerspective.fetch("/api/destination/update", {
             method: "POST",
             body: JSON.stringify({
                 ...diff(this.getKeyedObject(destinationId), newData),
@@ -41,7 +41,7 @@ export class DestinationStore extends KeyedStore {
     }
 
     async delete(destinationId: string) {
-        const res = await fetch("/api/destination/delete", {
+        const res = await this.clientPerspective.fetch("/api/destination/delete", {
             method: "POST",
             body: JSON.stringify({
                 destination: destinationId,
@@ -52,7 +52,7 @@ export class DestinationStore extends KeyedStore {
     }
 
     async checkVerification(destinationId: string) {
-        const res = await fetch("/api/destination/checkVerification", {
+        const res = await this.clientPerspective.fetch("/api/destination/checkVerification", {
             method: "POST",
             body: JSON.stringify({
                 destination: destinationId,
@@ -63,11 +63,11 @@ export class DestinationStore extends KeyedStore {
     }
 
     // ===== STATIC METHODS =====
-    async list(userId: any, page: number = 0, limit: number = 50) {
-        const res = await fetch("/api/destination/list", {
+    async list(page: number = 0, limit: number = 50) {
+        const res = await this.clientPerspective.fetch("/api/destination/list", {
             method: "POST",
             body: JSON.stringify({
-                user: userId,
+                user: this.clientPerspective.userId,
                 page,
                 limit
             })
@@ -77,7 +77,7 @@ export class DestinationStore extends KeyedStore {
     }
 
     async listAll(page: number = 0, limit: number = 50) {
-        const res = await fetch("/api/destination/listAll", {
+        const res = await this.clientPerspective.fetch("/api/destination/listAll", {
             method: "POST",
             body: JSON.stringify({
                 page,

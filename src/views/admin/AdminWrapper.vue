@@ -25,7 +25,7 @@ const tabItems = ref([
                     <div class="font-bold text-xl text-red-500 top-0 bottom-0 my-auto">ADMIN MODE</div>
                     <Button icon="pi pi-user" severity="secondary" aria-label="User" @click="router.push({ path: '/user/' })" v-tooltip.bottom="'User Mode'" />
                     <Button severity="secondary" @click="$router.push({ path: '/user/settings' })">
-                        <div>{{ AppState.authUser.username }}</div>
+                        <div>{{ AppState.apiClient.authKeyUser?.username }}</div>
                         <Avatar icon="pi pi-user" shape="circle" />
                     </Button>
                     <Button icon="pi pi-eject" severity="secondary" aria-label="Logout" @click="router.push({ path: '/auth/logout' })" v-tooltip.bottom="'Logout'" />
