@@ -1,3 +1,7 @@
+> [!CAUTION]  
+> This project is currently beeing split into multiple packages for ease of development!  
+> During the split-up there will be no further updates to this repository!
+
 <p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./public/logo_dark.png">
